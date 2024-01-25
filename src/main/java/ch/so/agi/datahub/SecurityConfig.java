@@ -1,5 +1,6 @@
 package ch.so.agi.datahub;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -38,16 +39,21 @@ public class SecurityConfig {
 //        return new BCryptPasswordEncoder();
 //    }
     
-    
-    @Bean
-    UserDetailsService userDetailsService() {
-        UserDetails userDetails = User.withDefaultPasswordEncoder()
-            .username("user")
-            .password("password")
-            .roles("USER")
-            .build();
-        return new InMemoryUserDetailsManager(userDetails);
+    private BasicAuthManager basicAuthManager;
+
+    public SecurityConfig(BasicAuthManager basicAuthManager) {
+        this.basicAuthManager = basicAuthManager;
     }
+    
+//    @Bean
+//    UserDetailsService userDetailsService() {
+//        UserDetails userDetails = User.withDefaultPasswordEncoder()
+//            .username("user")
+//            .password("password")
+//            .roles("USER")
+//            .build();
+//        return new InMemoryUserDetailsManager(userDetails);
+//    }
     
     // So geht das nicht, da man im CustomAuthorizationManager bereits authenficated ist.
     // Ich brauch sowas wie einen prefilter, der basic auth ausliest und prüft.
@@ -60,9 +66,10 @@ public class SecurityConfig {
             .authorizeHttpRequests((authorize) -> authorize
                 .requestMatchers("/ping").permitAll()
                 //.requestMatchers("/api/jobs/**").access(new CustomAuthorizationManager())
-                .requestMatchers("/hello").access(new CustomAuthorizationManager())
+                //.requestMatchers("/hello").access(new CustomAuthorizationManager())
                 .requestMatchers("/**").authenticated() //.hasAnyRole
             )
+            .authenticationManager(basicAuthManager)
             .httpBasic(Customizer.withDefaults());
             //.formLogin(Customizer.withDefaults());
         return http.build();
