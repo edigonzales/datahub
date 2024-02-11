@@ -41,6 +41,9 @@ public class WebSecurityConfig {
                 //.requestMatchers("/ping").permitAll()
                 .requestMatchers("/api/jobs/**").authenticated()
         )
+        //TODO Authorisierung eher nicht hier. Wenn man z.B. mit GUI sich anmeldet, schickt
+        // man noch keine Datei. Gut, da wäre URL anders. Aber eben, gibt viele
+        // Varianten.
         .addFilterAfter(new AuthoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
         .httpBasic(Customizer.withDefaults());
         //.formLogin(Customizer.withDefaults());
