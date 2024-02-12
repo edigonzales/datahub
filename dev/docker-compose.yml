@@ -1,0 +1,9 @@
+version: '3'
+services:
+  edit-db:
+    image: sogis/postgis:16-3.4
+    environment:
+      POSTGRES_DB: edit
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "54321:5432"

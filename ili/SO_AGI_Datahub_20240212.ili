@@ -13,15 +13,7 @@ AT "https://agi.so.ch"
 VERSION "2024-02-12"  =
   IMPORTS GeometryCHLV95_V1;
 
-  DOMAIN
-
-    SOOID = OID TEXT*255;
-
-  TOPIC Datahub =
-    OID AS SOOID;
-
-    CLASS Model =
-    END Model;
+  TOPIC Core =
 
     CLASS Operat =
       /** Name resp. ID des Operates, z.B. DMAV-2601 für die Gemeinde Solothurn im DMAV.
@@ -91,6 +83,51 @@ VERSION "2024-02-12"  =
       Theme_R -- {1} Theme;
     END Theme_Operat;
 
-  END Datahub;
+  END Core;
+
+  TOPIC Deliveries =
+    DEPENDS ON SO_AGI_Datahub_20240212.Core;
+
+    CLASS Asset =
+      originalFilename : MANDATORY TEXT*2048;
+      sanitizedFilename : TEXT*2048;
+      type : MANDATORY (
+        /** Reports created by the validation process.
+         */
+        ValidationReport,
+        /** Primary data delivered by the user.
+         */
+        PrimaryData
+      );
+    END Asset;
+
+    /** ID des Jobs muss eindeutig sein.
+     */
+    CLASS Delivery =
+      /** ID des (technischen) Jobs, der die Lieferung prozessiert hat.
+       */
+      jobId : MANDATORY INTERLIS.UUIDOID;
+      /** Datum und Uhrzeit der Lieferung
+       */
+      deliveryDate : MANDATORY INTERLIS.XMLDateTime;
+      UNIQUE jobId;
+    END Delivery;
+
+    ASSOCIATION Delivery_Asset =
+      Asset_R -- {1..*} Asset;
+      Delivery_R -- {1} Delivery;
+    END Delivery_Asset;
+
+    ASSOCIATION Operat_Delivery =
+      Delivery_R -- {0..*} Delivery;
+      Operat_R (EXTERNAL) -- {1} SO_AGI_Datahub_20240212.Core.Operat;
+    END Operat_Delivery;
+
+    ASSOCIATION User_Delivery =
+      User_R (EXTERNAL) -- {1} SO_AGI_Datahub_20240212.Core.User;
+      Delivery_R -- {0..*} Delivery;
+    END User_Delivery;
+
+  END Deliveries;
 
 END SO_AGI_Datahub_20240212.
