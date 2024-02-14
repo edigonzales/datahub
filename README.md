@@ -8,7 +8,7 @@ curl -i -X POST -F 'files=@2549.ch.so.arp.nutzungsplanung.kommunal.xtf' -u 'bob:
 
 ## Konzeptionelle Fragen
 - Ich glaube mir wäre lieber es gibt nur Lieferungen und keine Prüfung, die ich dann zu einer Lieferung machen kann. Dünkt mich einfacher umzusetzen, da es weniger Logik braucht.
-
+- Was wird genau geprüft? Wenn sogar der Inhalt (die Koordinaten) geprüft werden sollen, wirds teuer.
 
 ## Autorisierung
 
@@ -17,8 +17,12 @@ curl -i -X POST -F 'files=@2549.ch.so.arp.nutzungsplanung.kommunal.xtf' -u 'bob:
   * Normales Businesslogik im Service?
   * AccessDeniedHandler bringt mir nur was, wenn man Rollen hat? (hasRole). Woher soll sonst Spring Boot wissen, dass "bob" nicht autorisiert ist?
 
-- Was wird genau geprüft? Wenn sogar der Inhalt (die Koordinaten) geprüft werden sollen, wirds teuer.
 
+
+## Technische Fragen
+- Hochgeladene Dateien nicht zwischenspeichern (falls S3).
+- Cleaner braucht es trotzdem? (an async denken resp. besser machen?)
+- ...
 
 ## Datenmodell
 
