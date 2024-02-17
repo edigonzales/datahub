@@ -16,7 +16,7 @@ curl -i -X GET http://localhost:8080/ping
 ## Konzeptionelle Fragen
 - Ich glaube mir wäre lieber es gibt nur Lieferungen und keine Prüfung, die ich dann zu einer Lieferung machen kann. Dünkt mich einfacher umzusetzen, da es weniger Logik braucht.
 - Was wird genau geprüft? Wenn sogar der Inhalt (die Koordinaten) geprüft werden sollen, wirds teuer.
-- Was wird geantwortet, wenn File nicht validiert? Prozessiert mit jobrunr ist es. Aber nicht valide? Ah, ist ja heute schon so. Ich habe zwei Stati. Es muss ja via GET jobsId nachgefragt werden.
+- Was wird geantwortet, wenn File nicht validiert? Prozessiert mit jobrunr ist es. Aber nicht valide? Ah, ist ja heute schon so. Ich habe zwei Stati. Es muss ja via GET jobsId nachgefragt werden (resp. gibt dann schon E-Mail / RSS / GUI / whatever)
 
 ## Autorisierung
 
