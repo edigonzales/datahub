@@ -7,6 +7,8 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,6 +21,7 @@ import org.springframework.security.web.server.csrf.CsrfToken;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import ch.so.agi.datahub.filter.AuthorizationFilter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,6 +29,19 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 public class WebSecurityConfig {
+    
+    @Autowired
+    JdbcClient jdbcClient;
+    
+    @Bean
+    FilterRegistrationBean<AuthorizationFilter> authorizationFilter() {
+        FilterRegistrationBean<AuthorizationFilter> registrationBean = new FilterRegistrationBean<>();
+        registrationBean.setFilter(new AuthorizationFilter(jdbcClient));
+        //registrationBean.addUrlPatterns("/api/v1/deliveries/**", "/und_noch_andere/*");
+        //registrationBean.addUrlPatterns("*");
+        registrationBean.addUrlPatterns("/api/v1/deliveries/*");
+        return registrationBean;
+    }
     
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -35,16 +51,17 @@ public class WebSecurityConfig {
 //                );
 
         http
-        .securityMatcher("/api/jobs/**") // Sonst wird der Filter auf alle Requests angewendet.
+        .securityMatcher("/api/jobs/**", "/api/v1/deliveries/**") // Sonst wird ein allfälliger Filter hier (z.B. addFilterAfter()) auf alle Requests angewendet.
         .csrf(csrf -> csrf.disable()) // Für non-browser i.O. (?)
         .authorizeHttpRequests((authorize) -> authorize
                 //.requestMatchers("/ping").permitAll()
-                .requestMatchers("/api/jobs/**").authenticated()
+                //.requestMatchers("/api/jobs/**").authenticated()
+                .requestMatchers("/api/v1/deliveries/**").authenticated()
         )
         //TODO Authorisierung eher nicht hier. Wenn man z.B. mit GUI sich anmeldet, schickt
         // man noch keine Datei. Gut, da wäre URL anders. Aber eben, gibt viele
         // Varianten.
-        .addFilterAfter(new AuthoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
+        //.addFilterAfter(new AuthoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
         .httpBasic(Customizer.withDefaults());
         //.formLogin(Customizer.withDefaults());
 

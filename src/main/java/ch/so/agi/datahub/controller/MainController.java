@@ -1,9 +1,11 @@
-package ch.so.agi.datahub;
+package ch.so.agi.datahub.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,9 +17,15 @@ import org.springframework.web.multipart.MultipartFile;
 public class MainController {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     @GetMapping("/ping")
     public ResponseEntity<String>  ping() {
         logger.info("ping");
+        
+        logger.info(jdbcTemplate.toString());
+        
         return new ResponseEntity<String>("datahub", HttpStatus.OK);
     }
     

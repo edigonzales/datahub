@@ -1,4 +1,4 @@
-package ch.so.agi.datahub;
+package ch.so.agi.datahub.filter;
 
 import java.io.IOException;
 import java.util.Iterator;
