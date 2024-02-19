@@ -17,6 +17,7 @@ curl -i -X GET http://localhost:8080/ping
 - Ich glaube mir wäre lieber es gibt nur Lieferungen und keine Prüfung, die ich dann zu einer Lieferung machen kann. Dünkt mich einfacher umzusetzen, da es weniger Logik braucht.
 - Was wird genau geprüft? Wenn sogar der Inhalt (die Koordinaten) geprüft werden sollen, wirds teuer.
 - Was wird geantwortet, wenn File nicht validiert? Prozessiert mit jobrunr ist es. Aber nicht valide? Ah, ist ja heute schon so. Ich habe zwei Stati. Es muss ja via GET jobsId nachgefragt werden (resp. gibt dann schon E-Mail / RSS / GUI / whatever)
+- Wenn man will, dass der z.B. Import aufgrund des Filenamens alles weiss (Dataset-Name), muss man das File entweder korrekt benannt schicken (und das prüfen), oder beim wegkopieren umbenennen (muss in der DB stehen). Andere Varianten?
 
 ## Autorisierung
 
