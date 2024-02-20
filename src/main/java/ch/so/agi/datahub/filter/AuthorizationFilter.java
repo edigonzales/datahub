@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.security.core.Authentication;
@@ -14,14 +15,18 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import ch.so.agi.datahub.model.Operat;
+import ch.so.agi.datahub.model.OperatDeliveryInfo;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+@Component
 public class AuthorizationFilter extends OncePerRequestFilter {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Value("${app.dbSchema}")
+    private String dbSchema;
 
     private JdbcClient jdbcClient;
     
@@ -33,6 +38,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         logger.info("********* do authorization here...");
+        logger.info("*********: " + dbSchema);
         
         HttpServletRequest servletRequest = (HttpServletRequest) request;
 
@@ -47,16 +53,18 @@ SELECT
     t.themeid,
     t.config,
     t.metaconfig,
-    op.operatid
+    op.operatid,
+    op.t_id AS operatpk,
+    u.t_id AS userpk
 FROM 
     agi_datahub_v1.core_operat AS op 
-    LEFT JOIN agi_datahub_v1.core_organisation AS o 
+    LEFT JOIN %s.core_organisation AS o 
     ON o.t_id = op.organisation_r 
-    LEFT JOIN agi_datahub_v1.core_organisation_user AS ou 
+    LEFT JOIN %s.core_organisation_user AS ou 
     ON o.t_id = ou.organisation_r 
-    LEFT JOIN agi_datahub_v1.core_user AS u 
+    LEFT JOIN %s.core_user AS u 
     ON u.t_id = ou.user_r 
-    LEFT JOIN agi_datahub_v1.core_theme AS t 
+    LEFT JOIN %s.core_theme AS t 
     ON op.theme_r = t.t_id 
 WHERE 
     u.userid = :userid
@@ -64,21 +72,19 @@ WHERE
     op.operatid = :operatid
     AND 
     t.themeid = :themeid
-                """;
-        
-        // TODO Eventuell OperatUser mit Infos über User (isActive, Role, ...)
+                """.formatted(dbSchema, dbSchema, dbSchema, dbSchema);
 
-        Optional<Operat> operatOptional = jdbcClient.sql(stmt)
-        //Operat operat = jdbcClient.sql(stmt)
+        Optional<OperatDeliveryInfo> operatDeliveryInfoOptional = jdbcClient.sql(stmt)
                 .param("userid", userId)
                 //.param("userid", "gaga")
                 .param("themeid", themeId)
                 .param("operatid", operatId)
-                .query(Operat.class).optional();        
+                .query(OperatDeliveryInfo.class).optional();        
                 
-        if (operatOptional.isEmpty()) {
+        if (operatDeliveryInfoOptional.isEmpty()) {
             ((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN, "User is not authorized.");
         } else {
+            request.setAttribute("operat_delivery_info", operatDeliveryInfoOptional.get());
             filterChain.doFilter(request, response);            
         }
     }

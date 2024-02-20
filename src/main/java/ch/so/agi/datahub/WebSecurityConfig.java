@@ -29,14 +29,12 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 public class WebSecurityConfig {
-    
-    @Autowired
-    JdbcClient jdbcClient;
-    
+        
+    // Bean-Methode darf nicht den gleichen Namen wie die Klasse haben.
     @Bean
-    FilterRegistrationBean<AuthorizationFilter> authorizationFilter() {
+    FilterRegistrationBean<AuthorizationFilter> authFilter(AuthorizationFilter authorizationFilter) {
         FilterRegistrationBean<AuthorizationFilter> registrationBean = new FilterRegistrationBean<>();
-        registrationBean.setFilter(new AuthorizationFilter(jdbcClient));
+        registrationBean.setFilter(authorizationFilter);
         //registrationBean.addUrlPatterns("/api/v1/deliveries/**", "/und_noch_andere/*");
         //registrationBean.addUrlPatterns("*");
         registrationBean.addUrlPatterns("/api/v1/deliveries/*");
