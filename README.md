@@ -32,7 +32,7 @@ curl -i -X GET http://localhost:8080/ping
 
 ## Technische Fragen
 - Um normale Validierungsjobs von Deliverjobs zu unterscheiden, einfach joinen, die reinen Validierungsjobs gibt es nicht in Deliveryjobs. Vielleicht so?
-- Wie Jobs-Übersicht? Als erster Wurf "api/v1/jobs/<thema>/<operat>" etc. damit ich keine Bedienelemente brauche. Das Ganze sieht man nur authorisiert. man könnte alle gequeten Jobs zeigen, aber anonymisiert, wenn es nicht sein job ist.
+- Wie Jobs-Übersicht? Als erster Wurf "api/v1/jobs/<thema>/<operat>" etc. damit ich keine Bedienelemente brauche. Das Ganze sieht man nur authorisiert. man könnte alle gequeten Jobs zeigen, aber anonymisiert, wenn es nicht sein job ist. So könnte man sogar deleten (von gequeten) Jobs machen.
 - Hochgeladene Dateien nicht zwischenspeichern (falls S3).
 - Cleaner braucht es trotzdem? (an async denken resp. besser machen?)
 - File too large exception? 413 status code? Sauberes API error handling (bis jetzt nur halbgar) -> https://www.toptal.com/java/spring-boot-rest-api-error-handling 

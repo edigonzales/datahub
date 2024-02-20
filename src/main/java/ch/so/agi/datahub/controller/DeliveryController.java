@@ -111,7 +111,7 @@ WHERE
        
         // Validierungsjob in Jobrunr queuen
         jobScheduler.enqueue(jobIdUuid, () -> ilivalidatorService.validate());
-        logger.debug("<{}> Job is being queued for validation.", jobId);
+        logger.info("<{}> Job is being queued for validation.", jobId);
         
         return ResponseEntity
                 .accepted()
