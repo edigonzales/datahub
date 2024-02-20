@@ -20,6 +20,7 @@ curl -i -X GET http://localhost:8080/ping
 - Wenn man will, dass der z.B. Import aufgrund des Filenamens alles weiss (Dataset-Name), muss man das File entweder korrekt benannt schicken (und das prüfen), oder beim wegkopieren umbenennen (muss in der DB stehen). Andere Varianten?
 - Die Datei resp. das Operate wird vor der Prüfung nie überschrieben. Erst nach Validierung wird es in einen Thema-Ordner kopiert und überschreibt jeweils das ältere validierte Operat. Ist einfacher umzusetzen und auch (?) für die nachfolgenden Prozesse (wobei das nicht pauschalisiert werden kann, oder?). Aber wenn wir einfach aktuelle AV- oder was auch immer Daten wollen, ist überschreiben i.O.
 
+
 ## Autorisierung
 
 - Wo hänge ich die ein in Spring Boot? Wie setze ich es um?
@@ -30,6 +31,7 @@ curl -i -X GET http://localhost:8080/ping
 
 
 ## Technische Fragen
+- Um normale Validierungsjobs von Deliverjobs zu unterscheiden, einfach joinen, die reinen Validierungsjobs gibt es nicht in Deliveryjobs. Vielleicht so?
 - Wie Jobs-Übersicht? Als erster Wurf "api/v1/jobs/<thema>/<operat>" etc. damit ich keine Bedienelemente brauche. Das Ganze sieht man nur authorisiert. man könnte alle gequeten Jobs zeigen, aber anonymisiert, wenn es nicht sein job ist.
 - Hochgeladene Dateien nicht zwischenspeichern (falls S3).
 - Cleaner braucht es trotzdem? (an async denken resp. besser machen?)
