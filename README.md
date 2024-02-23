@@ -101,6 +101,7 @@ CREATE SCHEMA IF NOT EXISTS agi_datahub_jobrunr_v1;
 ./gradlew cgen
 ```
 
+- Probleme mit UUID-Datentyp -> String(36)
 
 ## Queries
 
