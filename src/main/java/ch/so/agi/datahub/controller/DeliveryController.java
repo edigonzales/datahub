@@ -3,9 +3,11 @@ package ch.so.agi.datahub.controller;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.cayenne.DataRow;
 import org.jobrunr.scheduling.JobScheduler;
 import org.jobrunr.storage.StorageProvider;
 import org.slf4j.Logger;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import ch.so.agi.datahub.AppConstants;
 import ch.so.agi.datahub.model.Delivery;
 import ch.so.agi.datahub.model.OperatDeliveryInfo;
 import ch.so.agi.datahub.service.IlivalidatorService;
@@ -73,41 +76,46 @@ public class DeliveryController {
         String jobId = jobIdUuid.toString();
         
         // Die Delivery-Tabellen nachführen.
-        OperatDeliveryInfo operatDeliveryInfo = (OperatDeliveryInfo) request.getAttribute("operat_delivery_info");
+        //OperatDeliveryInfo operatDeliveryInfo1 = (OperatDeliveryInfo) request.getAttribute(AppConstants.ATTRIBUTE_OPERAT_DELIVERY_INFO);
+        DataRow operatDeliveryInfo = (DataRow) request.getAttribute(AppConstants.ATTRIBUTE_OPERAT_DELIVERY_INFO);
+        System.out.println(operatDeliveryInfo.get("config"));
+       
         
-        jdbcClient.sql("INSERT INTO "+dbSchema+".deliveries_delivery(jobid, deliverydate, operat_r, user_r) VALUES (?, ?, ?, ?)")
-                .params(List.of(jobIdUuid, new Date(), operatDeliveryInfo.operatpk(), operatDeliveryInfo.userpk()))
-                .update();
-            
-        // Primary Key des neuen, vorhin erzeugten Records eruieren, damit die Kindtabelle befüllt werden kann.  
-        String stmt = """
-SELECT 
-    t_id AS tid,
-    jobid,
-    deliverydate,
-    operat_r AS operatfk,
-    user_r AS userfk
-FROM 
-    %s.deliveries_delivery
-WHERE 
-    jobid = :jobid
-;
-                    """.formatted(dbSchema);
-
-        Optional<Delivery> deliveryOptional = jdbcClient.sql(stmt)
-                .param("jobid", jobIdUuid)
-                //.param("jobid", UUID.randomUUID())
-                .query(Delivery.class).optional();        
         
-        if (deliveryOptional.isEmpty()) {
-            throw new InvalidDataAccessResourceUsageException("<"+jobId+"> JobId not found."); // Rollback der Transaktion.
-        }             
-      
-        // Update Tabelle deliveries_asset.
-        int deliveryTid = deliveryOptional.get().tid();
-        jdbcClient.sql("INSERT INTO "+dbSchema+".deliveries_asset(originalfilename, sanitizedfilename, atype, delivery_r) VALUES (?, ?, ?, ?)")
-                .params(List.of("foo", "bar", "PrimaryData", deliveryTid))
-                .update();            
+        
+//        jdbcClient.sql("INSERT INTO "+dbSchema+".deliveries_delivery(jobid, deliverydate, operat_r, user_r) VALUES (?, ?, ?, ?)")
+//                .params(List.of(jobIdUuid, new Date(), operatDeliveryInfo1.operatpk(), operatDeliveryInfo1.userpk()))
+//                .update();
+//            
+//        // Primary Key des neuen, vorhin erzeugten Records eruieren, damit die Kindtabelle befüllt werden kann.  
+//        String stmt = """
+//SELECT 
+//    t_id AS tid,
+//    jobid,
+//    deliverydate,
+//    operat_r AS operatfk,
+//    user_r AS userfk
+//FROM 
+//    %s.deliveries_delivery
+//WHERE 
+//    jobid = :jobid
+//;
+//                    """.formatted(dbSchema);
+//
+//        Optional<Delivery> deliveryOptional = jdbcClient.sql(stmt)
+//                .param("jobid", jobIdUuid)
+//                //.param("jobid", UUID.randomUUID())
+//                .query(Delivery.class).optional();        
+//        
+//        if (deliveryOptional.isEmpty()) {
+//            throw new InvalidDataAccessResourceUsageException("<"+jobId+"> JobId not found."); // Rollback der Transaktion.
+//        }             
+//      
+//        // Update Tabelle deliveries_asset.
+//        int deliveryTid = deliveryOptional.get().tid();
+//        jdbcClient.sql("INSERT INTO "+dbSchema+".deliveries_asset(originalfilename, sanitizedfilename, atype, delivery_r) VALUES (?, ?, ?, ?)")
+//                .params(List.of("foo", "bar", "PrimaryData", deliveryTid))
+//                .update();            
        
         // Validierungsjob in Jobrunr queuen
         jobScheduler.enqueue(jobIdUuid, () -> ilivalidatorService.validate());

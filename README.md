@@ -78,6 +78,29 @@ java -cp jobrunr-6.3.4.jar:slf4j-api-2.0.12.jar org.jobrunr.storage.sql.common.D
 CREATE SCHEMA IF NOT EXISTS agi_datahub_jobrunr_v1;
 ```
 
+## Cayenne
+
+- Ein minimales datamap.map.xml muss vorhanden sein.
+
+```
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
+	<property name="defaultPackage" value="ch.so.agi.datahub.cayenne"/>
+</data-map>
+
+```
+
+```
+./gradlew cdbimport
+```
+
+```
+./gradlew cgen
+```
+
 
 ## Queries
 

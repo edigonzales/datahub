@@ -39,6 +39,8 @@ dependencies {
     implementation 'com.unboundid:unboundid-ldapsdk'
     implementation 'org.jobrunr:jobrunr-spring-boot-3-starter:6.3.4'
 
+    implementation 'org.apache.cayenne:cayenne-server:4.2'
+
     runtimeOnly 'org.postgresql:postgresql'
     
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -51,6 +53,8 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+cayenne.defaultDataMap "$projectDir/src/main/resources/cayenne/datamap.map.xml"
 
 cgen {
     client = false
@@ -67,7 +71,7 @@ cdbimport {
     dataSource {
         driver 'org.postgresql.Driver'
         url "jdbc:postgresql://localhost:54321/edit"
-        username 'postgre'
+        username 'postgres'
         password 'secret'
     }
 
@@ -77,6 +81,12 @@ cdbimport {
         schema {
             name 'agi_datahub_v1'
             includeTable 'core_operat'
+            includeTable 'core_organisation'
+            includeTable 'core_organisation_user'
+            includeTable 'core_theme'
+            includeTable 'core_user'
+            includeTable 'deliveries_delivery'
+            includeTable 'deliveries_asset'
             //includeTable 'PEERREPOSITORY'
         }
     }

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
+	<property name="defaultPackage" value="ch.so.agi.datahub.cayenne"/>
+	<db-entity name="core_operat" schema="agi_datahub_v1">
+		<db-attribute name="operatid" type="VARCHAR" isMandatory="true" length="512"/>
+		<db-attribute name="organisation_r" type="BIGINT" isMandatory="true" length="19"/>
+		<db-attribute name="t_id" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="19"/>
+		<db-attribute name="theme_r" type="BIGINT" isMandatory="true" length="19"/>
+	</db-entity>
+	<db-entity name="core_organisation" schema="agi_datahub_v1">
+		<db-attribute name="aname" type="VARCHAR" isMandatory="true" length="512"/>
+		<db-attribute name="auid" type="VARCHAR" length="15"/>
+		<db-attribute name="t_id" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="19"/>
+	</db-entity>
+	<db-entity name="core_organisation_user" schema="agi_datahub_v1">
+		<db-attribute name="organisation_r" type="BIGINT" isMandatory="true" length="19"/>
+		<db-attribute name="t_id" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="19"/>
+		<db-attribute name="user_r" type="BIGINT" isMandatory="true" length="19"/>
+	</db-entity>
+	<db-entity name="core_theme" schema="agi_datahub_v1">
+		<db-attribute name="config" type="VARCHAR" length="512"/>
+		<db-attribute name="metaconfig" type="VARCHAR" length="512"/>
+		<db-attribute name="t_id" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="19"/>
+		<db-attribute name="themeid" type="VARCHAR" isMandatory="true" length="20"/>
+	</db-entity>
+	<db-entity name="core_user" schema="agi_datahub_v1">
+		<db-attribute name="arole" type="VARCHAR" length="20"/>
+		<db-attribute name="isactive" type="BIT" length="1"/>
+		<db-attribute name="t_id" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="19"/>
+		<db-attribute name="userid" type="VARCHAR" length="512"/>
+	</db-entity>
+	<db-entity name="deliveries_asset" schema="agi_datahub_v1">
+		<db-attribute name="atype" type="VARCHAR" isMandatory="true" length="255"/>
+		<db-attribute name="delivery_r" type="BIGINT" isMandatory="true" length="19"/>
+		<db-attribute name="originalfilename" type="VARCHAR" isMandatory="true" length="2048"/>
+		<db-attribute name="sanitizedfilename" type="VARCHAR" length="2048"/>
+		<db-attribute name="t_id" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="19"/>
+	</db-entity>
+	<db-entity name="deliveries_delivery" schema="agi_datahub_v1">
+		<db-attribute name="deliverydate" type="TIMESTAMP" isMandatory="true" length="29"/>
+		<db-attribute name="jobid" type="VARCHAR" isMandatory="true" length="36"/>
+		<db-attribute name="operat_r" type="BIGINT" isMandatory="true" length="19"/>
+		<db-attribute name="t_id" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="19"/>
+		<db-attribute name="user_r" type="BIGINT" isMandatory="true" length="19"/>
+	</db-entity>
+	<obj-entity name="CoreOperat" className="ch.so.agi.datahub.cayenne.CoreOperat" dbEntityName="core_operat">
+		<obj-attribute name="operatid" type="java.lang.String" db-attribute-path="operatid"/>
+	</obj-entity>
+	<obj-entity name="CoreOrganisation" className="ch.so.agi.datahub.cayenne.CoreOrganisation" dbEntityName="core_organisation">
+		<obj-attribute name="aname" type="java.lang.String" db-attribute-path="aname"/>
+		<obj-attribute name="auid" type="java.lang.String" db-attribute-path="auid"/>
+	</obj-entity>
+	<obj-entity name="CoreOrganisationUser" className="ch.so.agi.datahub.cayenne.CoreOrganisationUser" dbEntityName="core_organisation_user"/>
+	<obj-entity name="CoreTheme" className="ch.so.agi.datahub.cayenne.CoreTheme" dbEntityName="core_theme">
+		<obj-attribute name="config" type="java.lang.String" db-attribute-path="config"/>
+		<obj-attribute name="metaconfig" type="java.lang.String" db-attribute-path="metaconfig"/>
+		<obj-attribute name="themeid" type="java.lang.String" db-attribute-path="themeid"/>
+	</obj-entity>
+	<obj-entity name="CoreUser" className="ch.so.agi.datahub.cayenne.CoreUser" dbEntityName="core_user">
+		<obj-attribute name="arole" type="java.lang.String" db-attribute-path="arole"/>
+		<obj-attribute name="isactive" type="java.lang.Boolean" db-attribute-path="isactive"/>
+		<obj-attribute name="userid" type="java.lang.String" db-attribute-path="userid"/>
+	</obj-entity>
+	<obj-entity name="DeliveriesAsset" className="ch.so.agi.datahub.cayenne.DeliveriesAsset" dbEntityName="deliveries_asset">
+		<obj-attribute name="atype" type="java.lang.String" db-attribute-path="atype"/>
+		<obj-attribute name="originalfilename" type="java.lang.String" db-attribute-path="originalfilename"/>
+		<obj-attribute name="sanitizedfilename" type="java.lang.String" db-attribute-path="sanitizedfilename"/>
+	</obj-entity>
+	<obj-entity name="DeliveriesDelivery" className="ch.so.agi.datahub.cayenne.DeliveriesDelivery" dbEntityName="deliveries_delivery">
+		<obj-attribute name="deliverydate" type="java.time.LocalDateTime" db-attribute-path="deliverydate"/>
+		<obj-attribute name="jobid" type="java.lang.String" db-attribute-path="jobid"/>
+	</obj-entity>
+	<db-relationship name="coreOrganisation" source="core_operat" target="core_organisation">
+		<db-attribute-pair source="organisation_r" target="t_id"/>
+	</db-relationship>
+	<db-relationship name="coreTheme" source="core_operat" target="core_theme">
+		<db-attribute-pair source="theme_r" target="t_id"/>
+	</db-relationship>
+	<db-relationship name="deliveriesDeliveries" source="core_operat" target="deliveries_delivery" toMany="true">
+		<db-attribute-pair source="t_id" target="operat_r"/>
+	</db-relationship>
+	<db-relationship name="coreOperats" source="core_organisation" target="core_operat" toMany="true">
+		<db-attribute-pair source="t_id" target="organisation_r"/>
+	</db-relationship>
+	<db-relationship name="coreOrganisationUsers" source="core_organisation" target="core_organisation_user" toMany="true">
+		<db-attribute-pair source="t_id" target="organisation_r"/>
+	</db-relationship>
+	<db-relationship name="coreOrganisation" source="core_organisation_user" target="core_organisation">
+		<db-attribute-pair source="organisation_r" target="t_id"/>
+	</db-relationship>
+	<db-relationship name="coreUser" source="core_organisation_user" target="core_user">
+		<db-attribute-pair source="user_r" target="t_id"/>
+	</db-relationship>
+	<db-relationship name="coreOperats" source="core_theme" target="core_operat" toMany="true">
+		<db-attribute-pair source="t_id" target="theme_r"/>
+	</db-relationship>
+	<db-relationship name="coreOrganisationUsers" source="core_user" target="core_organisation_user" toMany="true">
+		<db-attribute-pair source="t_id" target="user_r"/>
+	</db-relationship>
+	<db-relationship name="deliveriesDeliveries" source="core_user" target="deliveries_delivery" toMany="true">
+		<db-attribute-pair source="t_id" target="user_r"/>
+	</db-relationship>
+	<db-relationship name="deliveriesDelivery" source="deliveries_asset" target="deliveries_delivery">
+		<db-attribute-pair source="delivery_r" target="t_id"/>
+	</db-relationship>
+	<db-relationship name="coreOperat" source="deliveries_delivery" target="core_operat">
+		<db-attribute-pair source="operat_r" target="t_id"/>
+	</db-relationship>
+	<db-relationship name="coreUser" source="deliveries_delivery" target="core_user">
+		<db-attribute-pair source="user_r" target="t_id"/>
+	</db-relationship>
+	<db-relationship name="deliveriesAssets" source="deliveries_delivery" target="deliveries_asset" toMany="true">
+		<db-attribute-pair source="t_id" target="delivery_r"/>
+	</db-relationship>
+	<obj-relationship name="coreOrganisation" source="CoreOperat" target="CoreOrganisation" deleteRule="Nullify" db-relationship-path="coreOrganisation"/>
+	<obj-relationship name="coreTheme" source="CoreOperat" target="CoreTheme" deleteRule="Nullify" db-relationship-path="coreTheme"/>
+	<obj-relationship name="deliveriesDeliveries" source="CoreOperat" target="DeliveriesDelivery" deleteRule="Deny" db-relationship-path="deliveriesDeliveries"/>
+	<obj-relationship name="coreOperats" source="CoreOrganisation" target="CoreOperat" deleteRule="Deny" db-relationship-path="coreOperats"/>
+	<obj-relationship name="coreOrganisationUsers" source="CoreOrganisation" target="CoreOrganisationUser" deleteRule="Deny" db-relationship-path="coreOrganisationUsers"/>
+	<obj-relationship name="coreOrganisation" source="CoreOrganisationUser" target="CoreOrganisation" deleteRule="Nullify" db-relationship-path="coreOrganisation"/>
+	<obj-relationship name="coreUser" source="CoreOrganisationUser" target="CoreUser" deleteRule="Nullify" db-relationship-path="coreUser"/>
+	<obj-relationship name="coreOperats" source="CoreTheme" target="CoreOperat" deleteRule="Deny" db-relationship-path="coreOperats"/>
+	<obj-relationship name="coreOrganisationUsers" source="CoreUser" target="CoreOrganisationUser" deleteRule="Deny" db-relationship-path="coreOrganisationUsers"/>
+	<obj-relationship name="deliveriesDeliveries" source="CoreUser" target="DeliveriesDelivery" deleteRule="Deny" db-relationship-path="deliveriesDeliveries"/>
+	<obj-relationship name="deliveriesDelivery" source="DeliveriesAsset" target="DeliveriesDelivery" deleteRule="Nullify" db-relationship-path="deliveriesDelivery"/>
+	<obj-relationship name="coreOperat" source="DeliveriesDelivery" target="CoreOperat" deleteRule="Nullify" db-relationship-path="coreOperat"/>
+	<obj-relationship name="coreUser" source="DeliveriesDelivery" target="CoreUser" deleteRule="Nullify" db-relationship-path="coreUser"/>
+	<obj-relationship name="deliveriesAssets" source="DeliveriesDelivery" target="DeliveriesAsset" deleteRule="Deny" db-relationship-path="deliveriesAssets"/>
+</data-map>

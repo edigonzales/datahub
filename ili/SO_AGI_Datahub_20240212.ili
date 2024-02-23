@@ -104,9 +104,9 @@ VERSION "2024-02-12"  =
     /** ID des Jobs muss eindeutig sein.
      */
     CLASS Delivery =
-      /** ID des (technischen) Jobs, der die Lieferung prozessiert hat.
+      /** ID des (technischen) Jobs, der die Lieferung prozessiert hat. (UUID macht mit Apache Cayenne Probleme, müsste man händisch eingreifen in datamap.map.xml).
        */
-      jobId : MANDATORY INTERLIS.UUIDOID;
+      jobId : MANDATORY TEXT*36;
       /** Datum und Uhrzeit der Lieferung
        */
       deliveryDate : MANDATORY INTERLIS.XMLDateTime;
