@@ -1,6 +1,7 @@
 package ch.so.agi.datahub.controller;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.query.SelectById;
 import org.jobrunr.scheduling.JobScheduler;
 import org.jobrunr.storage.StorageProvider;
 import org.slf4j.Logger;
@@ -19,6 +23,7 @@ import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -27,8 +32,13 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import ch.so.agi.datahub.AppConstants;
+import ch.so.agi.datahub.cayenne.CoreOperat;
+import ch.so.agi.datahub.cayenne.CoreUser;
+import ch.so.agi.datahub.cayenne.DeliveriesAsset;
+import ch.so.agi.datahub.cayenne.DeliveriesDelivery;
 import ch.so.agi.datahub.model.Delivery;
 import ch.so.agi.datahub.model.OperatDeliveryInfo;
+import ch.so.agi.datahub.service.FilesStorageService;
 import ch.so.agi.datahub.service.IlivalidatorService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -45,89 +55,77 @@ public class DeliveryController {
     private StorageProvider storageProvider;
 
     private IlivalidatorService ilivalidatorService;
+        
+    private ObjectContext objectContext;
     
-    private JdbcClient jdbcClient;
+    private FilesStorageService filesStorageService;
 
-    public DeliveryController(JobScheduler jobScheduler, StorageProvider storageProvider, IlivalidatorService ilivalidatorService, JdbcClient jdbcClient) {
+    public DeliveryController(JobScheduler jobScheduler, StorageProvider storageProvider,
+            IlivalidatorService ilivalidatorService, ObjectContext objectContext, FilesStorageService filesStorageService) {
         this.jobScheduler = jobScheduler;
         this.storageProvider = storageProvider;
         this.ilivalidatorService = ilivalidatorService;
-        this.jdbcClient = jdbcClient;
+        this.objectContext = objectContext;
+        this.filesStorageService = filesStorageService;
     }
 
     @Transactional(rollbackFor={InvalidDataAccessResourceUsageException.class})
     @PostMapping(value="/api/v1/deliveries", consumes = {"multipart/form-data"})
-    public ResponseEntity<?> uploadFiles(@RequestPart(name = "theme", required = true) String theme,
+    public ResponseEntity<?> uploadFile(@RequestPart(name = "theme", required = true) String theme,
             @RequestPart(name = "operat", required = true) String operat,
-            @RequestPart(name = "file", required = true) MultipartFile[] file, 
+            @RequestPart(name = "file", required = true) MultipartFile file, 
             HttpServletRequest request) throws Exception {
         
-        logger.info("****** do ilivalidation of delivery...");
+        logger.info("********* DO VALIDATION OF DELIVERY...");
         
-        
-        // Datei umbenennen hier?
-        // Und abspeichern wo?
-        
+       
         // In Service dann die Resultate in die DB schreiben?
-
         
         // JobId für Jobrunr
         UUID jobIdUuid = UUID.randomUUID();
         String jobId = jobIdUuid.toString();
         
+        // Normalize file name
+        String originalFileName = file.getOriginalFilename();
+        String sanitizedFileName = StringUtils.cleanPath(originalFileName);
+
+        // Daten speichern
+        filesStorageService.save(file, sanitizedFileName, jobId);
+        
         // Die Delivery-Tabellen nachführen.
-        //OperatDeliveryInfo operatDeliveryInfo1 = (OperatDeliveryInfo) request.getAttribute(AppConstants.ATTRIBUTE_OPERAT_DELIVERY_INFO);
         DataRow operatDeliveryInfo = (DataRow) request.getAttribute(AppConstants.ATTRIBUTE_OPERAT_DELIVERY_INFO);
-        System.out.println(operatDeliveryInfo.get("config"));
-       
+        long operatTid = (Long)operatDeliveryInfo.get("operattid");
+        long userTid = (Long)operatDeliveryInfo.get("usertid");
+                
+        CoreOperat coreOperat = SelectById.query(CoreOperat.class, operatTid).selectOne(objectContext);
+        CoreUser coreUser = SelectById.query(CoreUser.class, userTid).selectOne(objectContext);
+                
+        DeliveriesAsset deliveriesAsset = objectContext.newObject(DeliveriesAsset.class);
+        deliveriesAsset.setAtype("PrimaryData");
+        deliveriesAsset.setOriginalfilename(originalFileName);
+        deliveriesAsset.setSanitizedfilename(sanitizedFileName);
         
+        DeliveriesDelivery deliveriesDelivery = objectContext.newObject(DeliveriesDelivery.class);
+        deliveriesDelivery.setJobid(jobId);
+        deliveriesDelivery.setDeliverydate(LocalDateTime.now());
         
-        
-//        jdbcClient.sql("INSERT INTO "+dbSchema+".deliveries_delivery(jobid, deliverydate, operat_r, user_r) VALUES (?, ?, ?, ?)")
-//                .params(List.of(jobIdUuid, new Date(), operatDeliveryInfo1.operatpk(), operatDeliveryInfo1.userpk()))
-//                .update();
-//            
-//        // Primary Key des neuen, vorhin erzeugten Records eruieren, damit die Kindtabelle befüllt werden kann.  
-//        String stmt = """
-//SELECT 
-//    t_id AS tid,
-//    jobid,
-//    deliverydate,
-//    operat_r AS operatfk,
-//    user_r AS userfk
-//FROM 
-//    %s.deliveries_delivery
-//WHERE 
-//    jobid = :jobid
-//;
-//                    """.formatted(dbSchema);
-//
-//        Optional<Delivery> deliveryOptional = jdbcClient.sql(stmt)
-//                .param("jobid", jobIdUuid)
-//                //.param("jobid", UUID.randomUUID())
-//                .query(Delivery.class).optional();        
-//        
-//        if (deliveryOptional.isEmpty()) {
-//            throw new InvalidDataAccessResourceUsageException("<"+jobId+"> JobId not found."); // Rollback der Transaktion.
-//        }             
-//      
-//        // Update Tabelle deliveries_asset.
-//        int deliveryTid = deliveryOptional.get().tid();
-//        jdbcClient.sql("INSERT INTO "+dbSchema+".deliveries_asset(originalfilename, sanitizedfilename, atype, delivery_r) VALUES (?, ?, ?, ?)")
-//                .params(List.of("foo", "bar", "PrimaryData", deliveryTid))
-//                .update();            
-       
-        // Validierungsjob in Jobrunr queuen
+        deliveriesDelivery.setCoreOperat(coreOperat);
+        deliveriesDelivery.setCoreUser(coreUser);
+        deliveriesDelivery.addToDeliveriesAssets(deliveriesAsset);
+                      
+        // Validierungsjob in Jobrunr queuen.
         jobScheduler.enqueue(jobIdUuid, () -> ilivalidatorService.validate());
         logger.info("<{}> Job is being queued for validation.", jobId);
-        
+       
+        objectContext.commitChanges();
+
         return ResponseEntity
                 .accepted()
                 .header("Operation-Location", getHost()+"/api/v1/jobs/"+jobId)
                 .body(null);
     }
     
-    @ExceptionHandler({SQLException.class, InvalidDataAccessResourceUsageException.class})
+    @ExceptionHandler({Exception.class, RuntimeException.class})
     public ResponseEntity<?> databaseError(Exception e) {
         logger.error("<{}>", e.getMessage());
         return ResponseEntity
