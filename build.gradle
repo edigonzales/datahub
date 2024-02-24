@@ -26,6 +26,7 @@ java {
 
 repositories {
     mavenCentral()
+    maven { url 'https://jars.interlis.ch/' }
 }
 
 dependencies {
@@ -38,6 +39,8 @@ dependencies {
     
     implementation 'com.unboundid:unboundid-ldapsdk'
     implementation 'org.jobrunr:jobrunr-spring-boot-3-starter:6.3.4'
+    
+    implementation 'ch.interlis:ilivalidator:1.14.2-SNAPSHOT'
 
     implementation 'org.apache.cayenne:cayenne-server:4.2'
 

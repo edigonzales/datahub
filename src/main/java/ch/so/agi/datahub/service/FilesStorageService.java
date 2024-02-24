@@ -8,5 +8,5 @@ public interface FilesStorageService {
 
     public void save(MultipartFile file, String sanitizedFileName, String jobId);
 
-    public Resource load(String filename);
+    public Resource load(String fileName, String jobid);
 }

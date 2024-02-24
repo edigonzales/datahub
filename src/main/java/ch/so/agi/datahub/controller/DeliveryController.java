@@ -12,6 +12,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
+import org.jobrunr.jobs.context.JobContext;
 import org.jobrunr.scheduling.JobScheduler;
 import org.jobrunr.storage.StorageProvider;
 import org.slf4j.Logger;
@@ -79,23 +80,31 @@ public class DeliveryController {
         logger.info("********* DO VALIDATION OF DELIVERY...");
         
        
-        // In Service dann die Resultate in die DB schreiben?
+        // TODO
+        // - In Service dann die Resultate in die DB schreiben?
+        // - Wann / wie / wohin schreiben für "Publikation". FilesStorageService: save jobId -> (sub)directory
+        // Muss sonst noch was ändern? Ah, WorkDirectory als weitere Parameter, das targetDirectory.
+        // Am besten gleich mit S3 durchspielen, dann muss ich mich beim Interface auch darum kümmern.
         
         // JobId für Jobrunr
         UUID jobIdUuid = UUID.randomUUID();
         String jobId = jobIdUuid.toString();
-        
+  
+        // Get the operat/theme information we gathered in the authorization filter
+        DataRow operatDeliveryInfo = (DataRow) request.getAttribute(AppConstants.ATTRIBUTE_OPERAT_DELIVERY_INFO);
+
         // Normalize file name
         String originalFileName = file.getOriginalFilename();
-        String sanitizedFileName = StringUtils.cleanPath(originalFileName);
+        String sanitizedFileName = (String)operatDeliveryInfo.get("operatid") + ".xtf";
 
         // Daten speichern
         filesStorageService.save(file, sanitizedFileName, jobId);
         
         // Die Delivery-Tabellen nachführen.
-        DataRow operatDeliveryInfo = (DataRow) request.getAttribute(AppConstants.ATTRIBUTE_OPERAT_DELIVERY_INFO);
         long operatTid = (Long)operatDeliveryInfo.get("operattid");
         long userTid = (Long)operatDeliveryInfo.get("usertid");
+        String validatorConfig = (String)operatDeliveryInfo.get("config");
+        String validatorMetaConfig = (String)operatDeliveryInfo.get("metaconfig");
                 
         CoreOperat coreOperat = SelectById.query(CoreOperat.class, operatTid).selectOne(objectContext);
         CoreUser coreUser = SelectById.query(CoreUser.class, userTid).selectOne(objectContext);
@@ -114,7 +123,8 @@ public class DeliveryController {
         deliveriesDelivery.addToDeliveriesAssets(deliveriesAsset);
                       
         // Validierungsjob in Jobrunr queuen.
-        jobScheduler.enqueue(jobIdUuid, () -> ilivalidatorService.validate());
+        jobScheduler.enqueue(jobIdUuid, () -> ilivalidatorService.validate(JobContext.Null, sanitizedFileName,
+                validatorConfig, validatorMetaConfig));
         logger.info("<{}> Job is being queued for validation.", jobId);
        
         objectContext.commitChanges();
