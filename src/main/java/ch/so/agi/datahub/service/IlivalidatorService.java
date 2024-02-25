@@ -46,6 +46,7 @@ public class IlivalidatorService {
     // - Dieser ruft ohne jobrunr einen IlivalidatorService auf.
     // - Zusätzlich gibt es noch einen ValidationService (für ohne Delivery). Dieser verwendet auch den IlivalidatorService.
     // - neue Attribut in Delivery-Class: isDelivered. Datei wurde am Zielort gespeichert. 
+    // - In Delivery und Validation JobRunr-Klassen die ilivalidator-Settings zusammenstöpseln.
     
     
     @Job(name = "Ilivalidator", retries=0)
