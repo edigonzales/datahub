@@ -56,7 +56,7 @@ VERSION "2024-02-12"  =
     CLASS User =
       /** ID des Benutzers
        */
-      userId : TEXT*512;
+      userId : MANDATORY TEXT*512;
       /** TODO
        */
       role : TEXT*20;
@@ -110,6 +110,7 @@ VERSION "2024-02-12"  =
       /** Datum und Uhrzeit der Lieferung
        */
       deliveryDate : MANDATORY INTERLIS.XMLDateTime;
+      isValid : BOOLEAN;
       UNIQUE jobId;
     END Delivery;
 

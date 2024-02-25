@@ -36,48 +36,8 @@ public class MainController {
     ObjectContext objectContext;
 
     @GetMapping("/ping")
-    public ResponseEntity<String>  ping() {
-        logger.info("ping");
-        
-//        List<CoreTheme> foo = ObjectSelect.query(CoreTheme.class).select(objectContext);
-//        System.out.println(foo.get(0));
-
-        String stmt = """
-SELECT 
-    t.themeid,
-    t.config,
-    t.metaconfig,
-    op.operatid,
-    op.t_id AS operatpk,
-    u.t_id AS userpk
-FROM 
-    agi_datahub_v1.core_operat AS op 
-    LEFT JOIN %s.core_organisation AS o 
-    ON o.t_id = op.organisation_r 
-    LEFT JOIN %s.core_organisation_user AS ou 
-    ON o.t_id = ou.organisation_r 
-    LEFT JOIN %s.core_user AS u 
-    ON u.t_id = ou.user_r 
-    LEFT JOIN %s.core_theme AS t 
-    ON op.theme_r = t.t_id 
-WHERE 
-    u.userid = '$userid'
-    AND 
-    op.operatid = '$operatid'
-    AND 
-    t.themeid = '$themeid'
-                """.formatted(dbSchema, dbSchema, dbSchema, dbSchema);
-
-        DataRow result = SQLSelect
-                .dataRowQuery(stmt)
-                .param("userid", "bobXX")
-                .param("operatid", "2549")
-                .param("themeid", "NPLNF")
-                .selectOne(objectContext);
-                //.select(objectContext);
-
-        System.out.println(result);
-        
+    public ResponseEntity<String> ping() {
+        logger.info("ping");        
         return new ResponseEntity<String>("datahub", HttpStatus.OK);
     }
     

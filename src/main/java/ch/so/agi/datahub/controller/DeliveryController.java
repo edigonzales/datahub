@@ -37,12 +37,9 @@ import ch.so.agi.datahub.cayenne.CoreOperat;
 import ch.so.agi.datahub.cayenne.CoreUser;
 import ch.so.agi.datahub.cayenne.DeliveriesAsset;
 import ch.so.agi.datahub.cayenne.DeliveriesDelivery;
-import ch.so.agi.datahub.model.Delivery;
-import ch.so.agi.datahub.model.OperatDeliveryInfo;
 import ch.so.agi.datahub.service.FilesStorageService;
 import ch.so.agi.datahub.service.IlivalidatorService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 public class DeliveryController {
@@ -103,9 +100,11 @@ public class DeliveryController {
         // Die Delivery-Tabellen nachführen.
         long operatTid = (Long)operatDeliveryInfo.get("operattid");
         long userTid = (Long)operatDeliveryInfo.get("usertid");
-        String validatorConfig = (String)operatDeliveryInfo.get("config");
-        String validatorMetaConfig = (String)operatDeliveryInfo.get("metaconfig");
-                
+        
+        // Jobrunr kann nicht mit null Strings umgehen.
+        String validatorConfig = operatDeliveryInfo.get("config")!=null?(String)operatDeliveryInfo.get("config"):""; 
+        String validatorMetaConfig = operatDeliveryInfo.get("metaconfig")!=null?(String)operatDeliveryInfo.get("metaconfig"):"";
+                        
         CoreOperat coreOperat = SelectById.query(CoreOperat.class, operatTid).selectOne(objectContext);
         CoreUser coreUser = SelectById.query(CoreUser.class, userTid).selectOne(objectContext);
                 

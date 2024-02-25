@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
+import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.property.DateProperty;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.ListProperty;
@@ -30,12 +31,14 @@ public abstract class _DeliveriesDelivery extends BaseDataObject {
     public static final String T_ID_PK_COLUMN = "t_id";
 
     public static final DateProperty<LocalDateTime> DELIVERYDATE = PropertyFactory.createDate("deliverydate", LocalDateTime.class);
+    public static final BaseProperty<Boolean> ISVALID = PropertyFactory.createBase("isvalid", Boolean.class);
     public static final StringProperty<String> JOBID = PropertyFactory.createString("jobid", String.class);
     public static final EntityProperty<CoreOperat> CORE_OPERAT = PropertyFactory.createEntity("coreOperat", CoreOperat.class);
     public static final EntityProperty<CoreUser> CORE_USER = PropertyFactory.createEntity("coreUser", CoreUser.class);
     public static final ListProperty<DeliveriesAsset> DELIVERIES_ASSETS = PropertyFactory.createList("deliveriesAssets", DeliveriesAsset.class);
 
     protected LocalDateTime deliverydate;
+    protected Boolean isvalid;
     protected String jobid;
 
     protected Object coreOperat;
@@ -50,6 +53,16 @@ public abstract class _DeliveriesDelivery extends BaseDataObject {
     public LocalDateTime getDeliverydate() {
         beforePropertyRead("deliverydate");
         return this.deliverydate;
+    }
+
+    public void setIsvalid(Boolean isvalid) {
+        beforePropertyWrite("isvalid", this.isvalid, isvalid);
+        this.isvalid = isvalid;
+    }
+
+    public Boolean getIsvalid() {
+        beforePropertyRead("isvalid");
+        return this.isvalid;
     }
 
     public void setJobid(String jobid) {
@@ -100,6 +113,8 @@ public abstract class _DeliveriesDelivery extends BaseDataObject {
         switch(propName) {
             case "deliverydate":
                 return this.deliverydate;
+            case "isvalid":
+                return this.isvalid;
             case "jobid":
                 return this.jobid;
             case "coreOperat":
@@ -122,6 +137,9 @@ public abstract class _DeliveriesDelivery extends BaseDataObject {
         switch (propName) {
             case "deliverydate":
                 this.deliverydate = (LocalDateTime)val;
+                break;
+            case "isvalid":
+                this.isvalid = (Boolean)val;
                 break;
             case "jobid":
                 this.jobid = (String)val;
@@ -152,6 +170,7 @@ public abstract class _DeliveriesDelivery extends BaseDataObject {
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
         out.writeObject(this.deliverydate);
+        out.writeObject(this.isvalid);
         out.writeObject(this.jobid);
         out.writeObject(this.coreOperat);
         out.writeObject(this.coreUser);
@@ -162,6 +181,7 @@ public abstract class _DeliveriesDelivery extends BaseDataObject {
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
         this.deliverydate = (LocalDateTime)in.readObject();
+        this.isvalid = (Boolean)in.readObject();
         this.jobid = (String)in.readObject();
         this.coreOperat = in.readObject();
         this.coreUser = in.readObject();

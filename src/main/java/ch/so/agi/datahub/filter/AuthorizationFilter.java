@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import ch.so.agi.datahub.AppConstants;
-import ch.so.agi.datahub.model.OperatDeliveryInfo;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -78,6 +77,8 @@ WHERE
                 .param("operatid", operatId)
                 .param("themeid", themeId)
                 .selectOne(objectContext);
+
+        logger.debug("DataRow: {}", result);
         
         //if (operatDeliveryInfoOptional.isEmpty()) {        
         if (result == null) {

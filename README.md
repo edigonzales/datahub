@@ -1,8 +1,29 @@
 # datahub
 
 ## Testrequests
+
 ```
 curl -i -X POST -F 'file=@2549.ch.so.arp.nutzungsplanung.kommunal.xtf' -F 'theme=NPLNF' -F 'operat=2549' -u 'bob:uncle' http://localhost:8080/api/v1/deliveries
+```
+
+
+```
+curl -i -X POST -F 'file=@2471_gep.xtf' -F 'theme=IPW_2020' -F 'operat=2471' -u 'lisa:aunt' http://localhost:8080/api/v1/deliveries
+```
+
+```
+curl -i -X POST -F 'file=@2546_was.xtf' -F 'theme=LKMAP_2015' -F 'operat=2546' -u 'hans:cousin' http://localhost:8080/api/v1/deliveries
+```
+```
+curl -i -X GET -H 'Accept: text/html' -u 'hans:cousin' http://localhost:8080/api/v1/jobs/8bd96c37-65f6-45cb-a284-2cc714bc07c8
+```
+```
+curl -i -X GET -H 'Accept: application/json' -u 'hans:cousin' http://localhost:8080/api/v1/jobs/8bd96c37-65f6-45cb-a284-2cc714bc07c8
+```
+
+
+```
+curl -i -X GET -u 'hans:cousin' http://localhost:8080/api/v1/jobs/8bd96c37-65f6-45cb-a284-2cc714bc07c8
 ```
 
 ```
@@ -132,3 +153,20 @@ WHERE
     AND 
     t.themeid = :themeid
 ```
+
+```
+SELECT 
+    *
+FROM 
+    agi_datahub_v1.core_theme AS t
+    LEFT JOIN agi_datahub_v1.core_operat AS o 
+    ON o.theme_r = t.t_id
+    LEFT JOIN agi_datahub_v1.core_organisation AS org 
+    ON o.organisation_r = org.t_id 
+    LEFT JOIN agi_datahub_v1.core_organisation_user AS ou 
+    ON org.t_id = ou.organisation_r 
+    LEFT JOIN agi_datahub_v1.core_user AS u 
+    ON ou.user_r = u.t_id 
+```
+
+

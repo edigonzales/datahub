@@ -18,3 +18,23 @@ cn: User
 sn: Lastname
 uid: bob
 userPassword: uncle
+
+dn: uid=lisa,ou=people,dc=springframework,dc=org
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+objectclass: top
+cn: User
+sn: Lastname
+uid: lisa
+userPassword: aunt
+
+dn: uid=hans,ou=people,dc=springframework,dc=org
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+objectclass: top
+cn: User
+sn: Lastname
+uid: hans
+userPassword: cousin
