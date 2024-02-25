@@ -45,6 +45,7 @@ public class IlivalidatorService {
     // - Umbennenen in DeliveryService
     // - Dieser ruft ohne jobrunr einen IlivalidatorService auf.
     // - Zusätzlich gibt es noch einen ValidationService (für ohne Delivery). Dieser verwendet auch den IlivalidatorService.
+    // - neue Attribut in Delivery-Class: isDelivered. Datei wurde am Zielort gespeichert. 
     
     @Job(name = "Ilivalidator", retries=0)
     public synchronized boolean validate(JobContext jobContext, String fileName, String config, String metaConfig) throws IOException {
