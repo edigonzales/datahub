@@ -1,9 +1,12 @@
 package ch.so.agi.datahub.service;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,40 +29,42 @@ public class LocalFilesStorageService implements FilesStorageService {
     @Override
     public void init() {
     }
-
+    
     @Override
-    public void save(MultipartFile file, String sanitizedFileName, String jobId) {
-        logger.debug("Work directory: {}", workDirectory);
-        Path workDirectoryPath = Paths.get(workDirectory);
-        Path jobDirectoryPath = workDirectoryPath.resolve(folderPrefix + jobId);
+    public void save(InputStream is, String fileName, String parentDir, String prefix, String rootDir) throws IOException {
+        Path rootDirectoryPath = Paths.get(rootDir);
         
+        prefix = prefix==null?"":prefix;
+        Path fileDirectoryPath = rootDirectoryPath.resolve(prefix + parentDir);
+
         try {
-            Files.createDirectory(jobDirectoryPath);
-            Files.copy(file.getInputStream(), jobDirectoryPath.resolve(sanitizedFileName));
+            Files.createDirectories(fileDirectoryPath); // does not throw exception if directory exists
+            Files.copy(is, fileDirectoryPath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING
+                    );
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException();
+            throw new IOException();
         } 
     }
 
     @Override
-    public Resource load(String fileName, String jobId) {
-        logger.debug("Work directory: {}", workDirectory);
-        Path workDirectoryPath = Paths.get(workDirectory);
-        Path jobDirectoryPath = workDirectoryPath.resolve(folderPrefix + jobId);
+    public Resource load(String fileName, String parentDir, String prefix, String rootDir) throws IOException {
+        Path rootDirectoryPath = Paths.get(rootDir);
+
+        prefix = prefix==null?"":prefix;
+        Path fileDirectoryPath = rootDirectoryPath.resolve(folderPrefix + parentDir);
 
         try {
-            Path path = jobDirectoryPath.resolve(fileName);
+            Path path = fileDirectoryPath.resolve(fileName);
             Resource resource = new UrlResource(path.toUri());
 
             if (resource.exists() || resource.isReadable()) {
                 return resource;
             } else {
-                throw new RuntimeException("Could not read the file!");
+                throw new IOException("Could not read the file!");
             }
         } catch (MalformedURLException e) {
-            throw new RuntimeException("Error: " + e.getMessage());
+            throw new IOException("Error: " + e.getMessage());
         }
     }
-
 }

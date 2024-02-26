@@ -30,6 +30,7 @@ public abstract class _DeliveriesDelivery extends BaseDataObject {
 
     public static final String T_ID_PK_COLUMN = "t_id";
 
+    public static final BaseProperty<Boolean> DELIVERED = PropertyFactory.createBase("delivered", Boolean.class);
     public static final DateProperty<LocalDateTime> DELIVERYDATE = PropertyFactory.createDate("deliverydate", LocalDateTime.class);
     public static final BaseProperty<Boolean> ISVALID = PropertyFactory.createBase("isvalid", Boolean.class);
     public static final StringProperty<String> JOBID = PropertyFactory.createString("jobid", String.class);
@@ -37,6 +38,7 @@ public abstract class _DeliveriesDelivery extends BaseDataObject {
     public static final EntityProperty<CoreUser> CORE_USER = PropertyFactory.createEntity("coreUser", CoreUser.class);
     public static final ListProperty<DeliveriesAsset> DELIVERIES_ASSETS = PropertyFactory.createList("deliveriesAssets", DeliveriesAsset.class);
 
+    protected Boolean delivered;
     protected LocalDateTime deliverydate;
     protected Boolean isvalid;
     protected String jobid;
@@ -44,6 +46,16 @@ public abstract class _DeliveriesDelivery extends BaseDataObject {
     protected Object coreOperat;
     protected Object coreUser;
     protected Object deliveriesAssets;
+
+    public void setDelivered(Boolean delivered) {
+        beforePropertyWrite("delivered", this.delivered, delivered);
+        this.delivered = delivered;
+    }
+
+    public Boolean getDelivered() {
+        beforePropertyRead("delivered");
+        return this.delivered;
+    }
 
     public void setDeliverydate(LocalDateTime deliverydate) {
         beforePropertyWrite("deliverydate", this.deliverydate, deliverydate);
@@ -111,6 +123,8 @@ public abstract class _DeliveriesDelivery extends BaseDataObject {
         }
 
         switch(propName) {
+            case "delivered":
+                return this.delivered;
             case "deliverydate":
                 return this.deliverydate;
             case "isvalid":
@@ -135,6 +149,9 @@ public abstract class _DeliveriesDelivery extends BaseDataObject {
         }
 
         switch (propName) {
+            case "delivered":
+                this.delivered = (Boolean)val;
+                break;
             case "deliverydate":
                 this.deliverydate = (LocalDateTime)val;
                 break;
@@ -169,6 +186,7 @@ public abstract class _DeliveriesDelivery extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
+        out.writeObject(this.delivered);
         out.writeObject(this.deliverydate);
         out.writeObject(this.isvalid);
         out.writeObject(this.jobid);
@@ -180,6 +198,7 @@ public abstract class _DeliveriesDelivery extends BaseDataObject {
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
+        this.delivered = (Boolean)in.readObject();
         this.deliverydate = (LocalDateTime)in.readObject();
         this.isvalid = (Boolean)in.readObject();
         this.jobid = (String)in.readObject();

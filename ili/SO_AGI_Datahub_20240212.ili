@@ -111,6 +111,7 @@ VERSION "2024-02-12"  =
        */
       deliveryDate : MANDATORY INTERLIS.XMLDateTime;
       isValid : BOOLEAN;
+      delivered : BOOLEAN;
       UNIQUE jobId;
     END Delivery;
 

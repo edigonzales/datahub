@@ -1,6 +1,7 @@
 package ch.so.agi.datahub.service;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
@@ -21,42 +22,39 @@ import ch.so.agi.datahub.cayenne.DeliveriesAsset;
 import ch.so.agi.datahub.cayenne.DeliveriesDelivery;
 
 @Service
-public class IlivalidatorService {
+public class DeliveryService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    @Value("${app.workDirectory}")
+    private String workDirectory;
+    
+    @Value("${app.folderPrefix}")
+    private String folderPrefix;
+
+    @Value("${app.targetDirectory}")
+    private String targetDirectory;
+    
     @Value("${app.preferredIliRepo}")
     private String preferredIliRepo;
 
     private FilesStorageService filesStorageService;
     
     private ObjectContext objectContext;
-    
-    public IlivalidatorService(FilesStorageService filesStorageService, ObjectContext objectContext) {
+
+    public DeliveryService(FilesStorageService filesStorageService, ObjectContext objectContext) {
         this.filesStorageService = filesStorageService;
         this.objectContext = objectContext;
     }
-    
-    // S3-Support:
-    // Es wird eine zweiter Prefix ("validation_") o.ä. benötigt.
-    // Die Resource wird dorthin kopiert. 
 
-    
-    // TODO:
-    // - Umbennenen in DeliveryService. Methode "deliver"
-    // - Dieser ruft ohne jobrunr einen IlivalidatorService auf.
-    // - Zusätzlich gibt es noch einen ValidationService (für ohne Delivery). Dieser verwendet auch den IlivalidatorService.
-    // - neue Attribut in Delivery-Class: isDelivered. Datei wurde am Zielort gespeichert. 
-    // - In Delivery und Validation JobRunr-Klassen die ilivalidator-Settings zusammenstöpseln.
-    
-    
-    @Job(name = "Ilivalidator", retries=0)
-    public synchronized boolean validate(JobContext jobContext, String fileName, String config, String metaConfig) throws IOException {
-        logger.info("********* VALIDATING...");
+    @Job(name = "Delivery", retries=0)
+    public synchronized void deliver(JobContext jobContext, String theme, String fileName, String config, String metaConfig) throws IOException {
+        logger.info("********* DELIVERING SERVICE HERE...");
         logger.info(jobContext.getJobId().toString());
                 
         String jobId = jobContext.getJobId().toString();
-        
-        Resource resource = filesStorageService.load(fileName, jobId);        
+
+        // Validate file.
+        Resource resource = filesStorageService.load(fileName, jobId, folderPrefix, workDirectory);        
         File transferFile = resource.getFile();
         logger.debug(transferFile.getAbsolutePath().toString());
         
@@ -77,23 +75,32 @@ public class IlivalidatorService {
         if (!metaConfig.isEmpty()) {
             settings.setValue(Validator.SETTING_META_CONFIGFILE, "ilidata:" + metaConfig);
         }
-
-//        try {
-//            Thread.sleep(10000);
-//        } catch (InterruptedException e) {}
         
         logger.info("<{}> Validation start", jobId);
         boolean valid = Validator.runValidation(transferFile.getAbsolutePath().toString(), settings);
         logger.info("<{}> Validation end", jobId);
         
-        updateDelivery(jobId, valid, logFile);
+        // Copy file ("deliver") to target directory.
+        boolean delivered;
+        // TODO: nicht sicher, ob man das so will. Resp. für den Datenlieferanten ist nach Validierung fertig.
+        // D.h. er kann nichts dafür, wenn es beim Kopieren einen Fehler gibt.
+        try {
+            filesStorageService.save(new FileInputStream(transferFile), transferFile.getName(), theme, null, targetDirectory);            
+            filesStorageService.save(new FileInputStream(new File(logFileName)), transferFile.getName()+".log", theme, null, targetDirectory);            
+            delivered = true;
+        } catch (IOException e) {
+            delivered = false;
+        }
         
-        return valid;
+        // Update tables in database.
+        updateDelivery(jobId, valid, delivered, logFile);   
+        logger.info("<{}> File delivered", jobId);
     }
     
-    private void updateDelivery(String jobId, boolean valid, File logFile) {
+    private void updateDelivery(String jobId, boolean valid, boolean delivered, File logFile) {
         DeliveriesDelivery deliveriesDelivery = ObjectSelect.query(DeliveriesDelivery.class).where(DeliveriesDelivery.JOBID.eq(jobId)).selectOne(objectContext);
         deliveriesDelivery.setIsvalid(valid);
+        deliveriesDelivery.setDelivered(delivered);
         
         List<String> extensions = List.of("", ".xtf", ".csv");
         for (String ext : extensions) {
@@ -106,4 +113,5 @@ public class IlivalidatorService {
 
         objectContext.commitChanges();                
     }
+
 }

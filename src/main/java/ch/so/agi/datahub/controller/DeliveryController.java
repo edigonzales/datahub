@@ -37,32 +37,35 @@ import ch.so.agi.datahub.cayenne.CoreOperat;
 import ch.so.agi.datahub.cayenne.CoreUser;
 import ch.so.agi.datahub.cayenne.DeliveriesAsset;
 import ch.so.agi.datahub.cayenne.DeliveriesDelivery;
+import ch.so.agi.datahub.service.DeliveryService;
 import ch.so.agi.datahub.service.FilesStorageService;
-import ch.so.agi.datahub.service.IlivalidatorService;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 public class DeliveryController {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    @Value("${app.dbSchema}")
-    private String dbSchema;
+    
+    @Value("${app.workDirectory}")
+    private String workDirectory;
+    
+    @Value("${app.folderPrefix}")
+    private String folderPrefix;
 
     private JobScheduler jobScheduler;
     
     private StorageProvider storageProvider;
 
-    private IlivalidatorService ilivalidatorService;
+    private DeliveryService deliveryService;
         
     private ObjectContext objectContext;
     
     private FilesStorageService filesStorageService;
 
     public DeliveryController(JobScheduler jobScheduler, StorageProvider storageProvider,
-            IlivalidatorService ilivalidatorService, ObjectContext objectContext, FilesStorageService filesStorageService) {
+            DeliveryService deliveryService, ObjectContext objectContext, FilesStorageService filesStorageService) {
         this.jobScheduler = jobScheduler;
         this.storageProvider = storageProvider;
-        this.ilivalidatorService = ilivalidatorService;
+        this.deliveryService = deliveryService;
         this.objectContext = objectContext;
         this.filesStorageService = filesStorageService;
     }
@@ -74,7 +77,7 @@ public class DeliveryController {
             @RequestPart(name = "file", required = true) MultipartFile file, 
             HttpServletRequest request) throws Exception {
         
-        logger.info("********* DO VALIDATION OF DELIVERY...");
+        logger.info("********* DELIVERY CONTROLLER HERE...");
         
        
         // TODO
@@ -95,7 +98,7 @@ public class DeliveryController {
         String sanitizedFileName = (String)operatDeliveryInfo.get("operatid") + ".xtf";
 
         // Daten speichern
-        filesStorageService.save(file, sanitizedFileName, jobId);
+        filesStorageService.save(file.getInputStream(), sanitizedFileName, jobId, folderPrefix, workDirectory);
         
         // Die Delivery-Tabellen nachführen.
         long operatTid = (Long)operatDeliveryInfo.get("operattid");
@@ -122,7 +125,7 @@ public class DeliveryController {
         deliveriesDelivery.addToDeliveriesAssets(deliveriesAsset);
                       
         // Validierungsjob in Jobrunr queuen.
-        jobScheduler.enqueue(jobIdUuid, () -> ilivalidatorService.validate(JobContext.Null, sanitizedFileName,
+        jobScheduler.enqueue(jobIdUuid, () -> deliveryService.deliver(JobContext.Null, theme, sanitizedFileName,
                 validatorConfig, validatorMetaConfig));
         logger.info("<{}> Job is being queued for validation.", jobId);
        

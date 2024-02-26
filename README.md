@@ -12,7 +12,7 @@ curl -i -X POST -F 'file=@2471_gep.xtf' -F 'theme=IPW_2020' -F 'operat=2471' -u 
 ```
 
 ```
-curl -i -X POST -F 'file=@2546_was.xtf' -F 'theme=LKMAP_2015' -F 'operat=2546' -u 'hans:cousin' http://localhost:8080/api/v1/deliveries
+curl -i -X POST -F 'file=@Aeschi_LKMap_Wasser.xtf' -F 'theme=LKMAP_2015' -F 'operat=2511_was' -u 'hans:cousin' http://localhost:8080/api/v1/deliveries
 ```
 ```
 curl -i -X GET -H 'Accept: text/html' -u 'hans:cousin' http://localhost:8080/api/v1/jobs/8bd96c37-65f6-45cb-a284-2cc714bc07c8

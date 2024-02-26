@@ -40,6 +40,7 @@
 		<db-attribute name="t_id" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="19"/>
 	</db-entity>
 	<db-entity name="deliveries_delivery" schema="agi_datahub_v1">
+		<db-attribute name="delivered" type="BIT" length="1"/>
 		<db-attribute name="deliverydate" type="TIMESTAMP" isMandatory="true" length="29"/>
 		<db-attribute name="isvalid" type="BIT" length="1"/>
 		<db-attribute name="jobid" type="VARCHAR" isMandatory="true" length="36"/>
@@ -71,6 +72,7 @@
 		<obj-attribute name="sanitizedfilename" type="java.lang.String" db-attribute-path="sanitizedfilename"/>
 	</obj-entity>
 	<obj-entity name="DeliveriesDelivery" className="ch.so.agi.datahub.cayenne.DeliveriesDelivery" dbEntityName="deliveries_delivery">
+		<obj-attribute name="delivered" type="java.lang.Boolean" db-attribute-path="delivered"/>
 		<obj-attribute name="deliverydate" type="java.time.LocalDateTime" db-attribute-path="deliverydate"/>
 		<obj-attribute name="isvalid" type="java.lang.Boolean" db-attribute-path="isvalid"/>
 		<obj-attribute name="jobid" type="java.lang.String" db-attribute-path="jobid"/>
