@@ -170,3 +170,59 @@ FROM
 ```
 
 
+## puml
+
+```
+@startuml
+package "infogrips.ch" {    
+    component [Checkservice] as checkservice
+    component [Ablage] as ablage
+}
+
+package "Geodateninfrastruktur" {    
+    database [Edit-DB] as editdb
+}
+
+checkservice --> ablage : isValid
+
+
+actor "Datenlieferanten\n(wöchentlich)" as deliveryman
+
+deliveryman --> checkservice : ftp und html form
+editdb <-- ablage : ftp
+
+legend right
+  infogrips.ch:
+  Login: "MOCHECKSO"
+  Passwort: <E-Mail-Adresse>
+endlegend
+
+@enduml
+```
+
+```
+@startuml
+
+package "Geodateninfrastruktur" {  
+    component [Checkservice] as checkservice
+    component [Ablage] as ablage  
+    database [Edit-DB] as editdb
+}
+
+checkservice --> ablage : isValid
+
+
+actor "Datenlieferanten\n(wöchentlich)" as deliveryman
+
+deliveryman --> checkservice : ????
+editdb <-- ablage
+
+legend right
+  Anforderungen:
+  - "ftp put"- resp. "curl post"-Niveau
+  - IAM: Self registration / Passwort ändern durch Benutzer
+  - Zukunftsfähige Lösung / Passt in die (zukünftige) kantonale Infrastruktur
+endlegend
+
+@enduml
+```
