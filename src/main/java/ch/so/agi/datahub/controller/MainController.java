@@ -41,14 +41,14 @@ public class MainController {
         return new ResponseEntity<String>("datahub", HttpStatus.OK);
     }
     
-    @GetMapping("/foo")
+    @GetMapping("/protected/hello")
     public String foo() {
         return "Hello, this is a secured endpoint!";
     }
     
-    @GetMapping("/hello")
+    @GetMapping("/public/hello")
     public String hello() {
-        return "Hello, this is a secured endpoint!";
+        return "Hello, this is a _un_secured endpoint!";
     }
 
     

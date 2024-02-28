@@ -3,6 +3,11 @@
 ## Testrequests
 
 ```
+curl -i -X GET --header "X-API-KEY:1234" http://localhost:8080/protected/hello
+```
+
+
+```
 curl -i -X POST -F 'file=@2549.ch.so.arp.nutzungsplanung.kommunal.xtf' -F 'theme=NPLNF' -F 'operat=2549' -u 'bob:uncle' http://localhost:8080/api/v1/deliveries
 ```
 
