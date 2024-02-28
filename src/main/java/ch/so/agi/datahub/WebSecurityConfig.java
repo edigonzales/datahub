@@ -33,6 +33,9 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 public class WebSecurityConfig {
+    
+    @Autowired
+    private UnauthorizedEntryPoint authenticationEntryPoint;
         
     //private ApiKeyAuthFilter apiKeyAuthFilter;
     
@@ -66,6 +69,9 @@ public class WebSecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(exceptionHandling ->
+                    exceptionHandling.authenticationEntryPoint(authenticationEntryPoint))
+                // message body is missng: https://www.baeldung.com/spring-security-basic-authentication??
                 .build();
     }
 
