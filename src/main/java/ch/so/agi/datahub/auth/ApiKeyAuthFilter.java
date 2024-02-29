@@ -1,31 +1,34 @@
 package ch.so.agi.datahub.auth;
 
-import java.io.IOException;
+import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.filter.OncePerRequestFilter;
-
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
-public class ApiKeyAuthFilter extends OncePerRequestFilter {
+public class ApiKeyAuthFilter extends AbstractPreAuthenticatedProcessingFilter {
 
-    @Autowired
-    private ApiKeyAuthExtractor extractor;
-    
-//    public ApiKeyAuthFilter(ApiKeyAuthExtractor extractor) {
-//        this.extractor = extractor;
-//    }
+    private final String headerName;
+
+    public ApiKeyAuthFilter(final String headerName) {
+        this.headerName = headerName;
+        
+        // AbstractPreAuthenticatedProcessingFilter speichert SecurityContext in einer Session.
+        // Obwohl man in "securityFilterChain" die ganze Geschichte als stateless definiert.
+        // Das ist wohl nur gültig, wenn man keinen eigenen Filter macht, der explizit
+        // eine Session macht.
+        // Man kann auch "NullSecurityContextRepository" verwenden.
+        setSecurityContextRepository(new RequestAttributeSecurityContextRepository());
+    }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
-
-        extractor.extract(request).ifPresent(SecurityContextHolder.getContext()::setAuthentication);
-        
-        filterChain.doFilter(request, response);
+    protected Object getPreAuthenticatedPrincipal(HttpServletRequest request) {
+        return request.getHeader(headerName);
     }
+
+    @Override
+    protected Object getPreAuthenticatedCredentials(HttpServletRequest request) {
+        // No credentials when using API key
+        return null;
+    }
+
 }

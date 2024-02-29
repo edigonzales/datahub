@@ -57,6 +57,7 @@ curl -i -X GET http://localhost:8080/ping
 
 
 ## Technische Fragen
+- if "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Proto" == http THEN revoke key
 - Um normale Validierungsjobs von Deliverjobs zu unterscheiden, einfach joinen, die reinen Validierungsjobs gibt es nicht in Deliveryjobs. Vielleicht so?
 - Wie Jobs-Übersicht? Als erster Wurf "api/v1/jobs/<thema>/<operat>" etc. damit ich keine Bedienelemente brauche. Das Ganze sieht man nur authorisiert. man könnte alle gequeten Jobs zeigen, aber anonymisiert, wenn es nicht sein job ist. So könnte man sogar deleten (von gequeten) Jobs machen.
 - Hochgeladene Dateien nicht zwischenspeichern (falls S3).
