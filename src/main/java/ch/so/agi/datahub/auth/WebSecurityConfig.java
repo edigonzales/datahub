@@ -1,4 +1,4 @@
-package ch.so.agi.datahub;
+package ch.so.agi.datahub.auth;
 
 import java.io.IOException;
 
@@ -24,8 +24,6 @@ import org.springframework.security.web.server.csrf.CsrfToken;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import ch.so.agi.datahub.filter.ApiKeyAuthFilter;
-import ch.so.agi.datahub.filter.AuthorizationFilter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

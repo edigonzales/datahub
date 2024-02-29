@@ -1,4 +1,4 @@
-package ch.so.agi.datahub.filter;
+package ch.so.agi.datahub.auth;
 
 import java.io.IOException;
 
