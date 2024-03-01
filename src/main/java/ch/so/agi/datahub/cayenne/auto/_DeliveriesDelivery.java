@@ -14,8 +14,8 @@ import org.apache.cayenne.exp.property.ListProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.StringProperty;
 
+import ch.so.agi.datahub.cayenne.CoreApikey;
 import ch.so.agi.datahub.cayenne.CoreOperat;
-import ch.so.agi.datahub.cayenne.CoreUser;
 import ch.so.agi.datahub.cayenne.DeliveriesAsset;
 
 /**
@@ -34,8 +34,8 @@ public abstract class _DeliveriesDelivery extends BaseDataObject {
     public static final DateProperty<LocalDateTime> DELIVERYDATE = PropertyFactory.createDate("deliverydate", LocalDateTime.class);
     public static final BaseProperty<Boolean> ISVALID = PropertyFactory.createBase("isvalid", Boolean.class);
     public static final StringProperty<String> JOBID = PropertyFactory.createString("jobid", String.class);
+    public static final EntityProperty<CoreApikey> CORE_APIKEY = PropertyFactory.createEntity("coreApikey", CoreApikey.class);
     public static final EntityProperty<CoreOperat> CORE_OPERAT = PropertyFactory.createEntity("coreOperat", CoreOperat.class);
-    public static final EntityProperty<CoreUser> CORE_USER = PropertyFactory.createEntity("coreUser", CoreUser.class);
     public static final ListProperty<DeliveriesAsset> DELIVERIES_ASSETS = PropertyFactory.createList("deliveriesAssets", DeliveriesAsset.class);
 
     protected Boolean delivered;
@@ -43,8 +43,8 @@ public abstract class _DeliveriesDelivery extends BaseDataObject {
     protected Boolean isvalid;
     protected String jobid;
 
+    protected Object coreApikey;
     protected Object coreOperat;
-    protected Object coreUser;
     protected Object deliveriesAssets;
 
     public void setDelivered(Boolean delivered) {
@@ -87,20 +87,20 @@ public abstract class _DeliveriesDelivery extends BaseDataObject {
         return this.jobid;
     }
 
+    public void setCoreApikey(CoreApikey coreApikey) {
+        setToOneTarget("coreApikey", coreApikey, true);
+    }
+
+    public CoreApikey getCoreApikey() {
+        return (CoreApikey)readProperty("coreApikey");
+    }
+
     public void setCoreOperat(CoreOperat coreOperat) {
         setToOneTarget("coreOperat", coreOperat, true);
     }
 
     public CoreOperat getCoreOperat() {
         return (CoreOperat)readProperty("coreOperat");
-    }
-
-    public void setCoreUser(CoreUser coreUser) {
-        setToOneTarget("coreUser", coreUser, true);
-    }
-
-    public CoreUser getCoreUser() {
-        return (CoreUser)readProperty("coreUser");
     }
 
     public void addToDeliveriesAssets(DeliveriesAsset obj) {
@@ -131,10 +131,10 @@ public abstract class _DeliveriesDelivery extends BaseDataObject {
                 return this.isvalid;
             case "jobid":
                 return this.jobid;
+            case "coreApikey":
+                return this.coreApikey;
             case "coreOperat":
                 return this.coreOperat;
-            case "coreUser":
-                return this.coreUser;
             case "deliveriesAssets":
                 return this.deliveriesAssets;
             default:
@@ -161,11 +161,11 @@ public abstract class _DeliveriesDelivery extends BaseDataObject {
             case "jobid":
                 this.jobid = (String)val;
                 break;
+            case "coreApikey":
+                this.coreApikey = val;
+                break;
             case "coreOperat":
                 this.coreOperat = val;
-                break;
-            case "coreUser":
-                this.coreUser = val;
                 break;
             case "deliveriesAssets":
                 this.deliveriesAssets = val;
@@ -190,8 +190,8 @@ public abstract class _DeliveriesDelivery extends BaseDataObject {
         out.writeObject(this.deliverydate);
         out.writeObject(this.isvalid);
         out.writeObject(this.jobid);
+        out.writeObject(this.coreApikey);
         out.writeObject(this.coreOperat);
-        out.writeObject(this.coreUser);
         out.writeObject(this.deliveriesAssets);
     }
 
@@ -202,8 +202,8 @@ public abstract class _DeliveriesDelivery extends BaseDataObject {
         this.deliverydate = (LocalDateTime)in.readObject();
         this.isvalid = (Boolean)in.readObject();
         this.jobid = (String)in.readObject();
+        this.coreApikey = in.readObject();
         this.coreOperat = in.readObject();
-        this.coreUser = in.readObject();
         this.deliveriesAssets = in.readObject();
     }
 

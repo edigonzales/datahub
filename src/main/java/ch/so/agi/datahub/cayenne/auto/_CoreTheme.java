@@ -24,16 +24,26 @@ public abstract class _CoreTheme extends BaseDataObject {
 
     public static final String T_ID_PK_COLUMN = "t_id";
 
+    public static final StringProperty<String> ANAME = PropertyFactory.createString("aname", String.class);
     public static final StringProperty<String> CONFIG = PropertyFactory.createString("config", String.class);
     public static final StringProperty<String> METACONFIG = PropertyFactory.createString("metaconfig", String.class);
-    public static final StringProperty<String> THEMEID = PropertyFactory.createString("themeid", String.class);
     public static final ListProperty<CoreOperat> CORE_OPERATS = PropertyFactory.createList("coreOperats", CoreOperat.class);
 
+    protected String aname;
     protected String config;
     protected String metaconfig;
-    protected String themeid;
 
     protected Object coreOperats;
+
+    public void setAname(String aname) {
+        beforePropertyWrite("aname", this.aname, aname);
+        this.aname = aname;
+    }
+
+    public String getAname() {
+        beforePropertyRead("aname");
+        return this.aname;
+    }
 
     public void setConfig(String config) {
         beforePropertyWrite("config", this.config, config);
@@ -53,16 +63,6 @@ public abstract class _CoreTheme extends BaseDataObject {
     public String getMetaconfig() {
         beforePropertyRead("metaconfig");
         return this.metaconfig;
-    }
-
-    public void setThemeid(String themeid) {
-        beforePropertyWrite("themeid", this.themeid, themeid);
-        this.themeid = themeid;
-    }
-
-    public String getThemeid() {
-        beforePropertyRead("themeid");
-        return this.themeid;
     }
 
     public void addToCoreOperats(CoreOperat obj) {
@@ -85,12 +85,12 @@ public abstract class _CoreTheme extends BaseDataObject {
         }
 
         switch(propName) {
+            case "aname":
+                return this.aname;
             case "config":
                 return this.config;
             case "metaconfig":
                 return this.metaconfig;
-            case "themeid":
-                return this.themeid;
             case "coreOperats":
                 return this.coreOperats;
             default:
@@ -105,14 +105,14 @@ public abstract class _CoreTheme extends BaseDataObject {
         }
 
         switch (propName) {
+            case "aname":
+                this.aname = (String)val;
+                break;
             case "config":
                 this.config = (String)val;
                 break;
             case "metaconfig":
                 this.metaconfig = (String)val;
-                break;
-            case "themeid":
-                this.themeid = (String)val;
                 break;
             case "coreOperats":
                 this.coreOperats = val;
@@ -133,18 +133,18 @@ public abstract class _CoreTheme extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
+        out.writeObject(this.aname);
         out.writeObject(this.config);
         out.writeObject(this.metaconfig);
-        out.writeObject(this.themeid);
         out.writeObject(this.coreOperats);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
+        this.aname = (String)in.readObject();
         this.config = (String)in.readObject();
         this.metaconfig = (String)in.readObject();
-        this.themeid = (String)in.readObject();
         this.coreOperats = in.readObject();
     }
 

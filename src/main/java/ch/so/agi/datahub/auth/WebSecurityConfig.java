@@ -3,8 +3,10 @@ package ch.so.agi.datahub.auth;
 import java.io.IOException;
 import java.util.Objects;
 
+import org.apache.cayenne.ObjectContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +20,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -35,14 +38,17 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 public class WebSecurityConfig {
+
+    @Value("${app.apiKeyHeaderName}")
+    private String apiKeyHeaderName;
     
-//    @Autowired
-//    private UnauthorizedEntryPoint authenticationEntryPoint;
-        
     @Autowired
     @Qualifier("customAuthenticationEntryPoint")
     AuthenticationEntryPoint authEntryPoint;
 
+    @Autowired
+    ObjectContext objectContext;
+    
     //private ApiKeyAuthFilter apiKeyAuthFilter;
     
     // Bean-Methode darf nicht den gleichen Namen wie die Klasse haben.
@@ -56,37 +62,28 @@ public class WebSecurityConfig {
 //        return registrationBean;
 //    }
     
-//    @Bean
-//    ApiKeyAuthFilter1 authenticationFilter() {
-//        return new ApiKeyAuthFilter1(); 
-//    }
-    
     
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        String principalRequestValue = "1234";
-        
-        ApiKeyAuthFilter filter = new ApiKeyAuthFilter("X-API-KEY");
-//        filter.setAuthenticationManager(
-//            authentication -> {
-//              String principal = (String) authentication.getPrincipal();
-//              if (!Objects.equals(principalRequestValue, principal)) {
-//                  throw new BadCredentialsException(
-//                          "The API key was not found or not the expected value.");
-//              }
-//              authentication.setAuthenticated(true);
-//              return authentication;
-//            });
-
-        filter.setAuthenticationManager(new ApiKeyAuthenticationManager());
-        
+    ApiKeyAuthenticationManager authenticationManager() {
+        return new ApiKeyAuthenticationManager(objectContext);
+    }
+    
+    @Bean
+    ApiKeyAuthFilter authenticationFilter() {
+        ApiKeyAuthFilter filter = new ApiKeyAuthFilter(apiKeyHeaderName);
+        filter.setAuthenticationManager(authenticationManager());
+        return filter;
+    }
+    
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {                
         return http
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .securityMatcher("/**")
-                .addFilter(filter)
+                .addFilter(authenticationFilter())
                 .authorizeHttpRequests(registry -> registry
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/public/**")).permitAll()
                         .anyRequest().authenticated()
@@ -96,28 +93,8 @@ public class WebSecurityConfig {
                 )
                 .logout(AbstractHttpConfigurer::disable)
                 .build();
-
     }
     
-    
-//    @Bean
-//    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        return http
-//                .cors(AbstractHttpConfigurer::disable)
-//                .csrf(AbstractHttpConfigurer::disable)
-//                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .formLogin(AbstractHttpConfigurer::disable)
-//                .securityMatcher("/**")
-//                .authorizeHttpRequests(registry -> registry
-//                        .requestMatchers(AntPathRequestMatcher.antMatcher("/public/**")).permitAll()
-//                        .anyRequest().authenticated()
-//                )
-//                .addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-//                .exceptionHandling(exceptionHandling ->
-//                    exceptionHandling.authenticationEntryPoint(authenticationEntryPoint))
-//                // message body is missng: https://www.baeldung.com/spring-security-basic-authentication??
-//                .build();
-//    }
 
     
     
@@ -144,16 +121,5 @@ public class WebSecurityConfig {
 //        //.formLogin(Customizer.withDefaults());
 //
 //      return http.build();
-//    }
-    
-//    @Autowired
-//    public void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth
-//        .ldapAuthentication()
-//            .userDnPatterns("uid={0},ou=people") // Specifies the patterns used to search for user Distinguished Names (DNs) during authentication.
-//            .groupSearchBase("ou=people") // Specifies the base DN (Distinguished Name) under which the search for LDAP groups will be performed.
-//            .contextSource()
-//                //.ldif("classpath:test-server.ldif")
-//                .root("dc=springframework,dc=org");
-//    }
+//    }    
 }

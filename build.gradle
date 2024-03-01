@@ -82,10 +82,11 @@ cdbimport {
         usePrimitives false
         defaultPackage 'ch.so.agi.datahub.cayenne'
         schema {
-            name 'agi_datahub_v1'
+            name 'agi_datahub_v2'
             includeTable 'core_operat'
             includeTable 'core_organisation'
-            includeTable 'core_organisation_user'
+            includeTable 'core_apikey'
+            //includeTable 'core_organisation_user'
             includeTable 'core_theme'
             includeTable 'core_user'
             includeTable 'deliveries_delivery'

@@ -50,7 +50,7 @@ public class DeliveryController {
     
     @Value("${app.folderPrefix}")
     private String folderPrefix;
-
+    
     private JobScheduler jobScheduler;
     
     private StorageProvider storageProvider;
@@ -121,7 +121,7 @@ public class DeliveryController {
         deliveriesDelivery.setDeliverydate(LocalDateTime.now());
         
         deliveriesDelivery.setCoreOperat(coreOperat);
-        deliveriesDelivery.setCoreUser(coreUser);
+        //deliveriesDelivery.setCoreUser(coreUser);
         deliveriesDelivery.addToDeliveriesAssets(deliveriesAsset);
                       
         // Validierungsjob in Jobrunr queuen.
