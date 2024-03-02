@@ -65,17 +65,18 @@ public class WebSecurityConfig {
 //        return registrationBean;
 //    }
     
-
-    @Bean
-    FilterRegistrationBean<TokenAuthorizationFilter> tokenAuthFilter(TokenAuthorizationFilter tokenAuthorizationFilter) {
-        FilterRegistrationBean<TokenAuthorizationFilter> registrationBean = new FilterRegistrationBean<>();
-        registrationBean.setFilter(tokenAuthorizationFilter);
-        // registrationBean.addUrlPatterns("/api/v1/deliveries/**",
-        // "/und_noch_andere/*");
-        // registrationBean.addUrlPatterns("*");
-        registrationBean.addUrlPatterns("/api/v1/token/*");
-        return registrationBean;
-    }
+    
+    // Braucht es das überhaupt, wenn man nicht noch die Organisation als Parameter übergibt.
+    // Dann gibt es m.E. nur die Authentifizierung und es wird für die Organisation
+    // ein neuer Key erzeugt, die dem gültigen Key entspricht.
+    // 
+//    @Bean
+//    FilterRegistrationBean<TokenAuthorizationFilter> tokenAuthFilter(TokenAuthorizationFilter tokenAuthorizationFilter) {
+//        FilterRegistrationBean<TokenAuthorizationFilter> registrationBean = new FilterRegistrationBean<>();
+//        registrationBean.setFilter(tokenAuthorizationFilter);
+//        registrationBean.addUrlPatterns("/api/v1/token/*");
+//        return registrationBean;
+//    }
 
     @Bean
     ApiKeyAuthenticationManager authenticationManager() {

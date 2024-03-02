@@ -24,14 +24,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ch.so.agi.datahub.AppConstants;
 import ch.so.agi.datahub.cayenne.CoreApikey;
 import ch.so.agi.datahub.cayenne.CoreOrganisation;
-import ch.so.agi.datahub.model.ErrorResponse;
+import ch.so.agi.datahub.model.GenericResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@Component
+// DISABLE
+//@Component
 public class TokenAuthorizationFilter extends OncePerRequestFilter {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -95,7 +96,7 @@ public class TokenAuthorizationFilter extends OncePerRequestFilter {
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 ServletOutputStream responseStream = response.getOutputStream();
-                mapper.writeValue(responseStream, new ErrorResponse(this.getClass().getCanonicalName(), "User is not authorized", Instant.now()));
+                mapper.writeValue(responseStream, new GenericResponse(this.getClass().getCanonicalName(), "User is not authorized", Instant.now()));
                 responseStream.flush();
             }
         }

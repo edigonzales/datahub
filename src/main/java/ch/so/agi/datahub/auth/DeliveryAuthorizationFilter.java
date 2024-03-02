@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -21,7 +22,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 // DISABLED
 //@Component
-public class AuthorizationFilter extends OncePerRequestFilter {
+public class DeliveryAuthorizationFilter extends OncePerRequestFilter {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Value("${app.dbSchema}")
@@ -31,19 +32,28 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     
     private ObjectContext objectContext;
  
-    public AuthorizationFilter(ObjectContext objectContext) {
+    private PasswordEncoder encoder;
+    
+    public DeliveryAuthorizationFilter(ObjectContext objectContext, PasswordEncoder encoder) {
         this.objectContext = objectContext;
+        this.encoder = encoder;
     }
     
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        logger.info("********* DO AUTHORIZATION HERE...");
+        logger.info("********* DO DELIVER AUTHORIZATION HERE...");
         
         HttpServletRequest servletRequest = (HttpServletRequest) request;
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = authentication.getName();
+        
+        // ApiKey als Details.
+        // Damit kenne ich Organisation bereits.
+        // Hier mit dataRowQuery prüfen, ob Organisation authorisiert ist.
+        
+        
         
         String themeId = servletRequest.getParameter("theme");
         String operatId = servletRequest.getParameter("operat");

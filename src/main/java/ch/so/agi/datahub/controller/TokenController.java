@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -25,9 +27,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
+import ch.so.agi.datahub.AppConstants;
 import ch.so.agi.datahub.cayenne.CoreApikey;
 import ch.so.agi.datahub.cayenne.CoreOrganisation;
-import ch.so.agi.datahub.model.ErrorResponse;
+import ch.so.agi.datahub.model.GenericResponse;
 import ch.so.agi.datahub.model.TokenResponse;
 
 @RestController
@@ -47,18 +50,33 @@ public class TokenController {
     }
     
     @PostMapping(path = "/api/v1/token")
-    public ResponseEntity<?> addToken(Authentication authentication, @RequestPart(name = "organisation", required = true) String organisation) {
-        // Falls Admin-Organisation requestet, wird in Tokenauthorisierung nicht implizit geprüft,
-        // ob Organisation vorhanden ist.
+    public ResponseEntity<?> createToken(Authentication authentication, @RequestPart(name = "organisation", required = false) String organisationParam) {
+        // Organisation eruieren, für die der neue API-Key erzeugt werden soll.
+        
+        String organisation = null;
+        if(authentication.getAuthorities().contains(new SimpleGrantedAuthority(AppConstants.ROLE_NAME_ADMIN))) {
+            organisation = organisationParam;
+        } else {
+            organisation = ((CoreApikey) authentication.getDetails()).getCoreOrganisation().getAname();
+        }
+        
+        if (organisation == null) {
+            logger.error("organisation parameter is required");
+            return ResponseEntity
+                    .internalServerError()
+                    .body(new GenericResponse(this.getClass().getCanonicalName(), "organisation parameter is required", Instant.now()));
+                    
+        }
+        
         CoreOrganisation coreOrganisation = ObjectSelect.query(CoreOrganisation.class)
                 .where(CoreOrganisation.ANAME.eq(organisation))
-                .selectFirst(objectContext);
-        
+                .selectOne(objectContext);
+    
         if (coreOrganisation == null) {
             logger.error("Organisation '{}' not found.", organisation);
             return ResponseEntity
                     .internalServerError()
-                    .body(new ErrorResponse(this.getClass().getCanonicalName(), "Object not found.", Instant.now()));
+                    .body(new GenericResponse(this.getClass().getCanonicalName(), "Object not found.", Instant.now()));
         }
         
         String apiKey = UUID.randomUUID().toString();
@@ -75,10 +93,25 @@ public class TokenController {
                 .ok(new TokenResponse(organisation, apiKey));
     }
     
-//    // Es wird nicht geprüft, ob 
-//    @DeleteMapping(path = "/api/v1/token/{apiKey}") 
-//    public ResponseEntity<?> deleteToken(@PathVariable String apiKey) {
-//        
-//    }
+    @DeleteMapping(path = "/api/v1/token/{apiKey}") 
+    public ResponseEntity<?> deleteToken(Authentication authentication, @PathVariable(name = "apiKey") String apiKeyParam) {        
+        List<CoreApikey> apiKeys = ObjectSelect.query(CoreApikey.class)
+                .where(CoreApikey.REVOKEDAT.isNull())
+                .select(objectContext);
+        
+        for (CoreApikey apiKey : apiKeys) {
+            if (encoder.matches(apiKeyParam, apiKey.getApikey())) {
+                apiKey.setRevokedat(LocalDateTime.now());
+                objectContext.commitChanges();
+                
+                return ResponseEntity
+                        .ok().body(new GenericResponse(null, "Key deleted.", Instant.now()));
+            }
+        }
+
+        return ResponseEntity
+                .internalServerError()
+                .body(new GenericResponse(this.getClass().getCanonicalName(), "Key not deleted.", Instant.now()));
+    }
 
 }

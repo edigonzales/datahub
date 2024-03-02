@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ch.so.agi.datahub.model.ErrorResponse;
+import ch.so.agi.datahub.model.GenericResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +31,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         ServletOutputStream responseStream = response.getOutputStream();
-        mapper.writeValue(responseStream, new ErrorResponse(authException.getClass().getCanonicalName(), authException.getMessage(), Instant.now()));
+        mapper.writeValue(responseStream, new GenericResponse(authException.getClass().getCanonicalName(), authException.getMessage(), Instant.now()));
         responseStream.flush();
     }
 }

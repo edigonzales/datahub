@@ -61,7 +61,7 @@ public class ApiKeyAuthenticationManager implements AuthenticationManager {
         List<GrantedAuthority> grants = new ArrayList<GrantedAuthority>();
         grants.add(new SimpleGrantedAuthority(myApiKey.getCoreOrganisation().getArole()));
         PreAuthenticatedAuthenticationToken tokenUser = new PreAuthenticatedAuthenticationToken(authentication.getName(), null, grants);
-        tokenUser.setDetails(authentication.getDetails());
+        tokenUser.setDetails(myApiKey);
         tokenUser.setAuthenticated(true);
 
         return tokenUser;
