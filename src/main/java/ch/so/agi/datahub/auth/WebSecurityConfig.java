@@ -49,6 +49,9 @@ public class WebSecurityConfig {
     @Autowired
     ObjectContext objectContext;
     
+    @Autowired
+    PasswordEncoder encoder;
+    
     //private ApiKeyAuthFilter apiKeyAuthFilter;
     
     // Bean-Methode darf nicht den gleichen Namen wie die Klasse haben.
@@ -62,10 +65,21 @@ public class WebSecurityConfig {
 //        return registrationBean;
 //    }
     
-    
+
+    @Bean
+    FilterRegistrationBean<TokenAuthorizationFilter> tokenAuthFilter(TokenAuthorizationFilter tokenAuthorizationFilter) {
+        FilterRegistrationBean<TokenAuthorizationFilter> registrationBean = new FilterRegistrationBean<>();
+        registrationBean.setFilter(tokenAuthorizationFilter);
+        // registrationBean.addUrlPatterns("/api/v1/deliveries/**",
+        // "/und_noch_andere/*");
+        // registrationBean.addUrlPatterns("*");
+        registrationBean.addUrlPatterns("/api/v1/token/*");
+        return registrationBean;
+    }
+
     @Bean
     ApiKeyAuthenticationManager authenticationManager() {
-        return new ApiKeyAuthenticationManager(objectContext);
+        return new ApiKeyAuthenticationManager(objectContext, encoder);
     }
     
     @Bean

@@ -3,8 +3,22 @@
 ## Testrequests
 
 ```
-curl -i -X GET --header "X-API-KEY:1234" http://localhost:8080/protected/hello
+curl -i -X GET --header "X-API-KEY:07241eb1-23a1-4dd0-aca1-b2c0d7554ff9" http://localhost:8080/protected/hello
 ```
+
+
+Admin:
+```
+curl -i -X POST --header "X-API-KEY:07241eb1-23a1-4dd0-aca1-b2c0d7554ff9"  -F 'organisation=W+H AG' http://localhost:8080/api/v1/token
+
+```
+W+H AG:
+```
+curl -i -X POST --header "X-API-KEY:a3f444be-f170-45a8-a809-d84a5606568b"  -F 'organisation=W+H AG' http://localhost:8080/api/v1/token
+
+```
+
+
 
 
 ```
@@ -80,6 +94,16 @@ Datenbank starten (in dev-Verzeichnis):
 docker-compose up
 ```
 
+## Tests
+
+### Token
+- neues token:
+  * falls org nicht vorhanden, darf es nicht funktionieren (bereits autho  nicht möglich).
+  * 
+
+- datümer bei den Keys
+
+
 **API-Key-Version**
 ```
 java -jar /Users/stefan/Downloads/ili2pg-4.9.1.jar --dbhost localhost --dbport 54321 --dbdatabase edit --dbusr postgres --dbpwd secret --defaultSrsCode 2056 --createGeomIdx  --createFk --createFkIdx --createEnumTabs --createMetaInfo --nameByTopic --strokeArcs --createUnique --createNumChecks --createTextChecks --createDateTimeChecks --createImportTabs --createUnique --dbschema agi_datahub_v2 --models "SO_AGI_Datahub_20240301" --modeldir "https://models.geo.admin.ch;ili/" --schemaimport
@@ -101,6 +125,10 @@ java -jar /Users/stefan/apps/ili2pg-5.1.0/ili2pg-5.1.0.jar --dbhost localhost --
 
 ```
 java -jar /Users/stefan/apps/ili2pg-5.1.0/ili2pg-5.1.0.jar --dbhost localhost --dbport 54321 --dbdatabase edit --dbusr postgres --dbpwd secret --defaultSrsCode 2056 --createGeomIdx  --createFk --createFkIdx --createEnumTabs --createMetaInfo --nameByTopic --strokeArcs --createUnique --createNumChecks --createTextChecks --createDateTimeChecks --createImportTabs --createUnique --dbschema agi_datahub_v2 --models "SO_AGI_Datahub_20240301" --modeldir "https://models.geo.admin.ch;ili/" --doSchemaImport --import datahub_key.xtf
+```
+
+```
+java -jar /Users/stefan/apps/ili2pg-5.1.0/ili2pg-5.1.0.jar --dbhost localhost --dbport 54321 --dbdatabase edit --dbusr postgres --dbpwd secret --dbschema agi_datahub_v2 --models "SO_AGI_Datahub_20240301" --modeldir "https://models.geo.admin.ch;ili/" --export datahub_key.xtf
 ```
 
 **LDAP-Version**

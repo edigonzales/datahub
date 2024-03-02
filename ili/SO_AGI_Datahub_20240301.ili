@@ -19,7 +19,7 @@ VERSION "2024-03-01"  =
     CLASS ApiKey =
       /** API-Key
        */
-      apiKey : MANDATORY BLACKBOX BINARY;
+      apiKey : MANDATORY TEXT*256;
       /** Zeitpunkt der Erstellung.
        */
       createdAt : MANDATORY INTERLIS.XMLDateTime;

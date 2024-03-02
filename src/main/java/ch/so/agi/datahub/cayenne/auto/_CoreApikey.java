@@ -7,11 +7,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.property.DateProperty;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.ListProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 
 import ch.so.agi.datahub.cayenne.CoreOrganisation;
 import ch.so.agi.datahub.cayenne.DeliveriesDelivery;
@@ -28,14 +28,14 @@ public abstract class _CoreApikey extends BaseDataObject {
 
     public static final String T_ID_PK_COLUMN = "t_id";
 
-    public static final BaseProperty<byte[]> APIKEY = PropertyFactory.createBase("apikey", byte[].class);
+    public static final StringProperty<String> APIKEY = PropertyFactory.createString("apikey", String.class);
     public static final DateProperty<LocalDateTime> CREATEDAT = PropertyFactory.createDate("createdat", LocalDateTime.class);
     public static final DateProperty<LocalDateTime> DATEOFEXPIRY = PropertyFactory.createDate("dateofexpiry", LocalDateTime.class);
     public static final DateProperty<LocalDateTime> REVOKEDAT = PropertyFactory.createDate("revokedat", LocalDateTime.class);
     public static final EntityProperty<CoreOrganisation> CORE_ORGANISATION = PropertyFactory.createEntity("coreOrganisation", CoreOrganisation.class);
     public static final ListProperty<DeliveriesDelivery> DELIVERIES_DELIVERIES = PropertyFactory.createList("deliveriesDeliveries", DeliveriesDelivery.class);
 
-    protected byte[] apikey;
+    protected String apikey;
     protected LocalDateTime createdat;
     protected LocalDateTime dateofexpiry;
     protected LocalDateTime revokedat;
@@ -43,12 +43,12 @@ public abstract class _CoreApikey extends BaseDataObject {
     protected Object coreOrganisation;
     protected Object deliveriesDeliveries;
 
-    public void setApikey(byte[] apikey) {
+    public void setApikey(String apikey) {
         beforePropertyWrite("apikey", this.apikey, apikey);
         this.apikey = apikey;
     }
 
-    public byte[] getApikey() {
+    public String getApikey() {
         beforePropertyRead("apikey");
         return this.apikey;
     }
@@ -136,7 +136,7 @@ public abstract class _CoreApikey extends BaseDataObject {
 
         switch (propName) {
             case "apikey":
-                this.apikey = (byte[])val;
+                this.apikey = (String)val;
                 break;
             case "createdat":
                 this.createdat = (LocalDateTime)val;
@@ -180,7 +180,7 @@ public abstract class _CoreApikey extends BaseDataObject {
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        this.apikey = (byte[])in.readObject();
+        this.apikey = (String)in.readObject();
         this.createdat = (LocalDateTime)in.readObject();
         this.dateofexpiry = (LocalDateTime)in.readObject();
         this.revokedat = (LocalDateTime)in.readObject();

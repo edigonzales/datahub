@@ -27,8 +27,10 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     @Value("${app.dbSchema}")
     private String dbSchema;
     
-    private ObjectContext objectContext;
+    private Authentication authentication;
     
+    private ObjectContext objectContext;
+ 
     public AuthorizationFilter(ObjectContext objectContext) {
         this.objectContext = objectContext;
     }

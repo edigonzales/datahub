@@ -90,7 +90,7 @@ public class DatahubApplication {
                 String encodedApiKey = encoder().encode(apiKey);
                 
                 CoreApikey coreApiKey = objectContext.newObject(CoreApikey.class);
-                coreApiKey.setApikey(encodedApiKey.getBytes());
+                coreApiKey.setApikey(encodedApiKey);
                 coreApiKey.setCreatedat(LocalDateTime.now());
                 coreApiKey.setCoreOrganisation(coreOrganisation);
                 
@@ -99,8 +99,6 @@ public class DatahubApplication {
                 logger.warn("************************************************************");
                 logger.warn(apiKey);
                 logger.warn("************************************************************");
-                
-                // a45b09a2-7981-460f-a605-89e55be7c4b6
             }
         };
     }

@@ -1,6 +1,7 @@
 !datahub_key.xtf
 !datahub.xtf
 *.xtf
+!datahub*.xtf
 !datahub_key.xtf
 
 # Created by https://www.toptal.com/developers/gitignore/api/maven,gradle,java,groovy,windows,linux,macos,intellij+all,netbeans,eclipse

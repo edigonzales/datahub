@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.security.web.context.SaveContextOnUpdateOrErrorResponseWrapper;
 
@@ -24,53 +25,45 @@ import ch.so.agi.datahub.cayenne.CoreApikey;
 
 public class ApiKeyAuthenticationManager implements AuthenticationManager {
     
-    
-    // Aus Datenbank:
-    
-    String principalRequestValue = "1234";
-    
     private ObjectContext objectContext;
     
-    public ApiKeyAuthenticationManager(ObjectContext objectContext) {
-        this.objectContext = objectContext;
-    }
+    private PasswordEncoder encoder;
     
+    public ApiKeyAuthenticationManager(ObjectContext objectContext, PasswordEncoder encoder) {
+        this.objectContext = objectContext;
+        this.encoder = encoder;
+    }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        
         String principal = (String) authentication.getPrincipal();
-        
-        
-//        Expression qualifier = ExpressionFactory.no
-//                .containsIgnoreCaseExp(Author.NAME.getName(), "Paul")
-//                .andExp(ExpressionFactory
-//                  .endsWithExp(Author.NAME.getName(), "h"));
+           
+        List<CoreApikey> apiKeys = ObjectSelect.query(CoreApikey.class)
+                .where(CoreApikey.REVOKEDAT.isNull())
+                .and(CoreApikey.DATEOFEXPIRY.gt(LocalDateTime.now()).orExp(CoreApikey.DATEOFEXPIRY.isNull()))
+                .select(objectContext);
 
+        // Weil das Passwort randommässig gesalted wird, muss man die matches-Funktion verwenden und
+        // kann nicht den Plaintext-Key nochmals encoden und mit der DB vergleichen.
+        CoreApikey myApiKey = null;
+        for (CoreApikey apiKey : apiKeys) {
+            if (encoder.matches(principal, apiKey.getApikey())) {
+                myApiKey = apiKey;
+                break;
+            }
+        }
         
-        CoreApikey apiKey = ObjectSelect.query(CoreApikey.class)
-                .where(CoreApikey.REVOKEDAT.isNull()).and(CoreApikey.DATEOFEXPIRY.gt(LocalDateTime.now()).orExp(CoreApikey.DATEOFEXPIRY.isNull()))
-                .selectOne(objectContext);
-        
-        System.out.println(apiKey);
-
-        //.an.dot(Artist.DATE_OF_BIRTH).lt(LocalDate.of(1900,1,1))
-        
-        
-        if (!Objects.equals(principalRequestValue, principal)) {
+        if (apiKeys.size() == 0 || myApiKey == null) {
             throw new BadCredentialsException(
                     "The API key was not found or not the expected value.");
-        }
+        }  
 
-        // Falls man hier mehr wissen will/muss.
-//        List<GrantedAuthority> grants = new ArrayList<GrantedAuthority>();
-//        grants.add(new SimpleGrantedAuthority("ROLE_USER"));
-//        PreAuthenticatedAuthenticationToken tokenUser = new PreAuthenticatedAuthenticationToken(authentication.getName(), null, grants);
-//        tokenUser.setDetails(authentication.getDetails());
-//        tokenUser.setAuthenticated(true);
+        List<GrantedAuthority> grants = new ArrayList<GrantedAuthority>();
+        grants.add(new SimpleGrantedAuthority(myApiKey.getCoreOrganisation().getArole()));
+        PreAuthenticatedAuthenticationToken tokenUser = new PreAuthenticatedAuthenticationToken(authentication.getName(), null, grants);
+        tokenUser.setDetails(authentication.getDetails());
+        tokenUser.setAuthenticated(true);
 
-        authentication.setAuthenticated(true);
-
-        return authentication;
+        return tokenUser;
     }
 }

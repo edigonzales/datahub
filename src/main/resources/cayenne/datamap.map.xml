@@ -5,7 +5,7 @@
 	 project-version="10">
 	<property name="defaultPackage" value="ch.so.agi.datahub.cayenne"/>
 	<db-entity name="core_apikey" schema="agi_datahub_v2">
-		<db-attribute name="apikey" type="LONGVARBINARY" isMandatory="true" length="2147483647"/>
+		<db-attribute name="apikey" type="VARCHAR" isMandatory="true" length="256"/>
 		<db-attribute name="createdat" type="TIMESTAMP" isMandatory="true" length="29"/>
 		<db-attribute name="dateofexpiry" type="TIMESTAMP" length="29"/>
 		<db-attribute name="organisation_r" type="BIGINT" isMandatory="true" length="19"/>
@@ -47,7 +47,7 @@
 		<db-attribute name="t_id" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="19"/>
 	</db-entity>
 	<obj-entity name="CoreApikey" className="ch.so.agi.datahub.cayenne.CoreApikey" dbEntityName="core_apikey">
-		<obj-attribute name="apikey" type="byte[]" db-attribute-path="apikey"/>
+		<obj-attribute name="apikey" type="java.lang.String" db-attribute-path="apikey"/>
 		<obj-attribute name="createdat" type="java.time.LocalDateTime" db-attribute-path="createdat"/>
 		<obj-attribute name="dateofexpiry" type="java.time.LocalDateTime" db-attribute-path="dateofexpiry"/>
 		<obj-attribute name="revokedat" type="java.time.LocalDateTime" db-attribute-path="revokedat"/>
