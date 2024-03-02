@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?><TRANSFER xmlns="http://www.interlis.ch/INTERLIS2.3">
+<HEADERSECTION SENDER="ili2pg-5.1.0-58fc980cc6639b2c16a3cff8a0fa19ef1484b11c" VERSION="2.3"><MODELS><MODEL NAME="SO_AGI_Datahub_20240301" VERSION="2024-03-01" URI="https://agi.so.ch"></MODEL></MODELS></HEADERSECTION>
+<DATASECTION>
+<SO_AGI_Datahub_20240301.Core BID="SO_AGI_Datahub_20240301.Core">
+<SO_AGI_Datahub_20240301.Core.Organisation TID="3"><name>Märki AG</name><role>USER</role></SO_AGI_Datahub_20240301.Core.Organisation>
+<SO_AGI_Datahub_20240301.Core.Organisation TID="4"><name>SWG</name><role>USER</role></SO_AGI_Datahub_20240301.Core.Organisation>
+<SO_AGI_Datahub_20240301.Core.Organisation TID="5"><name>W+H AG</name><role>USER</role></SO_AGI_Datahub_20240301.Core.Organisation>
+<SO_AGI_Datahub_20240301.Core.Theme TID="1"><name>IPW_2020</name><config>ch.so.afu.ipw_2020</config><metaConfig>ch.so.afu.ipw_2020-meta</metaConfig></SO_AGI_Datahub_20240301.Core.Theme>
+<SO_AGI_Datahub_20240301.Core.Theme TID="2"><name>LKMAP_2015</name></SO_AGI_Datahub_20240301.Core.Theme>
+<SO_AGI_Datahub_20240301.Core.Operat TID="6"><name>2546_was</name><Organisation_R REF="4"></Organisation_R><Theme_R REF="2"></Theme_R></SO_AGI_Datahub_20240301.Core.Operat>
+<SO_AGI_Datahub_20240301.Core.Operat TID="7"><name>2511_was</name><Organisation_R REF="5"></Organisation_R><Theme_R REF="2"></Theme_R></SO_AGI_Datahub_20240301.Core.Operat>
+<SO_AGI_Datahub_20240301.Core.Operat TID="8"><name>2471</name><Organisation_R REF="3"></Organisation_R><Theme_R REF="1"></Theme_R></SO_AGI_Datahub_20240301.Core.Operat>
+</SO_AGI_Datahub_20240301.Core>
+<SO_AGI_Datahub_20240301.Deliveries BID="SO_AGI_Datahub_20240301.Deliveries">
+</SO_AGI_Datahub_20240301.Deliveries>
+</DATASECTION>
+</TRANSFER>

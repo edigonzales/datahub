@@ -93,6 +93,15 @@ java -jar /Users/stefan/Downloads/ili2pg-4.9.1.jar --dbhost localhost --dbport 5
 java -jar /Users/stefan/Downloads/ili2pg-4.9.1.jar --dbhost localhost --dbport 54321 --dbdatabase edit --dbusr postgres --dbpwd secret --defaultSrsCode 2056 --createGeomIdx  --createFk --createFkIdx --createEnumTabs --createMetaInfo --nameByTopic --strokeArcs --createUnique --createNumChecks --createTextChecks --createDateTimeChecks --createImportTabs --createUnique --dbschema agi_datahub_v2 --models "SO_AGI_Datahub_20240301" --modeldir "https://models.geo.admin.ch;ili/" --doSchemaImport --import datahub_key.xtf
 ```
 
+ili2pg 5.1.0
+
+```
+java -jar /Users/stefan/apps/ili2pg-5.1.0/ili2pg-5.1.0.jar --dbhost localhost --dbport 54321 --dbdatabase edit --dbusr postgres --dbpwd secret --defaultSrsCode 2056 --createGeomIdx  --createFk --createFkIdx --createEnumTabs --createMetaInfo --nameByTopic --strokeArcs --createUnique --createNumChecks --createTextChecks --createDateTimeChecks --createImportTabs --createUnique --dbschema agi_datahub_v2 --models "SO_AGI_Datahub_20240301" --modeldir "https://models.geo.admin.ch;ili/" --schemaimport
+```
+
+```
+java -jar /Users/stefan/apps/ili2pg-5.1.0/ili2pg-5.1.0.jar --dbhost localhost --dbport 54321 --dbdatabase edit --dbusr postgres --dbpwd secret --defaultSrsCode 2056 --createGeomIdx  --createFk --createFkIdx --createEnumTabs --createMetaInfo --nameByTopic --strokeArcs --createUnique --createNumChecks --createTextChecks --createDateTimeChecks --createImportTabs --createUnique --dbschema agi_datahub_v2 --models "SO_AGI_Datahub_20240301" --modeldir "https://models.geo.admin.ch;ili/" --doSchemaImport --import datahub_key.xtf
+```
 
 **LDAP-Version**
 Daten importieren:
