@@ -15,6 +15,8 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
 public class WebSecurityConfig {
 
@@ -30,8 +32,6 @@ public class WebSecurityConfig {
     
     @Autowired
     PasswordEncoder encoder;
-    
-    //private ApiKeyAuthFilter apiKeyAuthFilter;
     
     // Bean-Methode darf nicht den gleichen Namen wie die Klasse haben.
     @Bean
@@ -69,19 +69,34 @@ public class WebSecurityConfig {
         return filter;
     }
     
+    // Funktioniert es mit zweitenm Filter, der Query-Param ausliest (z.B)?
+    // Mir wäre aber Formlogin fast lieber, dann müsste es aber wohl unter
+    // anderer URL laufen. formLogin and key-auth kombiniert, geht das?
+    
+    // Vielleicht wenn wir den EntryPoint schlauer machen: dort unterscheiden
+    // was accept header ist.
+    
+    // Oder so: https://stackoverflow.com/questions/33739359/combining-basic-authentication-and-form-login-for-the-same-rest-api
+    
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {                
         return http
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .formLogin(AbstractHttpConfigurer::disable)
                 .securityMatcher("/**")
+//                .formLogin(AbstractHttpConfigurer::disable)
+//                .formLogin(form -> form
+//                        .loginPage("/login")
+//                        .permitAll())
                 .addFilter(authenticationFilter())
+                .formLogin(withDefaults())
                 .authorizeHttpRequests(registry -> registry
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/public/**")).permitAll()
                         .anyRequest().authenticated()
                 )
+                // Überschreibt auch Weiterleitung zu Default-Login-Seite, falls
+                // formLogin(withDefaults()) aktiviert ist.
                 .exceptionHandling(exceptionHandling ->
                     exceptionHandling.authenticationEntryPoint(authEntryPoint)
                 )

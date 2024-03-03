@@ -52,16 +52,15 @@ public class MainController {
     public String hello() {
         return "Hello, this is a _un_secured endpoint!";
     }
-
     
-    @PostMapping(value="/api/jobs", consumes = {"multipart/form-data"})
-    // @RequestPart anstelle von @RequestParam und @RequestBody damit swagger korrekt funktioniert.
-    // Sonst kann man zwar Dateien auswählen aber Swagger reklamiert im Browser, dass es Strings sein müssen.
-    public ResponseEntity<?> uploadFiles(@RequestPart(name="files", required=true) MultipartFile[] files/*, @RequestPart(name="theme", required=false) String theme*/) {
-
-        return ResponseEntity
-                .accepted()
-                //.header("Operation-Location", getHost()+"/api/jobs/"+jobId)
-                .body("Hallo Welt.");
-    }
+//    @PostMapping(value="/api/jobs", consumes = {"multipart/form-data"})
+//    // @RequestPart anstelle von @RequestParam und @RequestBody damit swagger korrekt funktioniert.
+//    // Sonst kann man zwar Dateien auswählen aber Swagger reklamiert im Browser, dass es Strings sein müssen.
+//    public ResponseEntity<?> uploadFiles(@RequestPart(name="files", required=true) MultipartFile[] files/*, @RequestPart(name="theme", required=false) String theme*/) {
+//
+//        return ResponseEntity
+//                .accepted()
+//                //.header("Operation-Location", getHost()+"/api/jobs/"+jobId)
+//                .body("Hallo Welt.");
+//    }
 }

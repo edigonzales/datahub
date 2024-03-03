@@ -29985,7 +29985,7 @@
 <Syntax>6560</Syntax>
 </ch.ehi.interlis.constraints.ConstraintExpression>
 <ch.ehi.basics.types.NlsString TID="6560">
-<Entry TID="6561" language="de" translation="UNIQUE name;"/>
+<Entry TID="6561" language="de" translation="UNIQUE name;&#10;UNIQUE email;"/>
 </ch.ehi.basics.types.NlsString>
 <ch.ehi.interlis.associations.AssociationDef TID="1600">
 <NamespaceLink>6562</NamespaceLink>
