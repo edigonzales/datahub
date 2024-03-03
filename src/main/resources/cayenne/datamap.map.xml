@@ -22,6 +22,7 @@
 		<db-attribute name="aname" type="VARCHAR" isMandatory="true" length="512"/>
 		<db-attribute name="arole" type="VARCHAR" length="20"/>
 		<db-attribute name="auid" type="VARCHAR" length="15"/>
+		<db-attribute name="email" type="VARCHAR" isMandatory="true" length="512"/>
 		<db-attribute name="t_id" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="19"/>
 	</db-entity>
 	<db-entity name="core_theme" schema="agi_datahub_v2">
@@ -59,6 +60,7 @@
 		<obj-attribute name="aname" type="java.lang.String" db-attribute-path="aname"/>
 		<obj-attribute name="arole" type="java.lang.String" db-attribute-path="arole"/>
 		<obj-attribute name="auid" type="java.lang.String" db-attribute-path="auid"/>
+		<obj-attribute name="email" type="java.lang.String" db-attribute-path="email"/>
 	</obj-entity>
 	<obj-entity name="CoreTheme" className="ch.so.agi.datahub.cayenne.CoreTheme" dbEntityName="core_theme">
 		<obj-attribute name="aname" type="java.lang.String" db-attribute-path="aname"/>

@@ -28,12 +28,14 @@ public abstract class _CoreOrganisation extends BaseDataObject {
     public static final StringProperty<String> ANAME = PropertyFactory.createString("aname", String.class);
     public static final StringProperty<String> AROLE = PropertyFactory.createString("arole", String.class);
     public static final StringProperty<String> AUID = PropertyFactory.createString("auid", String.class);
+    public static final StringProperty<String> EMAIL = PropertyFactory.createString("email", String.class);
     public static final ListProperty<CoreApikey> CORE_APIKEYS = PropertyFactory.createList("coreApikeys", CoreApikey.class);
     public static final ListProperty<CoreOperat> CORE_OPERATS = PropertyFactory.createList("coreOperats", CoreOperat.class);
 
     protected String aname;
     protected String arole;
     protected String auid;
+    protected String email;
 
     protected Object coreApikeys;
     protected Object coreOperats;
@@ -66,6 +68,16 @@ public abstract class _CoreOrganisation extends BaseDataObject {
     public String getAuid() {
         beforePropertyRead("auid");
         return this.auid;
+    }
+
+    public void setEmail(String email) {
+        beforePropertyWrite("email", this.email, email);
+        this.email = email;
+    }
+
+    public String getEmail() {
+        beforePropertyRead("email");
+        return this.email;
     }
 
     public void addToCoreApikeys(CoreApikey obj) {
@@ -107,6 +119,8 @@ public abstract class _CoreOrganisation extends BaseDataObject {
                 return this.arole;
             case "auid":
                 return this.auid;
+            case "email":
+                return this.email;
             case "coreApikeys":
                 return this.coreApikeys;
             case "coreOperats":
@@ -131,6 +145,9 @@ public abstract class _CoreOrganisation extends BaseDataObject {
                 break;
             case "auid":
                 this.auid = (String)val;
+                break;
+            case "email":
+                this.email = (String)val;
                 break;
             case "coreApikeys":
                 this.coreApikeys = val;
@@ -157,6 +174,7 @@ public abstract class _CoreOrganisation extends BaseDataObject {
         out.writeObject(this.aname);
         out.writeObject(this.arole);
         out.writeObject(this.auid);
+        out.writeObject(this.email);
         out.writeObject(this.coreApikeys);
         out.writeObject(this.coreOperats);
     }
@@ -167,6 +185,7 @@ public abstract class _CoreOrganisation extends BaseDataObject {
         this.aname = (String)in.readObject();
         this.arole = (String)in.readObject();
         this.auid = (String)in.readObject();
+        this.email = (String)in.readObject();
         this.coreApikeys = in.readObject();
         this.coreOperats = in.readObject();
     }

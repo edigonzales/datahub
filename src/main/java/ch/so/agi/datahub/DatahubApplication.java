@@ -85,6 +85,7 @@ public class DatahubApplication {
                 CoreOrganisation coreOrganisation = objectContext.newObject(CoreOrganisation.class);
                 coreOrganisation.setAname(adminAccountName);
                 coreOrganisation.setArole("ADMIN");
+                coreOrganisation.setEmail("stefan.ziegler@bd.so.ch");
                 
                 String apiKey = UUID.randomUUID().toString();
                 String encodedApiKey = encoder().encode(apiKey);

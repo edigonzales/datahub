@@ -23,6 +23,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -33,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import ch.so.agi.datahub.AppConstants;
+import ch.so.agi.datahub.cayenne.CoreApikey;
 import ch.so.agi.datahub.cayenne.CoreOperat;
 import ch.so.agi.datahub.cayenne.CoreUser;
 import ch.so.agi.datahub.cayenne.DeliveriesAsset;
@@ -72,7 +74,8 @@ public class DeliveryController {
 
     @Transactional(rollbackFor={InvalidDataAccessResourceUsageException.class})
     @PostMapping(value="/api/v1/deliveries", consumes = {"multipart/form-data"})
-    public ResponseEntity<?> uploadFile(@RequestPart(name = "theme", required = true) String theme,
+    public ResponseEntity<?> uploadFile(Authentication authentication, 
+            @RequestPart(name = "theme", required = true) String theme,
             @RequestPart(name = "operat", required = true) String operat,
             @RequestPart(name = "file", required = true) MultipartFile file, 
             HttpServletRequest request) throws Exception {
@@ -95,40 +98,39 @@ public class DeliveryController {
 
         // Normalize file name
         String originalFileName = file.getOriginalFilename();
-        String sanitizedFileName = (String)operatDeliveryInfo.get("operatid") + ".xtf";
+        String sanitizedFileName = (String)operatDeliveryInfo.get("operat_name") + ".xtf";
 
         // Daten speichern
         filesStorageService.save(file.getInputStream(), sanitizedFileName, jobId, folderPrefix, workDirectory);
         
         // Die Delivery-Tabellen nachführen.
-        long operatTid = (Long)operatDeliveryInfo.get("operattid");
-        long userTid = (Long)operatDeliveryInfo.get("usertid");
+        long operatTid = (Long)operatDeliveryInfo.get("operat_tid");
         
-        // Jobrunr kann nicht mit null Strings umgehen.
-        String validatorConfig = operatDeliveryInfo.get("config")!=null?(String)operatDeliveryInfo.get("config"):""; 
-        String validatorMetaConfig = operatDeliveryInfo.get("metaconfig")!=null?(String)operatDeliveryInfo.get("metaconfig"):"";
-                        
         CoreOperat coreOperat = SelectById.query(CoreOperat.class, operatTid).selectOne(objectContext);
-        CoreUser coreUser = SelectById.query(CoreUser.class, userTid).selectOne(objectContext);
-                
+        
         DeliveriesAsset deliveriesAsset = objectContext.newObject(DeliveriesAsset.class);
         deliveriesAsset.setAtype("PrimaryData");
         deliveriesAsset.setOriginalfilename(originalFileName);
         deliveriesAsset.setSanitizedfilename(sanitizedFileName);
-        
+
         DeliveriesDelivery deliveriesDelivery = objectContext.newObject(DeliveriesDelivery.class);
         deliveriesDelivery.setJobid(jobId);
         deliveriesDelivery.setDeliverydate(LocalDateTime.now());
-        
+
         deliveriesDelivery.setCoreOperat(coreOperat);
-        //deliveriesDelivery.setCoreUser(coreUser);
+        deliveriesDelivery.setCoreApikey(((CoreApikey) authentication.getDetails()));
         deliveriesDelivery.addToDeliveriesAssets(deliveriesAsset);
-                      
+
         // Validierungsjob in Jobrunr queuen.
+        // Jobrunr kann nicht mit null Strings umgehen.
+        String validatorConfig = operatDeliveryInfo.get("config")!=null?(String)operatDeliveryInfo.get("config"):""; 
+        String validatorMetaConfig = operatDeliveryInfo.get("metaconfig")!=null?(String)operatDeliveryInfo.get("metaconfig"):"";
+                        
         jobScheduler.enqueue(jobIdUuid, () -> deliveryService.deliver(JobContext.Null, theme, sanitizedFileName,
                 validatorConfig, validatorMetaConfig));
         logger.info("<{}> Job is being queued for validation.", jobId);
        
+        // DB-Nachführung committen.
         objectContext.commitChanges();
 
         return ResponseEntity

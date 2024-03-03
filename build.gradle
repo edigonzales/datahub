@@ -36,6 +36,7 @@ dependencies {
     implementation 'org.springframework.security:spring-security-ldap'
     implementation 'org.springframework.boot:spring-boot-starter-web' 
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'  
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
     
     //implementation 'com.unboundid:unboundid-ldapsdk'
     implementation 'org.jobrunr:jobrunr-spring-boot-3-starter:6.3.4'

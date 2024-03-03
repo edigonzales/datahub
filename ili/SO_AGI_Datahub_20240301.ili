@@ -50,9 +50,11 @@ VERSION "2024-03-01"  =
       /** Rolle der Organisation (Admin oder User).
        */
       role : TEXT*20;
+      email : MANDATORY TEXT*512;
       /** Name der Organisation ist eindeutig.
        */
       UNIQUE name;
+      UNIQUE email;
     END Organisation;
 
     /** TODO
