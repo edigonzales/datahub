@@ -58,13 +58,13 @@ public class WebSecurityConfig {
 //    }
 
     @Bean
-    ApiKeyAuthenticationManager authenticationManager() {
-        return new ApiKeyAuthenticationManager(objectContext, encoder);
+    ApiKeyAuthenticationManager1 authenticationManager() {
+        return new ApiKeyAuthenticationManager1(objectContext, encoder);
     }
     
     @Bean
-    ApiKeyAuthFilter authenticationFilter() {
-        ApiKeyAuthFilter filter = new ApiKeyAuthFilter(apiKeyHeaderName);
+    ApiKeyAuthFilter1 authenticationFilter() {
+        ApiKeyAuthFilter1 filter = new ApiKeyAuthFilter1(apiKeyHeaderName);
         filter.setAuthenticationManager(authenticationManager());
         return filter;
     }
@@ -90,16 +90,18 @@ public class WebSecurityConfig {
 //                        .loginPage("/login")
 //                        .permitAll())
                 .addFilter(authenticationFilter())
-                .formLogin(withDefaults())
+//                .formLogin(withDefaults())
                 .authorizeHttpRequests(registry -> registry
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/public/**")).permitAll()
                         .anyRequest().authenticated()
                 )
                 // Überschreibt auch Weiterleitung zu Default-Login-Seite, falls
                 // formLogin(withDefaults()) aktiviert ist.
-                .exceptionHandling(exceptionHandling ->
-                    exceptionHandling.authenticationEntryPoint(authEntryPoint)
-                )
+
+                // FIXME Während refactoring ausschalten. 
+//                .exceptionHandling(exceptionHandling ->
+//                    exceptionHandling.authenticationEntryPoint(authEntryPoint)
+//                )
                 .logout(AbstractHttpConfigurer::disable)
                 .build();
     }
