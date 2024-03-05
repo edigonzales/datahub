@@ -44,7 +44,8 @@ public class MainController {
     
     @GetMapping("/protected/hello")
     public String foo(Authentication authentication) {
-        System.out.println("in controller: " + authentication);
+        System.out.println("in controller: " + authentication.getCredentials());
+        System.out.println("in controller: " + authentication.getName());
         return "Hello, this is a secured endpoint!";
     }
     

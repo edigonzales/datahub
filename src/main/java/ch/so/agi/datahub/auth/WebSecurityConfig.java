@@ -7,12 +7,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -34,15 +37,15 @@ public class WebSecurityConfig {
     PasswordEncoder encoder;
     
     // Bean-Methode darf nicht den gleichen Namen wie die Klasse haben.
-    @Bean
-    FilterRegistrationBean<DeliveryAuthorizationFilter> deliveryAuthFilter(DeliveryAuthorizationFilter authorizationFilter) {
-        FilterRegistrationBean<DeliveryAuthorizationFilter> registrationBean = new FilterRegistrationBean<>();
-        registrationBean.setFilter(authorizationFilter);
-        //registrationBean.addUrlPatterns("/api/v1/deliveries/**", "/und_noch_andere/*");
-        //registrationBean.addUrlPatterns("*");
-        registrationBean.addUrlPatterns("/api/v1/deliveries/*");
-        return registrationBean;
-    }
+//    @Bean
+//    FilterRegistrationBean<DeliveryAuthorizationFilter> deliveryAuthFilter(DeliveryAuthorizationFilter authorizationFilter) {
+//        FilterRegistrationBean<DeliveryAuthorizationFilter> registrationBean = new FilterRegistrationBean<>();
+//        registrationBean.setFilter(authorizationFilter);
+//        //registrationBean.addUrlPatterns("/api/v1/deliveries/**", "/und_noch_andere/*");
+//        //registrationBean.addUrlPatterns("*");
+//        registrationBean.addUrlPatterns("/api/v1/deliveries/*");
+//        return registrationBean;
+//    }
     
     
     // Braucht es das überhaupt, wenn man nicht noch die Organisation als Parameter übergibt.
@@ -57,17 +60,17 @@ public class WebSecurityConfig {
 //        return registrationBean;
 //    }
 
-    @Bean
-    ApiKeyAuthenticationManager1 authenticationManager() {
-        return new ApiKeyAuthenticationManager1(objectContext, encoder);
-    }
-    
-    @Bean
-    ApiKeyAuthFilter1 authenticationFilter() {
-        ApiKeyAuthFilter1 filter = new ApiKeyAuthFilter1(apiKeyHeaderName);
-        filter.setAuthenticationManager(authenticationManager());
-        return filter;
-    }
+//    @Bean
+//    ApiKeyAuthenticationManager1 authenticationManager() {
+//        return new ApiKeyAuthenticationManager1(objectContext, encoder);
+//    }
+//    
+//    @Bean
+//    ApiKeyAuthFilter1 authenticationFilter() {
+//        ApiKeyAuthFilter1 filter = new ApiKeyAuthFilter1(apiKeyHeaderName);
+//        filter.setAuthenticationManager(authenticationManager());
+//        return filter;
+//    }
     
     // Funktioniert es mit zweitenm Filter, der Query-Param ausliest (z.B)?
     // Mir wäre aber Formlogin fast lieber, dann müsste es aber wohl unter
@@ -78,6 +81,9 @@ public class WebSecurityConfig {
     
     // Oder so: https://stackoverflow.com/questions/33739359/combining-basic-authentication-and-form-login-for-the-same-rest-api
     
+    @Autowired
+    private ApiKeyHeaderAuthService apiKeyHeaderAuthService;
+
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {                
         return http
@@ -89,12 +95,14 @@ public class WebSecurityConfig {
 //                .formLogin(form -> form
 //                        .loginPage("/login")
 //                        .permitAll())
-                .addFilter(authenticationFilter())
+//                .addFilter(authenticationFilter())
 //                .formLogin(withDefaults())
                 .authorizeHttpRequests(registry -> registry
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/public/**")).permitAll()
                         .anyRequest().authenticated()
                 )
+                .addFilterBefore(new ApiKeyHeaderAuthenticationFilter(authenticationManager(), apiKeyHeaderName), LogoutFilter.class)
+                
                 // Überschreibt auch Weiterleitung zu Default-Login-Seite, falls
                 // formLogin(withDefaults()) aktiviert ist.
 
@@ -105,4 +113,12 @@ public class WebSecurityConfig {
                 .logout(AbstractHttpConfigurer::disable)
                 .build();
     }
+    
+    @Bean
+    AuthenticationManager authenticationManager() {
+        ApiKeyHeaderAuthenticationProvider apiKeyHeaderAuthenticationProvider = new ApiKeyHeaderAuthenticationProvider(apiKeyHeaderAuthService);
+        //TenantAuthenticationProvider tenantAuthenticationProvider = new TenantAuthenticationProvider(tenantAuthService);
+        return new ProviderManager(apiKeyHeaderAuthenticationProvider /*, tenantAuthenticationProvider*/);
+    }
+
 }
