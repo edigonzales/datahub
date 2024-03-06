@@ -34,6 +34,9 @@ public class ApiKeyHeaderAuthenticationToken implements Authentication {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (userDetails != null) {
+            return userDetails.getAuthorities();
+        } 
         return null;
     }
 

@@ -32,7 +32,6 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    //implementation 'org.springframework.ldap:spring-ldap-core'
     implementation 'org.springframework.security:spring-security-ldap'
     implementation 'org.springframework.boot:spring-boot-starter-web' 
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'  
@@ -40,7 +39,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     
-    //implementation 'com.unboundid:unboundid-ldapsdk'
     implementation 'org.jobrunr:jobrunr-spring-boot-3-starter:6.3.4'
     
     implementation 'ch.interlis:ilivalidator:1.14.2-SNAPSHOT'
@@ -53,7 +51,6 @@ dependencies {
     
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
-    //testImplementation 'com.unboundid:unboundid-ldapsdk'
 }
 
 tasks.named('test') {
@@ -89,12 +86,10 @@ cdbimport {
             includeTable 'core_operat'
             includeTable 'core_organisation'
             includeTable 'core_apikey'
-            //includeTable 'core_organisation_user'
             includeTable 'core_theme'
             includeTable 'core_user'
             includeTable 'deliveries_delivery'
             includeTable 'deliveries_asset'
-            //includeTable 'PEERREPOSITORY'
         }
     }
 }

@@ -10,15 +10,21 @@ public class AppUser implements UserDetails {
       
     private String password;
     
-    private String type = "user";
+    private Collection<? extends GrantedAuthority> authorities;
+    
+    //private String type = "user";
 
     public AppUser(String username) {
         this.username = username;
     }
+    
+    public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
+        this.authorities = authorities;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return authorities;
     }
 
     @Override

@@ -19,11 +19,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.codec.Encoder;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -34,6 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import ch.so.agi.datahub.AppConstants;
+import ch.so.agi.datahub.auth.ApiKeyHeaderAuthenticationToken;
 import ch.so.agi.datahub.cayenne.CoreApikey;
 import ch.so.agi.datahub.cayenne.CoreOperat;
 import ch.so.agi.datahub.cayenne.CoreUser;
@@ -53,6 +56,8 @@ public class DeliveryController {
     @Value("${app.folderPrefix}")
     private String folderPrefix;
     
+    private PasswordEncoder encoder;
+    
     private JobScheduler jobScheduler;
     
     private StorageProvider storageProvider;
@@ -63,8 +68,9 @@ public class DeliveryController {
     
     private FilesStorageService filesStorageService;
 
-    public DeliveryController(JobScheduler jobScheduler, StorageProvider storageProvider,
+    public DeliveryController(PasswordEncoder encoder, JobScheduler jobScheduler, StorageProvider storageProvider,
             DeliveryService deliveryService, ObjectContext objectContext, FilesStorageService filesStorageService) {
+        this.encoder = encoder;
         this.jobScheduler = jobScheduler;
         this.storageProvider = storageProvider;
         this.deliveryService = deliveryService;
@@ -72,7 +78,7 @@ public class DeliveryController {
         this.filesStorageService = filesStorageService;
     }
 
-    @Transactional(rollbackFor={InvalidDataAccessResourceUsageException.class})
+    //@Transactional(rollbackFor={InvalidDataAccessResourceUsageException.class})
     @PostMapping(value="/api/v1/deliveries", consumes = {"multipart/form-data"})
     public ResponseEntity<?> uploadFile(Authentication authentication, 
             @RequestPart(name = "theme", required = true) String theme,
@@ -103,6 +109,11 @@ public class DeliveryController {
         // Daten speichern
         filesStorageService.save(file.getInputStream(), sanitizedFileName, jobId, folderPrefix, workDirectory);
         
+        // TODO 
+        // DB-Zeugs mit Repository Pattern?
+        // Committen muss dann vor Queuen kommen. 
+        // Falls aber das Queuen failed, müsste man die DB manuell nachführen.
+        
         // Die Delivery-Tabellen nachführen.
         long operatTid = (Long)operatDeliveryInfo.get("operat_tid");
         
@@ -116,9 +127,22 @@ public class DeliveryController {
         DeliveriesDelivery deliveriesDelivery = objectContext.newObject(DeliveriesDelivery.class);
         deliveriesDelivery.setJobid(jobId);
         deliveriesDelivery.setDeliverydate(LocalDateTime.now());
-
         deliveriesDelivery.setCoreOperat(coreOperat);
-        deliveriesDelivery.setCoreApikey(((CoreApikey) authentication.getDetails()));
+        
+        // TODO
+        // Wird bereits im ApiKeyHeaderAuthenticationService ermittelt. 
+        List<CoreApikey> apiKeys = ObjectSelect.query(CoreApikey.class)
+                .where(CoreApikey.REVOKEDAT.isNull())
+                .and(CoreApikey.DATEOFEXPIRY.gt(LocalDateTime.now()).orExp(CoreApikey.DATEOFEXPIRY.isNull()))
+                .select(objectContext);
+        CoreApikey myApiKey = null;
+        for (CoreApikey apiKey : apiKeys) {
+            if (encoder.matches(((ApiKeyHeaderAuthenticationToken) authentication).getApiKey(), apiKey.getApikey())) {
+                myApiKey = apiKey;
+                break;
+            }
+        }
+        deliveriesDelivery.setCoreApikey(myApiKey);
         deliveriesDelivery.addToDeliveriesAssets(deliveriesAsset);
 
         // Validierungsjob in Jobrunr queuen.

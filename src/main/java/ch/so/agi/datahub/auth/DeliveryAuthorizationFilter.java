@@ -19,7 +19,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.so.agi.datahub.AppConstants;
-import ch.so.agi.datahub.cayenne.CoreApikey;
 import ch.so.agi.datahub.model.GenericResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -27,8 +26,14 @@ import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-// DISABLE
-//@Component
+
+// Wenn hier Exceptions auftreten, wird es weitergereicht und es folgt
+// ein 403er. Falls man was anderes will, muss kann man hier auch
+// einen ExceptionHandler machen. (oder dann ganz vorne bei der 
+// SecurityChain und dem EntryPoint).
+// Geht ExceptionHandler? Oder braucht geht es nur via Dispatcher Servlet?
+// Und nicht in Filter?
+@Component
 public class DeliveryAuthorizationFilter extends OncePerRequestFilter {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -65,8 +70,7 @@ public class DeliveryAuthorizationFilter extends OncePerRequestFilter {
         }
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CoreApikey apiKey = (CoreApikey) authentication.getDetails();
-        String orgName = apiKey.getCoreOrganisation().getAname();
+        String orgName = authentication.getName();
                  
         String stmt = """
 SELECT 

@@ -6,16 +6,15 @@ import org.springframework.security.core.AuthenticationException;
 
 public class ApiKeyHeaderAuthenticationProvider implements AuthenticationProvider {
 
-    private final ApiKeyHeaderAuthService authService;
+    private final ApiKeyHeaderAuthenticationService authenticationService;
 
-    public ApiKeyHeaderAuthenticationProvider(ApiKeyHeaderAuthService service) {
-        this.authService = service;
+    public ApiKeyHeaderAuthenticationProvider(ApiKeyHeaderAuthenticationService service) {
+        this.authenticationService = service;
     }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        System.out.println("*** provider authentication");
-        return authService.authenticate((ApiKeyHeaderAuthenticationToken) authentication);
+        return authenticationService.authenticate((ApiKeyHeaderAuthenticationToken) authentication);
     }
 
     @Override

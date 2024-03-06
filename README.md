@@ -3,13 +3,13 @@
 ## Testrequests
 
 ```
-curl -i -X GET --header "X-API-KEY:0cd5ed0a-cbe6-439e-bcfd-e7556b5f293f" http://localhost:8080/protected/hello
+curl -i -X GET --header "X-API-KEY:2f3eb7b7-ecd3-4d5a-8074-4dae317368dc" http://localhost:8080/protected/hello
 ```
 
 
 Admin:
 ```
-curl -i -X POST --header "X-API-KEY:0cd5ed0a-cbe6-439e-bcfd-e7556b5f293f" -F 'organisation=W+H AG' http://localhost:8080/api/v1/key
+curl -i -X POST --header "X-API-KEY:2f3eb7b7-ecd3-4d5a-8074-4dae317368dc" -F 'organisation=W+H AG' http://localhost:8080/api/v1/key
 
 ```
 
@@ -18,12 +18,15 @@ curl -i -X POST --header "X-API-KEY:0cd5ed0a-cbe6-439e-bcfd-e7556b5f293f" -F 'or
 
 W+H AG:
 ```
-curl -i -X POST --header "X-API-KEY:1411d77c-1124-4c94-9dc9-4123dffb2b46" http://localhost:8080/api/v1/key
+curl -i -X GET --header "X-API-KEY:2b36b2f5-3a84-4614-b5dc-8ffa38723270" http://localhost:8080/protected/hello
+```
+```
+curl -i -X POST --header "X-API-KEY:d48471ff-4fe1-4ace-aaa2-8471a7279c3c" http://localhost:8080/api/v1/key
 
 ```
 
 ```
-curl -i -X DELETE --header "X-API-KEY:f3f65344-c909-4615-a2ea-7a05f7e27fbf" http://localhost:8080/api/v1/key/f97922a5-04b7-4b45-a0db-166afb18e7a7
+curl -i -X DELETE --header "X-API-KEY:d48471ff-4fe1-4ace-aaa2-8471a7279c3c" http://localhost:8080/api/v1/key/d48471ff-4fe1-4ace-aaa2-8471a7279c3c
 ```
 ```
 curl -i -X POST --header "X-API-KEY:f3f65344-c909-4615-a2ea-7a05f7e27fbf" -F 'file=@Aeschi_LKMap_Wasser.xtf' -F 'theme=LKMAP_2015' -F 'operat=2511_was' http://localhost:8080/api/v1/deliveries

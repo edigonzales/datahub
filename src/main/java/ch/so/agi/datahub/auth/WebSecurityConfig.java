@@ -37,15 +37,15 @@ public class WebSecurityConfig {
     PasswordEncoder encoder;
     
     // Bean-Methode darf nicht den gleichen Namen wie die Klasse haben.
-//    @Bean
-//    FilterRegistrationBean<DeliveryAuthorizationFilter> deliveryAuthFilter(DeliveryAuthorizationFilter authorizationFilter) {
-//        FilterRegistrationBean<DeliveryAuthorizationFilter> registrationBean = new FilterRegistrationBean<>();
-//        registrationBean.setFilter(authorizationFilter);
-//        //registrationBean.addUrlPatterns("/api/v1/deliveries/**", "/und_noch_andere/*");
-//        //registrationBean.addUrlPatterns("*");
-//        registrationBean.addUrlPatterns("/api/v1/deliveries/*");
-//        return registrationBean;
-//    }
+    @Bean
+    FilterRegistrationBean<DeliveryAuthorizationFilter> deliveryAuthFilter(DeliveryAuthorizationFilter authorizationFilter) {
+        FilterRegistrationBean<DeliveryAuthorizationFilter> registrationBean = new FilterRegistrationBean<>();
+        registrationBean.setFilter(authorizationFilter);
+        //registrationBean.addUrlPatterns("/api/v1/deliveries/**", "/und_noch_andere/*");
+        //registrationBean.addUrlPatterns("*");
+        registrationBean.addUrlPatterns("/api/v1/deliveries/*");
+        return registrationBean;
+    }
     
     
     // Braucht es das überhaupt, wenn man nicht noch die Organisation als Parameter übergibt.
@@ -82,7 +82,7 @@ public class WebSecurityConfig {
     // Oder so: https://stackoverflow.com/questions/33739359/combining-basic-authentication-and-form-login-for-the-same-rest-api
     
     @Autowired
-    private ApiKeyHeaderAuthService apiKeyHeaderAuthService;
+    private ApiKeyHeaderAuthenticationService apiKeyHeaderAuthService;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {                
@@ -90,17 +90,19 @@ public class WebSecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .securityMatcher("/**")
+                .securityMatcher("/api/**", "/protected/**")
 //                .formLogin(AbstractHttpConfigurer::disable)
 //                .formLogin(form -> form
 //                        .loginPage("/login")
 //                        .permitAll())
 //                .addFilter(authenticationFilter())
 //                .formLogin(withDefaults())
-                .authorizeHttpRequests(registry -> registry
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/public/**")).permitAll()
-                        .anyRequest().authenticated()
-                )
+                // permitAll() isn't the same as no security and skip all filters
+                // D.h. der ApiKeyHeaderAuthenticationFilter wird trotzdem ausgeführt.
+//                .authorizeHttpRequests(registry -> registry
+//                        .requestMatchers(AntPathRequestMatcher.antMatcher("/public/**")).permitAll()
+//                        .anyRequest().authenticated()
+//                )
                 .addFilterBefore(new ApiKeyHeaderAuthenticationFilter(authenticationManager(), apiKeyHeaderName), LogoutFilter.class)
                 
                 // Überschreibt auch Weiterleitung zu Default-Login-Seite, falls

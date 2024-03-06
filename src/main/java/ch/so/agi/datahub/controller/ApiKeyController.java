@@ -21,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -58,13 +59,17 @@ public class ApiKeyController {
         // Organisation eruieren, für die der neue API-Key erzeugt werden soll.
         // Falls es ein Admin-Key (resp. Org) ist, muss die Organisation als Parameter geliefert 
         // werden.
-        // Falls die Organisation selber einen neuen Key braucht, kennt man zum Request-Key 
-        // gehörende Organisation.
+        // Falls die Organisation selber einen neuen Key braucht, kennt man die zum Request-Key 
+        // gehörende Organisation (aus der DB).
+        
+        System.out.println("authentication.getAuthorities(): " + authentication.getAuthorities());
+        
+        
         String organisation = null;
         if(authentication.getAuthorities().contains(new SimpleGrantedAuthority(AppConstants.ROLE_NAME_ADMIN))) {
             organisation = organisationParam;
         } else {
-            organisation = ((CoreApikey) authentication.getDetails()).getCoreOrganisation().getAname();
+            organisation = authentication.getName();
         }
         
         if (organisation == null) {
@@ -135,6 +140,16 @@ public class ApiKeyController {
         return ResponseEntity
                 .internalServerError()
                 .body(new GenericResponse(this.getClass().getCanonicalName(), "Key not deleted.", Instant.now()));
+    }
+
+    // Notwendig, weil sonst ApiKeyHeaderAuthenticationFilter Exception greift.
+    // Wegen filterChain.
+    @ExceptionHandler({Exception.class, RuntimeException.class})
+    public ResponseEntity<?> databaseError(Exception e) {
+        logger.error("<{}>", e.getMessage());
+        return ResponseEntity
+                .internalServerError()
+                .body("Please contact service provider.");
     }
 
 }

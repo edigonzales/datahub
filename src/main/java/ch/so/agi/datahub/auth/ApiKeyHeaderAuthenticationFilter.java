@@ -42,7 +42,7 @@ public class ApiKeyHeaderAuthenticationFilter extends OncePerRequestFilter {
             logger.warn("Did not find api key header in request");
             //filterChain.doFilter(request, response);
             
-            // Fall filterChain.doFilter() nicht gesetzt wird,
+            // Falls filterChain.doFilter() nicht gesetzt wird,
             // wird bereits hier abgebrochen. Es kann so keine
             // zweite Authentifizierungsmethode verwendet werden.
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -59,14 +59,19 @@ public class ApiKeyHeaderAuthenticationFilter extends OncePerRequestFilter {
             Authentication authentication = this.authenticationManager.authenticate(new ApiKeyHeaderAuthenticationToken(apiKey));
             SecurityContextHolder.getContext().setAuthentication(authentication);
             filterChain.doFilter(request, response);
-          } catch (Exception e) {
+        } catch (Exception e) {
+            // Exception NICHT im Sinne von nicht-authentifiziert, sondern beim Authentifizieren
+            // ist was schief gelaufen.
+            e.printStackTrace();
+            logger.error(e.getMessage());
             logger.error("Api Key Authentication failed");
+            logger.error(HttpStatus.UNAUTHORIZED.toString());
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             // If you want to immediatelly return an error response, you can do it like this:
             response.sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
             // but you can also just let the request go on and let the next filter handle it
             //filterChain.doFilter(request, response);
-          }
+        }
 
 
     }
