@@ -21,15 +21,15 @@ W+H AG:
 curl -i -X GET --header "X-API-KEY:2b36b2f5-3a84-4614-b5dc-8ffa38723270" http://localhost:8080/protected/hello
 ```
 ```
-curl -i -X POST --header "X-API-KEY:d48471ff-4fe1-4ace-aaa2-8471a7279c3c" http://localhost:8080/api/v1/key
+curl -i -X POST --header "X-API-KEY:2b36b2f5-3a84-4614-b5dc-8ffa38723270" http://localhost:8080/api/v1/key
 
 ```
 
 ```
-curl -i -X DELETE --header "X-API-KEY:d48471ff-4fe1-4ace-aaa2-8471a7279c3c" http://localhost:8080/api/v1/key/d48471ff-4fe1-4ace-aaa2-8471a7279c3c
+curl -i -X DELETE --header "X-API-KEY:2b36b2f5-3a84-4614-b5dc-8ffa38723270" http://localhost:8080/api/v1/key/d48471ff-4fe1-4ace-aaa2-8471a7279c3c
 ```
 ```
-curl -i -X POST --header "X-API-KEY:f3f65344-c909-4615-a2ea-7a05f7e27fbf" -F 'file=@Aeschi_LKMap_Wasser.xtf' -F 'theme=LKMAP_2015' -F 'operat=2511_was' http://localhost:8080/api/v1/deliveries
+curl -i -X POST --header "X-API-KEY:2b36b2f5-3a84-4614-b5dc-8ffa38723270" -F 'file=@Aeschi_LKMap_Wasser.xtf' -F 'theme=LKMAP_2015' -F 'operat=2511_was' http://localhost:8080/api/v1/deliveries
 ```
 ```
 curl -i -X GET --header 'Accept: application/json' --header "X-API-KEY:f3f65344-c909-4615-a2ea-7a05f7e27fbf" http://localhost:8080/api/v1/jobs/0ecc0cd7-204e-4380-961b-a4b198f13675
