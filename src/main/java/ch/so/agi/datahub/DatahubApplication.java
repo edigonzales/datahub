@@ -46,7 +46,7 @@ public class DatahubApplication {
     private ServerRuntime cayenneRuntime;
 
     public static void main(String[] args) {
-        applicationContext = SpringApplication.run(DatahubApplication.class, args);
+        ApplicationContext applicationContext = SpringApplication.run(DatahubApplication.class, args);
         
 //        String[] allBeanNames = applicationContext.getBeanDefinitionNames();
 //        for(String beanName : allBeanNames) {
@@ -70,9 +70,7 @@ public class DatahubApplication {
     public void shutdownCayenne() {
         cayenneRuntime.shutdown();
     }
-    
-    static ApplicationContext applicationContext;
-    
+        
     @Bean
     CommandLineRunner init() {
         return args -> {

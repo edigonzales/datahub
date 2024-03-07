@@ -18,18 +18,17 @@ curl -i -X POST --header "X-API-KEY:c0bb04eb-789b-4063-95ad-bd86a06c6aff" -F 'or
 
 W+H AG:
 ```
-curl -i -X GET --header "X-API-KEY:2b36b2f5-3a84-4614-b5dc-8ffa38723270" http://localhost:8080/protected/hello
+curl -i -X GET --header "X-API-KEY:fda5f71f-8875-4d4a-af0c-87d9ba2832b6" http://localhost:8080/protected/hello
 ```
 ```
-curl -i -X POST --header "X-API-KEY:2b36b2f5-3a84-4614-b5dc-8ffa38723270" http://localhost:8080/api/v1/key
+curl -i -X POST --header "X-API-KEY:fda5f71f-8875-4d4a-af0c-87d9ba2832b6" http://localhost:8080/api/v1/key
+```
 
 ```
-
-```
-curl -i -X DELETE --header "X-API-KEY:2b36b2f5-3a84-4614-b5dc-8ffa38723270" http://localhost:8080/api/v1/key/d48471ff-4fe1-4ace-aaa2-8471a7279c3c
+curl -i -X DELETE --header "X-API-KEY:fda5f71f-8875-4d4a-af0c-87d9ba2832b6" http://localhost:8080/api/v1/key/e2b76dce-5160-429b-96ec-0c64ed7c5027
 ```
 ```
-curl -i -X POST --header "X-API-KEY:2b36b2f5-3a84-4614-b5dc-8ffa38723270" -F 'file=@Aeschi_LKMap_Wasser.xtf' -F 'theme=LKMAP_2015' -F 'operat=2511_was' http://localhost:8080/api/v1/deliveries
+curl -i -X POST --header "X-API-KEY:fda5f71f-8875-4d4a-af0c-87d9ba2832b6" -F 'file=@Aeschi_LKMap_Wasser.xtf' -F 'theme=LKMAP_2015' -F 'operat=2511_was' http://localhost:8080/api/v1/deliveries
 ```
 ```
 curl -i -X GET --header 'Accept: application/json' --header "X-API-KEY:f3f65344-c909-4615-a2ea-7a05f7e27fbf" http://localhost:8080/api/v1/jobs/0ecc0cd7-204e-4380-961b-a4b198f13675
@@ -148,6 +147,10 @@ java -jar /Users/stefan/apps/ili2pg-5.1.0/ili2pg-5.1.0.jar --dbhost localhost --
 
 ```
 java -jar /Users/stefan/apps/ili2pg-5.1.0/ili2pg-5.1.0.jar --dbhost localhost --dbport 54321 --dbdatabase edit --dbusr postgres --dbpwd secret --dbschema agi_datahub_v2 --models "SO_AGI_Datahub_20240301" --modeldir "https://models.geo.admin.ch;ili/" --export datahub_key.xtf
+```
+
+```
+java -jar /Users/stefan/apps/ili2pg-5.1.0/ili2pg-5.1.0.jar --dbhost localhost --dbport 54321 --dbdatabase edit --dbusr postgres --dbpwd secret --dbschema agi_datahub_v2 --models "SO_AGI_Datahub_20240301" --modeldir "https://models.geo.admin.ch;ili/" --export datahub_key_with_data.xtf
 ```
 
 **LDAP-Version**

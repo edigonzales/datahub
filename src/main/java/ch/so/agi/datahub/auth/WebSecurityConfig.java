@@ -47,6 +47,17 @@ public class WebSecurityConfig {
         return registrationBean;
     }
     
+    // Braucht es m.E. nicht: Werden alle Jobs angefordert, werden nach der Authentifizierung nur
+    // die Jobs der anfordernden Organisation angezeigt. Wird ein einzelner Job requestet, reicht
+    // momentan die Authentifizerung, da man die Job-ID (UUID) kennen muss.
+//    @Bean
+//    FilterRegistrationBean<JobAuthorizationFilter> jobAuthFilter(JobAuthorizationFilter authorizationFilter) {
+//        FilterRegistrationBean<JobAuthorizationFilter> registrationBean = new FilterRegistrationBean<>();
+//        registrationBean.setFilter(authorizationFilter);
+//        registrationBean.addUrlPatterns("/api/v1/jobs/*");
+//        return registrationBean;
+//    }
+
     
     // Braucht es das überhaupt, wenn man nicht noch die Organisation als Parameter übergibt.
     // Dann gibt es m.E. nur die Authentifizierung und es wird für die Organisation
@@ -97,6 +108,7 @@ public class WebSecurityConfig {
 //                        .permitAll())
 //                .addFilter(authenticationFilter())
 //                .formLogin(withDefaults())
+                
                 // permitAll() isn't the same as no security and skip all filters
                 // D.h. der ApiKeyHeaderAuthenticationFilter wird trotzdem ausgeführt.
 //                .authorizeHttpRequests(registry -> registry

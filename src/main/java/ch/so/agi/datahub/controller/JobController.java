@@ -29,30 +29,30 @@ public class JobController {
     }
     
     @GetMapping(path = "/api/v1/jobs/{jobId}")
-    public /*ResponseEntity<?>*/ String getJobById(Model model,
+    public ResponseEntity<?> getJobById(Model model,
             @RequestHeader(value = "Accept") String acceptHeader,
             @PathVariable("jobId") String jobId) throws IOException {
         
         JobResponse jobResponse = jobResponseService.getJobResponseById(jobId);
         logger.info(jobResponse.toString());
         
-        model.addAttribute("message", "Hello World!");
-        return "foo";
+//        model.addAttribute("message", "Hello World!");
+//        return "foo";
 
-//        if (acceptHeader != null && acceptHeader.contains(MediaType.TEXT_HTML_VALUE)) {
-//            // HTML response
-////            ModelAndView modelAndView = new ModelAndView("templateName");
-////            modelAndView.addObject("key", "value");
-////            return modelAndView;
-//            HttpHeaders responseHeaders = new HttpHeaders();
-//            responseHeaders.setContentType(MediaType.TEXT_HTML);
-//            return new ResponseEntity<String>("Ich bin HTML", responseHeaders, HttpStatus.OK);
-//        } else {
-//            // JSON response
-////            return new ModelAndView().addObject("key", "value");
-//            HttpHeaders responseHeaders = new HttpHeaders();
-//            responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-//            return new ResponseEntity<JobResponse>(jobResponse, responseHeaders, HttpStatus.OK);
-//        }        
+        if (acceptHeader != null && acceptHeader.contains(MediaType.TEXT_HTML_VALUE)) {
+            // HTML response
+//            ModelAndView modelAndView = new ModelAndView("templateName");
+//            modelAndView.addObject("key", "value");
+//            return modelAndView;
+            HttpHeaders responseHeaders = new HttpHeaders();
+            responseHeaders.setContentType(MediaType.TEXT_HTML);
+            return new ResponseEntity<String>("Ich bin HTML", responseHeaders, HttpStatus.OK);
+        } else {
+            // JSON response
+//            return new ModelAndView().addObject("key", "value");
+            HttpHeaders responseHeaders = new HttpHeaders();
+            responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+            return new ResponseEntity<JobResponse>(jobResponse, responseHeaders, HttpStatus.OK);
+        }        
     }
 }

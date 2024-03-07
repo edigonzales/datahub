@@ -28,11 +28,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 
 // Wenn hier Exceptions auftreten, wird es weitergereicht und es folgt
-// ein 403er. Falls man was anderes will, muss kann man hier auch
-// einen ExceptionHandler machen. (oder dann ganz vorne bei der 
-// SecurityChain und dem EntryPoint).
-// Geht ExceptionHandler? Oder braucht geht es nur via Dispatcher Servlet?
-// Und nicht in Filter?
+// ein 403er. 
 @Component
 public class DeliveryAuthorizationFilter extends OncePerRequestFilter {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -52,7 +48,7 @@ public class DeliveryAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        logger.info("********* DO DELIVER AUTHORIZATION HERE...");
+        logger.debug("********* DO DELIVER AUTHORIZATION HERE...");
         
         HttpServletRequest servletRequest = (HttpServletRequest) request;
         String themeName = servletRequest.getParameter("theme");

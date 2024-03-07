@@ -33,7 +33,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 // DISABLE
 //@Component
-public class TokenAuthorizationFilter extends OncePerRequestFilter {
+public class TokenAuthorizationFilter1 extends OncePerRequestFilter {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Value("${app.dbSchema}")
@@ -46,7 +46,7 @@ public class TokenAuthorizationFilter extends OncePerRequestFilter {
     
     private PasswordEncoder encoder;
     
-    public TokenAuthorizationFilter(ObjectContext objectContext, PasswordEncoder encoder) {
+    public TokenAuthorizationFilter1(ObjectContext objectContext, PasswordEncoder encoder) {
         this.objectContext = objectContext;
         this.encoder = encoder;
     }
