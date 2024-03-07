@@ -78,6 +78,8 @@ public class WebSecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                
+                // Eventuell logs excluden. Kommt darauf an, wie gut das mit dem GUI funktioniert.
                 .securityMatcher("/api/**", "/protected/**")
 //                .formLogin(AbstractHttpConfigurer::disable)
 //                .formLogin(form -> form
