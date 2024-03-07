@@ -3,13 +3,13 @@
 ## Testrequests
 
 ```
-curl -i -X GET --header "X-API-KEY:2f3eb7b7-ecd3-4d5a-8074-4dae317368dc" http://localhost:8080/protected/hello
+curl -i -X GET --header "X-API-KEY:c0bb04eb-789b-4063-95ad-bd86a06c6aff" http://localhost:8080/protected/hello
 ```
 
 
 Admin:
 ```
-curl -i -X POST --header "X-API-KEY:2f3eb7b7-ecd3-4d5a-8074-4dae317368dc" -F 'organisation=W+H AG' http://localhost:8080/api/v1/key
+curl -i -X POST --header "X-API-KEY:c0bb04eb-789b-4063-95ad-bd86a06c6aff" -F 'organisation=W+H AG' http://localhost:8080/api/v1/key
 
 ```
 
