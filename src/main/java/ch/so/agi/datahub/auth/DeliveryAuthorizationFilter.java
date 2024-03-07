@@ -55,7 +55,7 @@ public class DeliveryAuthorizationFilter extends OncePerRequestFilter {
         String operatName = servletRequest.getParameter("operat");
         
         if (themeName == null || operatName == null) {
-            logger.error("theme or operat parameter is missing");
+            logger.error("theme or operate parameter is missing");
             
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -83,18 +83,18 @@ FROM
     LEFT JOIN %s.core_theme AS th 
     ON th.t_id = op.theme_r 
 WHERE 
-    org.aname = '$orgname'
+    org.aname = '$organisation_name'
     AND 
-    op.aname = '$opname'
+    op.aname = '$operat_name'
     AND 
-    th.aname = '$thname'
+    th.aname = '$theme_name'
                 """.formatted(dbSchema, dbSchema, dbSchema, dbSchema);
         
         DataRow result = SQLSelect
                 .dataRowQuery(stmt)
-                .param("orgname", orgName)
-                .param("opname", operatName)
-                .param("thname", themeName)
+                .param("organisation_name", orgName)
+                .param("operat_name", operatName)
+                .param("theme_name", themeName)
                 .selectOne(objectContext);
 
         logger.debug("DataRow: {}", result);

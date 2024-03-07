@@ -30,6 +30,16 @@ curl -i -X DELETE --header "X-API-KEY:fda5f71f-8875-4d4a-af0c-87d9ba2832b6" http
 ```
 curl -i -X POST --header "X-API-KEY:fda5f71f-8875-4d4a-af0c-87d9ba2832b6" -F 'file=@Aeschi_LKMap_Wasser.xtf' -F 'theme=LKMAP_2015' -F 'operat=2511_was' http://localhost:8080/api/v1/deliveries
 ```
+
+```
+curl -i -X GET --header "X-API-KEY:fda5f71f-8875-4d4a-af0c-87d9ba2832b6" http://localhost:8080/api/v1/jobs/967e96d0-1e6a-4c22-b7dd-6e08de0c7aa1
+```
+
+```
+curl -i -X GET --header "X-API-KEY:fda5f71f-8875-4d4a-af0c-87d9ba2832b6" http://localhost:8080/api/v1/logs/967e96d0-1e6a-4c22-b7dd-6e08de0c7aa1
+```
+
+
 ```
 curl -i -X GET --header 'Accept: application/json' --header "X-API-KEY:f3f65344-c909-4615-a2ea-7a05f7e27fbf" http://localhost:8080/api/v1/jobs/0ecc0cd7-204e-4380-961b-a4b198f13675
 ```

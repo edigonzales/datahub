@@ -63,9 +63,6 @@ public class ApiKeyHeaderAuthenticationFilter extends OncePerRequestFilter {
             // Exception NICHT im Sinne von nicht-authentifiziert, sondern beim Authentifizieren
             // ist was schief gelaufen.
             e.printStackTrace();
-            logger.error(e.getMessage());
-            logger.error("Api Key Authentication failed");
-            logger.error(HttpStatus.UNAUTHORIZED.toString());
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             // If you want to immediatelly return an error response, you can do it like this:
             response.sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());

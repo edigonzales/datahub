@@ -56,11 +56,11 @@ public class DeliveryService {
         // Validate file.
         Resource resource = filesStorageService.load(fileName, jobId, folderPrefix, workDirectory);        
         File transferFile = resource.getFile();
-        logger.debug(transferFile.getAbsolutePath().toString());
+        logger.debug("<{}> transfer file: {}", jobId, transferFile.getAbsolutePath().toString());
         
-        File logFile = Paths.get(transferFile.getAbsoluteFile().getParent(), transferFile.getName() + ".log").toFile();
+        File logFile = Paths.get(transferFile.getAbsoluteFile().getParent(), jobId + ".log").toFile();
         String logFileName = logFile.getAbsolutePath();                
-        logger.debug(logFileName);
+        logger.debug("<{}> log file name: {}", jobId, logFileName);
         
         Settings settings = new Settings();
         settings.setValue(Validator.SETTING_LOGFILE, logFileName);

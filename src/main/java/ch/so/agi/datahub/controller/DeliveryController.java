@@ -100,11 +100,11 @@ public class DeliveryController {
         String jobId = jobIdUuid.toString();
   
         // Get the operat/theme information we gathered in the authorization filter
-        DataRow operatDeliveryInfo = (DataRow) request.getAttribute(AppConstants.ATTRIBUTE_OPERAT_DELIVERY_INFO);
+        DataRow operateDeliveryInfo = (DataRow) request.getAttribute(AppConstants.ATTRIBUTE_OPERAT_DELIVERY_INFO);
 
         // Normalize file name
         String originalFileName = file.getOriginalFilename();
-        String sanitizedFileName = (String)operatDeliveryInfo.get("operat_name") + ".xtf";
+        String sanitizedFileName = (String)operateDeliveryInfo.get("operat_name") + ".xtf";
 
         // Daten speichern
         filesStorageService.save(file.getInputStream(), sanitizedFileName, jobId, folderPrefix, workDirectory);
@@ -115,7 +115,7 @@ public class DeliveryController {
         // Falls aber das Queuen failed, müsste man die DB manuell nachführen.
         
         // Die Delivery-Tabellen nachführen.
-        long operatTid = (Long)operatDeliveryInfo.get("operat_tid");
+        long operatTid = (Long)operateDeliveryInfo.get("operat_tid");
         
         CoreOperat coreOperat = SelectById.query(CoreOperat.class, operatTid).selectOne(objectContext);
         
@@ -129,8 +129,8 @@ public class DeliveryController {
         deliveriesDelivery.setDeliverydate(LocalDateTime.now());
         deliveriesDelivery.setCoreOperat(coreOperat);
         
-        // TODO
         // Wird bereits im ApiKeyHeaderAuthenticationService ermittelt. 
+        // Synergien?
         List<CoreApikey> apiKeys = ObjectSelect.query(CoreApikey.class)
                 .where(CoreApikey.REVOKEDAT.isNull())
                 .and(CoreApikey.DATEOFEXPIRY.gt(LocalDateTime.now()).orExp(CoreApikey.DATEOFEXPIRY.isNull()))
@@ -147,8 +147,8 @@ public class DeliveryController {
 
         // Validierungsjob in Jobrunr queuen.
         // Jobrunr kann nicht mit null Strings umgehen.
-        String validatorConfig = operatDeliveryInfo.get("config")!=null?(String)operatDeliveryInfo.get("config"):""; 
-        String validatorMetaConfig = operatDeliveryInfo.get("metaconfig")!=null?(String)operatDeliveryInfo.get("metaconfig"):"";
+        String validatorConfig = operateDeliveryInfo.get("config")!=null?(String)operateDeliveryInfo.get("config"):""; 
+        String validatorMetaConfig = operateDeliveryInfo.get("metaconfig")!=null?(String)operateDeliveryInfo.get("metaconfig"):"";
                         
         jobScheduler.enqueue(jobIdUuid, () -> deliveryService.deliver(JobContext.Null, theme, sanitizedFileName,
                 validatorConfig, validatorMetaConfig));
@@ -164,7 +164,7 @@ public class DeliveryController {
     }
     
     @ExceptionHandler({Exception.class, RuntimeException.class})
-    public ResponseEntity<?> databaseError(Exception e) {
+    public ResponseEntity<?> error(Exception e) {
         logger.error("<{}>", e.getMessage());
         return ResponseEntity
                 .internalServerError()

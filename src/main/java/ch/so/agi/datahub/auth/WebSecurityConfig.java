@@ -85,13 +85,12 @@ public class WebSecurityConfig {
 //                        .permitAll())
 //                .addFilter(authenticationFilter())
 //                .formLogin(withDefaults())
-                
-                // permitAll() isn't the same as no security and skip all filters
-                // D.h. der ApiKeyHeaderAuthenticationFilter wird trotzdem ausgeführt.
-//                .authorizeHttpRequests(registry -> registry
-//                        .requestMatchers(AntPathRequestMatcher.antMatcher("/public/**")).permitAll()
-//                        .anyRequest().authenticated()
-//                )
+                .authorizeHttpRequests(registry -> registry
+                        // permitAll() isn't the same as no security and skip all filters
+                        // D.h. der ApiKeyHeaderAuthenticationFilter wird trotzdem ausgeführt.
+                        //.requestMatchers(AntPathRequestMatcher.antMatcher("/public/**")).permitAll()
+                        .anyRequest().authenticated()
+                )
                 .addFilterBefore(new ApiKeyHeaderAuthenticationFilter(authenticationManager(), apiKeyHeaderName), LogoutFilter.class)
                 
                 // Überschreibt auch Weiterleitung zu Default-Login-Seite, falls
