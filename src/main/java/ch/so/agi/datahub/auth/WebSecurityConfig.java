@@ -80,7 +80,7 @@ public class WebSecurityConfig {
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 
                 // Eventuell logs excluden. Kommt darauf an, wie gut das mit dem GUI funktioniert.
-                .securityMatcher("/api/**", "/protected/**")
+                .securityMatcher("/api/v1/keys/**", "/api/v1/deliveries/**", "/api/v1/jobs/**", "/protected/**")
 //                .formLogin(AbstractHttpConfigurer::disable)
 //                .formLogin(form -> form
 //                        .loginPage("/login")

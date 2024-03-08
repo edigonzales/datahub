@@ -17,13 +17,13 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 
 import ch.so.agi.datahub.cayenne.CoreApikey;
 
-public class ApiKeyAuthenticationManager1 implements AuthenticationManager {
+public class ApiKeyAuthenticationManager_1 implements AuthenticationManager {
     
     private ObjectContext objectContext;
     
     private PasswordEncoder encoder;
     
-    public ApiKeyAuthenticationManager1(ObjectContext objectContext, PasswordEncoder encoder) {
+    public ApiKeyAuthenticationManager_1(ObjectContext objectContext, PasswordEncoder encoder) {
         this.objectContext = objectContext;
         this.encoder = encoder;
     }

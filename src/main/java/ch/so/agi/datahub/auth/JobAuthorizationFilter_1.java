@@ -29,7 +29,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 // DISABLE
 //@Component
-public class JobAuthorizationFilter extends OncePerRequestFilter {
+public class JobAuthorizationFilter_1 extends OncePerRequestFilter {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     
     private final static String JOB_PATH_ELE = "jobs";
@@ -41,7 +41,7 @@ public class JobAuthorizationFilter extends OncePerRequestFilter {
 
     private ObjectMapper mapper;
     
-    public JobAuthorizationFilter(ObjectContext objectContext, ObjectMapper mapper) {
+    public JobAuthorizationFilter_1(ObjectContext objectContext, ObjectMapper mapper) {
         this.objectContext = objectContext;
         this.mapper = mapper;
     }

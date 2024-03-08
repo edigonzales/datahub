@@ -5,11 +5,11 @@ import org.springframework.security.web.context.RequestAttributeSecurityContextR
 
 import jakarta.servlet.http.HttpServletRequest;
 
-public class ApiKeyAuthFilter1 extends AbstractPreAuthenticatedProcessingFilter {
+public class ApiKeyAuthFilter_1 extends AbstractPreAuthenticatedProcessingFilter {
 
     private final String headerName;
 
-    public ApiKeyAuthFilter1(final String headerName) {
+    public ApiKeyAuthFilter_1(final String headerName) {
         this.headerName = headerName;
         
         // AbstractPreAuthenticatedProcessingFilter speichert SecurityContext in einer Session.
