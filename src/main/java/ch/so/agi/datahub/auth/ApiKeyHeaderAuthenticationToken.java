@@ -7,7 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 public class ApiKeyHeaderAuthenticationToken implements Authentication {
     private boolean isAuthenticated;
-    private AppUser userDetails;
+    private ApiKeyUser userDetails;
 
     private final String apiKey;
 
@@ -17,7 +17,7 @@ public class ApiKeyHeaderAuthenticationToken implements Authentication {
     }
 
     // Constructor to be used after successful authentication
-    public ApiKeyHeaderAuthenticationToken(String apiKey, AppUser userDetails) {
+    public ApiKeyHeaderAuthenticationToken(String apiKey, ApiKeyUser userDetails) {
         this.apiKey = apiKey;
         this.userDetails = userDetails;
         this.isAuthenticated = true;

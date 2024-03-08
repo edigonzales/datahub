@@ -5,7 +5,7 @@ import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-public class AppUser implements UserDetails {
+public class ApiKeyUser implements UserDetails {
     private String username;
       
     private String password;
@@ -14,7 +14,7 @@ public class AppUser implements UserDetails {
     
     //private String type = "user";
 
-    public AppUser(String username) {
+    public ApiKeyUser(String username) {
         this.username = username;
     }
     

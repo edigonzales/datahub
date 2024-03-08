@@ -42,7 +42,7 @@ public class ApiKeyHeaderAuthenticationService {
         }
 
         if (apiKeys.size() > 0 && myApiKey != null) {
-            AppUser authenticatedUser = new AppUser(myApiKey.getCoreOrganisation().getAname());
+            ApiKeyUser authenticatedUser = new ApiKeyUser(myApiKey.getCoreOrganisation().getAname());
             
             List<GrantedAuthority> grants = new ArrayList<GrantedAuthority>();
             grants.add(new SimpleGrantedAuthority(myApiKey.getCoreOrganisation().getArole()));
