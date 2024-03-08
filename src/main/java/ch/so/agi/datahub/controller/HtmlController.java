@@ -13,9 +13,16 @@ public class HtmlController {
         return "foo";
     }
 
-    @GetMapping("/login")
-    String login() {
-        return "login";
+//    @GetMapping("/login")
+//    public String login() {
+//        return "login";
+//    }
+
+    
+    @GetMapping("/web/foo")
+    public String foo(Model model) {
+        model.addAttribute("message", "Hello World!");
+        return "foo";
     }
 
 

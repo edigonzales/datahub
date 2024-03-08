@@ -58,7 +58,13 @@ public class ApiKeyHeaderAuthenticationFilter extends OncePerRequestFilter {
         try {
             Authentication authentication = this.authenticationManager.authenticate(new ApiKeyHeaderAuthenticationToken(apiKey));
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            filterChain.doFilter(request, response);
+            filterChain.doFilter(request, response);                
+
+            // Falls es eine zweite Security Chain gibt, die die gleiche den gleichen
+            // Security Matcher hat, wird der unauthentifizerte Request in der
+            // zweiten Chain auch behandelt und z.B. auf eine Login-Seite verwiesen.
+            // Das wäre dann wahrscheinlich nicht gewünscht. Man müsste hier bereits
+            // abbrechen: "if/else isAuthenticated".
         } catch (Exception e) {
             // Exception NICHT im Sinne von nicht-authentifiziert, sondern beim Authentifizieren
             // ist was schief gelaufen.
@@ -69,8 +75,5 @@ public class ApiKeyHeaderAuthenticationFilter extends OncePerRequestFilter {
             // but you can also just let the request go on and let the next filter handle it
             //filterChain.doFilter(request, response);
         }
-
-
     }
-
 }
