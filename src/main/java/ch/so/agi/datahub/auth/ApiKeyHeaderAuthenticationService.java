@@ -32,7 +32,7 @@ public class ApiKeyHeaderAuthenticationService {
                 .select(objectContext);
 
         // Weil das Passwort randommässig gesalted wird, muss man die matches-Funktion verwenden und
-        // kann nicht den Plaintext-Key nochmals encoden und mit der DB vergleichen.
+        // kann nicht den Plaintext-Key nochmals encoden und mit der DB mittels SQL vergleichen.
         CoreApikey myApiKey = null;
         for (CoreApikey apiKey : apiKeys) {
             if (encoder.matches(apiKeyAuthenticationToken.getApiKey(), apiKey.getApikey())) {
