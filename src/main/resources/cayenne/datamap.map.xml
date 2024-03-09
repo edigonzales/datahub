@@ -4,7 +4,7 @@
 	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
 	 project-version="10">
 	<property name="defaultPackage" value="ch.so.agi.datahub.cayenne"/>
-	<db-entity name="core_apikey" schema="agi_datahub_v2">
+	<db-entity name="core_apikey" schema="agi_datahub_v1">
 		<db-attribute name="apikey" type="VARCHAR" isMandatory="true" length="256"/>
 		<db-attribute name="createdat" type="TIMESTAMP" isMandatory="true" length="29"/>
 		<db-attribute name="dateofexpiry" type="TIMESTAMP" length="29"/>
@@ -12,33 +12,33 @@
 		<db-attribute name="revokedat" type="TIMESTAMP" length="29"/>
 		<db-attribute name="t_id" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="19"/>
 	</db-entity>
-	<db-entity name="core_operat" schema="agi_datahub_v2">
+	<db-entity name="core_operat" schema="agi_datahub_v1">
 		<db-attribute name="aname" type="VARCHAR" isMandatory="true" length="512"/>
 		<db-attribute name="organisation_r" type="BIGINT" isMandatory="true" length="19"/>
 		<db-attribute name="t_id" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="19"/>
 		<db-attribute name="theme_r" type="BIGINT" isMandatory="true" length="19"/>
 	</db-entity>
-	<db-entity name="core_organisation" schema="agi_datahub_v2">
+	<db-entity name="core_organisation" schema="agi_datahub_v1">
 		<db-attribute name="aname" type="VARCHAR" isMandatory="true" length="512"/>
 		<db-attribute name="arole" type="VARCHAR" length="20"/>
 		<db-attribute name="auid" type="VARCHAR" length="15"/>
 		<db-attribute name="email" type="VARCHAR" isMandatory="true" length="512"/>
 		<db-attribute name="t_id" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="19"/>
 	</db-entity>
-	<db-entity name="core_theme" schema="agi_datahub_v2">
+	<db-entity name="core_theme" schema="agi_datahub_v1">
 		<db-attribute name="aname" type="VARCHAR" isMandatory="true" length="20"/>
 		<db-attribute name="config" type="VARCHAR" length="512"/>
 		<db-attribute name="metaconfig" type="VARCHAR" length="512"/>
 		<db-attribute name="t_id" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="19"/>
 	</db-entity>
-	<db-entity name="deliveries_asset" schema="agi_datahub_v2">
+	<db-entity name="deliveries_asset" schema="agi_datahub_v1">
 		<db-attribute name="atype" type="VARCHAR" isMandatory="true" length="255"/>
 		<db-attribute name="delivery_r" type="BIGINT" isMandatory="true" length="19"/>
 		<db-attribute name="originalfilename" type="VARCHAR" isMandatory="true" length="2048"/>
 		<db-attribute name="sanitizedfilename" type="VARCHAR" length="2048"/>
 		<db-attribute name="t_id" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="19"/>
 	</db-entity>
-	<db-entity name="deliveries_delivery" schema="agi_datahub_v2">
+	<db-entity name="deliveries_delivery" schema="agi_datahub_v1">
 		<db-attribute name="apikey_r" type="BIGINT" isMandatory="true" length="19"/>
 		<db-attribute name="delivered" type="BIT" length="1"/>
 		<db-attribute name="deliverydate" type="TIMESTAMP" isMandatory="true" length="29"/>

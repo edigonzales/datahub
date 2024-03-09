@@ -32,11 +32,11 @@ curl -i -X POST --header "X-API-KEY:fda5f71f-8875-4d4a-af0c-87d9ba2832b6" -F 'fi
 ```
 
 ```
-curl -i -X GET --header "X-API-KEY:fda5f71f-8875-4d4a-af0c-87d9ba2832b6" http://localhost:8080/api/v1/jobs/cc191a7d-92f7-49ef-b87c-f5cdf0ed7b28
+curl -i -X GET --header "X-API-KEY:fda5f71f-8875-4d4a-af0c-87d9ba2832b6" http://localhost:8080/api/v1/jobs/010a0db3-821a-41a2-8059-83d9aaa2258b
 ```
 
 ```
-curl -i -X GET --header "X-API-KEY:fda5f71f-8875-4d4a-af0c-87d9ba2832b6" http://localhost:8080/api/v1/logs/cc191a7d-92f7-49ef-b87c-f5cdf0ed7b28
+curl -i -X GET --header "X-API-KEY:fda5f71f-8875-4d4a-af0c-87d9ba2832b6" http://localhost:8080/api/v1/logs/010a0db3-821a-41a2-8059-83d9aaa2258b
 ```
 
 
@@ -152,7 +152,7 @@ java -jar /Users/stefan/apps/ili2pg-5.1.0/ili2pg-5.1.0.jar --dbhost localhost --
 ```
 
 ```
-java -jar /Users/stefan/apps/ili2pg-5.1.0/ili2pg-5.1.0.jar --dbhost localhost --dbport 54321 --dbdatabase edit --dbusr postgres --dbpwd secret --defaultSrsCode 2056 --createGeomIdx  --createFk --createFkIdx --createEnumTabs --createMetaInfo --nameByTopic --strokeArcs --createUnique --createNumChecks --createTextChecks --createDateTimeChecks --createImportTabs --createUnique --dbschema agi_datahub_v2 --models "SO_AGI_Datahub_20240301" --modeldir "https://models.geo.admin.ch;ili/" --doSchemaImport --import datahub_key_with_data.xtf
+java -jar /Users/stefan/apps/ili2pg-5.1.0/ili2pg-5.1.0.jar --dbhost localhost --dbport 54321 --dbdatabase edit --dbusr postgres --dbpwd secret --defaultSrsCode 2056 --createGeomIdx  --createFk --createFkIdx --createEnumTabs --createMetaInfo --nameByTopic --strokeArcs --createUnique --createNumChecks --createTextChecks --createDateTimeChecks --createImportTabs --createUnique --dbschema agi_datahub_v1 --models "SO_AGI_Datahub_20240301" --modeldir "https://models.geo.admin.ch;ili/" --doSchemaImport --import datahub_key_with_data.xtf
 ```
 
 ```
