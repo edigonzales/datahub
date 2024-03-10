@@ -31,7 +31,7 @@ public class JobController {
     }
     
     @GetMapping(path = "/api/v1/jobs")
-    public ResponseEntity<?> getJobs(Authentication authentication) {
+    public ResponseEntity<?> getJobsApi(Authentication authentication) {
         List<JobResponse> jobResponseList = jobResponseService.getJobsByOrg(authentication.getName());
         
         if (jobResponseList.size() == 0) {
@@ -41,6 +41,23 @@ public class JobController {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<List<JobResponse>>(jobResponseList, responseHeaders, HttpStatus.OK);
+    }
+        
+    @GetMapping(path = "/web/jobs")
+    public String getJobsWeb(Authentication authentication, Model model) {
+        List<JobResponse> jobResponseList = jobResponseService.getJobsByOrg(authentication.getName());
+        
+//        if (jobResponseList.size() == 0) {
+//            return new ResponseEntity<List<JobResponse>>(null, null, HttpStatus.NO_CONTENT);
+//        }
+        
+        model.addAttribute("message", "Hello World!");
+        return "jobs";
+
+        
+//        HttpHeaders responseHeaders = new HttpHeaders();
+//        responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+//        return new ResponseEntity<List<JobResponse>>(jobResponseList, responseHeaders, HttpStatus.OK);
     }
     
     
