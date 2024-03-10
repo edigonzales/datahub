@@ -84,6 +84,13 @@ public class DeliveryService {
         boolean delivered;
         // TODO: nicht sicher, ob man das so will. Resp. für den Datenlieferanten ist nach Validierung fertig.
         // D.h. er kann nichts dafür, wenn es beim Kopieren einen Fehler gibt.
+        
+        //TODO: S3, damit später einfach gelöscht werden kann beim Import durch GRETL.
+        // use qualifier for storageServices.
+        // Siehe Spring Cloud für s3 upload, falls es was bringt.
+        // Andi fragen, ob GRETL-Jenkins auf ein gemeinsames Volume zugreifen kann?
+        
+        
         try {
             filesStorageService.save(new FileInputStream(transferFile), transferFile.getName(), theme, null, targetDirectory);            
             filesStorageService.save(new FileInputStream(new File(logFileName)), transferFile.getName()+".log", theme, null, targetDirectory);            
