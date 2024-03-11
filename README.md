@@ -9,11 +9,41 @@ curl -i -X GET --header "X-API-KEY:c0bb04eb-789b-4063-95ad-bd86a06c6aff" http://
 
 Admin:
 ```
-curl -i -X POST --header "X-API-KEY:c0bb04eb-789b-4063-95ad-bd86a06c6aff" -F 'organisation=W+H AG' http://localhost:8080/api/v1/key
+curl -i -X POST --header "X-API-KEY:c0bb04eb-789b-4063-95ad-bd86a06c6aff" -F 'organisation=W+H AG' http://localhost:8080/api/v1/keys
+```
 
+```
+curl -i -X POST --header "X-API-KEY:c0bb04eb-789b-4063-95ad-bd86a06c6aff" -F 'organisation=SWG' http://localhost:8080/api/v1/keys
+```
+
+```
+curl -i -X POST --header "X-API-KEY:c0bb04eb-789b-4063-95ad-bd86a06c6aff" -F 'organisation=Märki AG' http://localhost:8080/api/v1/keys
+```
+
+Märki AG:
+```
+curl -i -X GET --header "X-API-KEY:ca20e14c-faa7-4920-b0a5-c5a44476d80c" http://localhost:8080/protected/hello
+```
+
+```
+curl -i -X POST --header "X-API-KEY:ca20e14c-faa7-4920-b0a5-c5a44476d80c" -F 'file=@2471.xtf' -F 'theme=IPW_2020' -F 'operat=2471' http://localhost:8080/api/v1/deliveries
+```
+
+```
+curl -i -X POST --header "X-API-KEY:ca20e14c-faa7-4920-b0a5-c5a44476d80c" -F 'file=@2622_gep.xtf' -F 'theme=IPW_2020' -F 'operat=2622' http://localhost:8080/api/v1/deliveries
 ```
 
 
+
+
+SWG:
+```
+curl -i -X GET --header "X-API-KEY:ab539116-210a-4ebf-ab9f-ee8786957fb6" http://localhost:8080/protected/hello
+```
+
+```
+curl -i -X POST --header "X-API-KEY:ab539116-210a-4ebf-ab9f-ee8786957fb6" -F 'file=@Grenchen_LKMap_wasser.xtf' -F 'theme=LKMAP_2015' -F 'operat=2546_was' http://localhost:8080/api/v1/deliveries
+```
 
 
 W+H AG:
@@ -148,7 +178,7 @@ java -jar /Users/stefan/Downloads/ili2pg-4.9.1.jar --dbhost localhost --dbport 5
 ili2pg 5.1.0
 
 ```
-java -jar /Users/stefan/apps/ili2pg-5.1.0/ili2pg-5.1.0.jar --dbhost localhost --dbport 54321 --dbdatabase edit --dbusr postgres --dbpwd secret --defaultSrsCode 2056 --createGeomIdx  --createFk --createFkIdx --createEnumTabs --createMetaInfo --nameByTopic --strokeArcs --createUnique --createNumChecks --createTextChecks --createDateTimeChecks --createImportTabs --createUnique --dbschema agi_datahub_v2 --models "SO_AGI_Datahub_20240301" --modeldir "https://models.geo.admin.ch;ili/" --schemaimport
+java -jar /Users/stefan/apps/ili2pg-5.1.0/ili2pg-5.1.0.jar --dbhost localhost --dbport 54321 --dbdatabase edit --dbusr postgres --dbpwd secret --defaultSrsCode 2056 --createGeomIdx  --createFk --createFkIdx --createEnumTabs --createMetaInfo --nameByTopic --strokeArcs --createUnique --createNumChecks --createTextChecks --createDateTimeChecks --createImportTabs --createUnique --dbschema agi_datahub_v1 --models "SO_AGI_Datahub_20240301" --modeldir "https://models.geo.admin.ch;ili/" --schemaimport
 ```
 
 ```
@@ -156,11 +186,11 @@ java -jar /Users/stefan/apps/ili2pg-5.1.0/ili2pg-5.1.0.jar --dbhost localhost --
 ```
 
 ```
-java -jar /Users/stefan/apps/ili2pg-5.1.0/ili2pg-5.1.0.jar --dbhost localhost --dbport 54321 --dbdatabase edit --dbusr postgres --dbpwd secret --dbschema agi_datahub_v2 --models "SO_AGI_Datahub_20240301" --modeldir "https://models.geo.admin.ch;ili/" --export datahub_key.xtf
+java -jar /Users/stefan/apps/ili2pg-5.1.0/ili2pg-5.1.0.jar --dbhost localhost --dbport 54321 --dbdatabase edit --dbusr postgres --dbpwd secret --dbschema agi_datahub_v1 --models "SO_AGI_Datahub_20240301" --modeldir "https://models.geo.admin.ch;ili/" --export datahub_key.xtf
 ```
 
 ```
-java -jar /Users/stefan/apps/ili2pg-5.1.0/ili2pg-5.1.0.jar --dbhost localhost --dbport 54321 --dbdatabase edit --dbusr postgres --dbpwd secret --dbschema agi_datahub_v2 --models "SO_AGI_Datahub_20240301" --modeldir "https://models.geo.admin.ch;ili/" --export datahub_key_with_data.xtf
+java -jar /Users/stefan/apps/ili2pg-5.1.0/ili2pg-5.1.0.jar --dbhost localhost --dbport 54321 --dbdatabase edit --dbusr postgres --dbpwd secret --dbschema agi_datahub_v1 --models "SO_AGI_Datahub_20240301" --modeldir "https://models.geo.admin.ch;ili/" --export datahub_key_with_data.xtf
 ```
 
 **LDAP-Version**

@@ -1,6 +1,7 @@
 package ch.so.agi.datahub.service;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
@@ -14,9 +15,12 @@ import org.jobrunr.storage.StorageProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import ch.so.agi.datahub.AppConstants;
 import ch.so.agi.datahub.model.JobResponse;
 import ch.so.agi.datahub.model.JobResponse;
 
@@ -40,7 +44,14 @@ public class JobResponseService {
         this.objectContext = objectContext;
     }
     
-    public List<JobResponse> getJobsByOrg(String organisation) {
+    public List<JobResponse> getJobsByOrg(Authentication authentication) {
+        String organisation = null;
+        if(authentication.getAuthorities().contains(new SimpleGrantedAuthority(AppConstants.ROLE_NAME_ADMIN))) {
+            organisation = "%";
+        } else {
+            organisation = authentication.getName();
+        }
+        
         String stmt = """
 WITH queue_position AS 
 (
@@ -54,8 +65,8 @@ WITH queue_position AS
         j.state = 'ENQUEUED'
 )
 SELECT 
-    j.createdat::TEXT AS createdat, 
-    j.updatedat::TEXT AS updatedat,
+    j.createdat AS createdat, 
+    j.updatedat AS updatedat,
     j.state AS status, 
     queue_position.queueposition AS queueposition,
     op.aname AS operat,
@@ -82,9 +93,8 @@ FROM
     ON op.theme_r = th.t_id    
     LEFT JOIN queue_position 
     ON queue_position.id = j.id
-    
 WHERE 
-    org.aname = '$organisation'
+    org.aname LIKE '$organisation'
 ORDER BY
     j.createdat DESC
                 """;
@@ -105,8 +115,8 @@ ORDER BY
                 
         List<JobResponse> jobResponseList = results.stream().map(dr -> {
             JobResponse jobResponse = new JobResponse(
-                    (String)dr.get("createdat"),
-                    (String)dr.get("updatedat"),
+                    dr.get("createdat")!=null?((Date)dr.get("createdat")).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime():null,
+                    dr.get("updatedat")!=null?((Date)dr.get("updatedat")).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime():null,
                     (String)dr.get("status"),
                     (Integer)dr.get("queueposition"),
                     (String)dr.get("operat"),
@@ -124,7 +134,14 @@ ORDER BY
         return jobResponseList;
     }
 
-    public JobResponse getJobResponseById(String jobId, String organisation) {         
+    public JobResponse getJobResponseById(String jobId, Authentication authentication) {            
+        String organisation = null;
+        if(authentication.getAuthorities().contains(new SimpleGrantedAuthority(AppConstants.ROLE_NAME_ADMIN))) {
+            organisation = "%";
+        } else {
+            organisation = authentication.getName();
+        }
+
         String stmt = """
 WITH queue_position AS 
 (
@@ -138,7 +155,7 @@ WITH queue_position AS
         j.state = 'ENQUEUED'
 )
 SELECT 
-    j.createdat::TEXT AS createdat, 
+    j.createdat AS createdat, 
     j.updatedat::TEXT AS updatedat,
     j.state AS status, 
     queue_position.queueposition AS queueposition,
@@ -168,7 +185,7 @@ FROM
     ON queue_position.id = j.id
     
 WHERE 
-    org.aname = '$organisation'
+    org.aname LIKE '$organisation'
 AND 
     j.id = '$job_id'
                 """;
@@ -191,8 +208,8 @@ AND
         }
         
         JobResponse jobResponse = new JobResponse(
-                (String)result.get("createdat"),
-                (String)result.get("updatedat"),
+                result.get("createdat")!=null?((Date)result.get("createdat")).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime():null,
+                result.get("updatedat")!=null?((Date)result.get("updatedat")).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime():null,
                 (String)result.get("status"),
                 (Integer)result.get("queueposition"),
                 (String)result.get("operat"),

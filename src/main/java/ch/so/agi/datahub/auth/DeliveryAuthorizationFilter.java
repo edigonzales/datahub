@@ -65,6 +65,9 @@ public class DeliveryAuthorizationFilter extends OncePerRequestFilter {
             return;
         }
 
+        // TODO: AGI (Admin) darf alles.
+        // Eventuell org filter mit LIKE ersetzen. Nicht ganz feine Art. Aber könnte funktionieren.
+        
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String orgName = authentication.getName();
                  

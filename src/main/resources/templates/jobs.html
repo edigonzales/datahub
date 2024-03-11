@@ -1,12 +1,156 @@
 <!DOCTYPE html>
-<html lang="en"
-    xmlns:th="http://www.thymeleaf.org"
->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Datahub - Jobs</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Datahub - Jobs</title>
+<style>
+    body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        font-size: 14px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    .row-green {
+        background-color: lightgreen;
+    }
+    .row-blue {
+        background-color: lightblue;
+    }
+    .row-yellow {
+        background-color: lightyellow;
+    }
+    .row-enqueued {
+        background-color: #949393;
+    }
+    .row-processing {
+        background-color: #3a70b0;
+    }
+    .row-succeeded {
+        background-color: #8cc04f;
+    }
+    .row-failed {
+        background-color: #d54c53;
+    }
+    
+    
+    
+    
+    @media screen and (max-width: 600px) {
+        table, thead, tbody, th, td, tr {
+            display: block;
+        }
+        thead tr {
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+        }
+        tr {
+            border: 1px solid #ccc;
+        }
+        td {
+            border: none;
+            border-bottom: 1px solid #eee;
+            position: relative;
+            padding-left: 50%;
+        }
+        td:before {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            width: 45%;
+            padding-right: 10px;
+            white-space: nowrap;
+        }
+        td:nth-of-type(1):before { content: "Name"; }
+        td:nth-of-type(2):before { content: "Age"; }
+        td:nth-of-type(3):before { content: "Email"; }
+    }
+</style>
 </head>
+
+
 <body>
+    
+    
+<h2>Responsive Table</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Email</th>
+                <th>Category</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="row, rowStat : ${rows}" th:class="${rowStat.odd}? 'row-green' : ${rowStat.even}? 'row-blue' : 'row-yellow'">
+                <td th:text="${row.name}"></td>
+                <td th:text="${row.age}"></td>
+                <td th:text="${row.email}"></td>
+                <td th:text="${row.category}"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    
     <h2 th:text="${message}">Hello Good Morning!.</h2>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Thema</th>
+                <th>Operat</th>
+                <th>Lieferstatus</th>
+                <th>Validierung</th>
+                <th>Lieferdatum</th>
+                <th>Updatedatum</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            
+            <tr th:each="jobResponse: ${jobResponseList}">                
+                <td th:text="${jobResponse.theme}" />
+                <td th:text="${jobResponse.operat}" />
+                <th:block th:switch="${jobResponse.status}">
+                    <td th:case="'ENQUEUED'">
+                        foo
+                    </td>
+                    <td th:case="'PROCESSING'">
+                        foo2
+                    </td>
+                    <td th:case="'SUCCEEDED'">
+                        foo3
+                    </td>
+                    <td th:case="'FAILED'">
+                        foo4
+                    </td>
+                </th:block>
+                <th:block th:switch="${jobResponse.validationStatus}">
+                    <td th:case="'SUCCEEDED'">
+                        super
+                    </td>
+                    <td th:case="'FAILED'">
+                        schlecht
+                    </td>
+                </th:block>
+                <td th:text="${#temporals.format(jobResponse.createdAt, 'yyyy-MM-dd HH:mm:ss')}" />
+                <td th:text="${#temporals.format(jobResponse.updatedAt, 'yyyy-MM-dd HH:mm:ss')}" />
+            </tr>
+        </tbody>
+    </table>
+    
 </body>
 </html>

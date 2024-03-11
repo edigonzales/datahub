@@ -32,7 +32,7 @@ public class JobController {
     
     @GetMapping(path = "/api/v1/jobs")
     public ResponseEntity<?> getJobsApi(Authentication authentication) {
-        List<JobResponse> jobResponseList = jobResponseService.getJobsByOrg(authentication.getName());
+        List<JobResponse> jobResponseList = jobResponseService.getJobsByOrg(authentication);
         
         if (jobResponseList.size() == 0) {
             return new ResponseEntity<List<JobResponse>>(null, null, HttpStatus.NO_CONTENT);
@@ -45,11 +45,13 @@ public class JobController {
         
     @GetMapping(path = "/web/jobs")
     public String getJobsWeb(Authentication authentication, Model model) {
-        List<JobResponse> jobResponseList = jobResponseService.getJobsByOrg(authentication.getName());
+        List<JobResponse> jobResponseList = jobResponseService.getJobsByOrg(authentication);
         
 //        if (jobResponseList.size() == 0) {
 //            return new ResponseEntity<List<JobResponse>>(null, null, HttpStatus.NO_CONTENT);
 //        }
+        
+        model.addAttribute("jobResponseList", jobResponseList);
         
         model.addAttribute("message", "Hello World!");
         return "jobs";
@@ -67,7 +69,7 @@ public class JobController {
             @RequestHeader(value = "Accept") String acceptHeader,
             @PathVariable("jobId") String jobId) throws IOException {
         
-        JobResponse jobResponse = jobResponseService.getJobResponseById(jobId, authentication.getName());
+        JobResponse jobResponse = jobResponseService.getJobResponseById(jobId, authentication);
 //        logger.info(jobResponse.toString());
         
 //        model.addAttribute("message", "Hello World!");
