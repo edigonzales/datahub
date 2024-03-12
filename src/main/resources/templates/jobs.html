@@ -43,9 +43,82 @@
         background-color: #d54c53;
     }
     
+    a:link {
+        color: rgb(21, 101, 192);
+        text-decoration: none;
+    }
     
+    a:visited {
+        color: rgb(21, 101, 192);
+        text-decoration: none;
+    }
     
+    a:hover {
+        color: rgb(21, 101, 192);
+        text-decoration: underline;
+    }
     
+    a:active {
+        color: rgb(21, 101, 192);
+    }
+
+.black-link {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: black !important;
+}
+
+a.black-link:hover {
+    color: black;
+    text-decoration: underline !important;
+}  
+
+a.black-link:visited {
+    color: black; 
+    text-decoration: underline !important;
+}  
+
+
+    .badge-enqueued {
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: #eaeaea;
+        color: #495057;
+        border-radius: 3px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .badge-processing {
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: #B3E5FC;
+        color: #39698E;
+        border-radius: 3px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .badge-succeeded {
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: #c8e6c9;
+        color: #256029;
+        border-radius: 3px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .badge-failed {
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: #ffcdd2;
+        color: #ca4141;
+        border-radius: 3px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+        
     @media screen and (max-width: 600px) {
         table, thead, tbody, th, td, tr {
             display: block;
@@ -72,80 +145,73 @@
             padding-right: 10px;
             white-space: nowrap;
         }
-        td:nth-of-type(1):before { content: "Name"; }
-        td:nth-of-type(2):before { content: "Age"; }
-        td:nth-of-type(3):before { content: "Email"; }
+        td:nth-of-type(1):before { content: "Organisation"; }
+        td:nth-of-type(2):before { content: "Thema"; }
+        td:nth-of-type(3):before { content: "Operat"; }
+        td:nth-of-type(4):before { content: "Position"; }
+        td:nth-of-type(5):before { content: "Lieferstatus"; }
+        td:nth-of-type(6):before { content: "Validierung"; }
+        td:nth-of-type(7):before { content: "Logdatei"; }
+        td:nth-of-type(8):before { content: "Lieferdatum"; }
+        td:nth-of-type(9):before { content: "Updatedatum"; }
     }
 </style>
 </head>
 
 
 <body>
-    
-    
-<h2>Responsive Table</h2>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Age</th>
-                <th>Email</th>
-                <th>Category</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="row, rowStat : ${rows}" th:class="${rowStat.odd}? 'row-green' : ${rowStat.even}? 'row-blue' : 'row-yellow'">
-                <td th:text="${row.name}"></td>
-                <td th:text="${row.age}"></td>
-                <td th:text="${row.email}"></td>
-                <td th:text="${row.category}"></td>
-            </tr>
-        </tbody>
-    </table>
-
-    
-    <h2 th:text="${message}">Hello Good Morning!.</h2>
+   
+    <h2>Jobs</h2>
     
     <table>
         <thead>
             <tr>
+                <th>Organisation</th>
                 <th>Thema</th>
                 <th>Operat</th>
-                <th>Lieferstatus</th>
+                <th>Position</th>
+                <th>Jobstatus</th>
                 <th>Validierung</th>
+                <th>Logdatei</th>
                 <th>Lieferdatum</th>
                 <th>Updatedatum</th>
             </tr>
         </thead>
 
         <tbody>
-            
             <tr th:each="jobResponse: ${jobResponseList}">                
+                <td th:text="${jobResponse.organisation}" />
                 <td th:text="${jobResponse.theme}" />
                 <td th:text="${jobResponse.operat}" />
+                <td th:text="${jobResponse.queuePosition != null} ? ${jobResponse.queuePosition} : '&nbsp;'" />
                 <th:block th:switch="${jobResponse.status}">
                     <td th:case="'ENQUEUED'">
-                        foo
+                        <div class="badge-enqueued">ENQUEUED</div>
                     </td>
                     <td th:case="'PROCESSING'">
-                        foo2
+                        <div class="badge-processing">PROCESSING</div>
                     </td>
                     <td th:case="'SUCCEEDED'">
-                        foo3
+                        <div class="badge-succeeded">SUCCEEDED</div>
                     </td>
                     <td th:case="'FAILED'">
-                        foo4
+                        <div class="badge-failed">FAILED</div>
                     </td>
                 </th:block>
                 <th:block th:switch="${jobResponse.validationStatus}">
                     <td th:case="'SUCCEEDED'">
-                        super
+                        <div class="badge-succeeded">SUCCEEDED</div>
                     </td>
                     <td th:case="'FAILED'">
-                        schlecht
+                        <div class="badge-failed">FAILED</div>
                     </td>
                 </th:block>
+                <td><a class="black-link" th:href="${jobResponse.logFileLocation}" target="_blank">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-file-text" viewBox="0 0 16 16">
+                        <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5M5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1z"/>
+                        <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1"/>
+                    </svg>
+                </a></td>
                 <td th:text="${#temporals.format(jobResponse.createdAt, 'yyyy-MM-dd HH:mm:ss')}" />
                 <td th:text="${#temporals.format(jobResponse.updatedAt, 'yyyy-MM-dd HH:mm:ss')}" />
             </tr>
