@@ -60,19 +60,16 @@ public class DeliveryController {
     
     private JobScheduler jobScheduler;
     
-    private StorageProvider storageProvider;
-
     private DeliveryService deliveryService;
         
     private ObjectContext objectContext;
     
     private FilesStorageService filesStorageService;
 
-    public DeliveryController(PasswordEncoder encoder, JobScheduler jobScheduler, StorageProvider storageProvider,
-            DeliveryService deliveryService, ObjectContext objectContext, FilesStorageService filesStorageService) {
+    public DeliveryController(PasswordEncoder encoder, JobScheduler jobScheduler, DeliveryService deliveryService,
+            ObjectContext objectContext, FilesStorageService filesStorageService) {
         this.encoder = encoder;
         this.jobScheduler = jobScheduler;
-        this.storageProvider = storageProvider;
         this.deliveryService = deliveryService;
         this.objectContext = objectContext;
         this.filesStorageService = filesStorageService;
@@ -86,25 +83,16 @@ public class DeliveryController {
             @RequestPart(name = "file", required = true) MultipartFile file, 
             HttpServletRequest request) throws Exception {
         
-        logger.info("********* DELIVERY CONTROLLER HERE...");
-        
-       
-        // TODO
-        // - In Service dann die Resultate in die DB schreiben?
-        // - Wann / wie / wohin schreiben für "Publikation". FilesStorageService: save jobId -> (sub)directory
-        // Muss sonst noch was ändern? Ah, WorkDirectory als weitere Parameter, das targetDirectory.
-        // Am besten gleich mit S3 durchspielen, dann muss ich mich beim Interface auch darum kümmern.
-        
         // JobId für Jobrunr
         UUID jobIdUuid = UUID.randomUUID();
         String jobId = jobIdUuid.toString();
   
         // Get the operat/theme information we gathered in the authorization filter
-        DataRow operateDeliveryInfo = (DataRow) request.getAttribute(AppConstants.ATTRIBUTE_OPERAT_DELIVERY_INFO);
+        DataRow operatDeliveryInfo = (DataRow) request.getAttribute(AppConstants.ATTRIBUTE_OPERAT_DELIVERY_INFO);
 
         // Normalize file name
         String originalFileName = file.getOriginalFilename();
-        String sanitizedFileName = (String)operateDeliveryInfo.get("operat_name") + ".xtf";
+        String sanitizedFileName = (String)operatDeliveryInfo.get("operat_name") + ".xtf";
 
         // Daten speichern
         filesStorageService.save(file.getInputStream(), sanitizedFileName, jobId, folderPrefix, workDirectory);
@@ -115,7 +103,7 @@ public class DeliveryController {
         // Falls aber das Queuen failed, müsste man die DB manuell nachführen.
         
         // Die Delivery-Tabellen nachführen.
-        long operatTid = (Long)operateDeliveryInfo.get("operat_tid");
+        long operatTid = (Long)operatDeliveryInfo.get("operat_tid");
         
         CoreOperat coreOperat = SelectById.query(CoreOperat.class, operatTid).selectOne(objectContext);
         
@@ -147,10 +135,12 @@ public class DeliveryController {
 
         // Validierungsjob in Jobrunr queuen.
         // Jobrunr kann nicht mit null Strings umgehen.
-        String validatorConfig = operateDeliveryInfo.get("config")!=null?(String)operateDeliveryInfo.get("config"):""; 
-        String validatorMetaConfig = operateDeliveryInfo.get("metaconfig")!=null?(String)operateDeliveryInfo.get("metaconfig"):"";
+        String validatorConfig = operatDeliveryInfo.get("config")!=null?(String)operatDeliveryInfo.get("config"):""; 
+        String validatorMetaConfig = operatDeliveryInfo.get("metaconfig")!=null?(String)operatDeliveryInfo.get("metaconfig"):"";
+        
+        String email = (String)operatDeliveryInfo.get("email");
                         
-        jobScheduler.enqueue(jobIdUuid, () -> deliveryService.deliver(JobContext.Null, theme, sanitizedFileName,
+        jobScheduler.enqueue(jobIdUuid, () -> deliveryService.deliver(JobContext.Null, email, theme, sanitizedFileName,
                 validatorConfig, validatorMetaConfig));
         logger.info("<{}> Job is being queued for validation.", jobId);
        

@@ -31,6 +31,7 @@ import ch.so.agi.datahub.AppConstants;
 import ch.so.agi.datahub.cayenne.CoreApikey;
 import ch.so.agi.datahub.cayenne.CoreOrganisation;
 import ch.so.agi.datahub.model.GenericResponse;
+import ch.so.agi.datahub.service.EmailService;
 
 @RestController
 public class ApiKeyController {
@@ -39,19 +40,16 @@ public class ApiKeyController {
     @Value("${app.apiKeyHeaderName}")
     private String apiKeyHeaderName;
 
-    @Value("${spring.mail.username}")
-    private String mailUsername;
-
     private ObjectContext objectContext;
     
     private PasswordEncoder encoder;
     
-    private JavaMailSender emailSender;
+    private EmailService emailService;
     
-    public ApiKeyController(ObjectContext objectContext, PasswordEncoder encoder, JavaMailSender emailSender) {
+    public ApiKeyController(ObjectContext objectContext, PasswordEncoder encoder, EmailService emailService) {
         this.objectContext = objectContext;
         this.encoder = encoder;
-        this.emailSender = emailSender;
+        this.emailService = emailService;
     }
     
     @PostMapping(path = "/api/v1/keys")
@@ -61,10 +59,7 @@ public class ApiKeyController {
         // werden.
         // Falls die Organisation selber einen neuen Key braucht, kennt man die zum Request-Key 
         // gehörende Organisation (aus der DB).
-        
-        System.out.println("authentication.getAuthorities(): " + authentication.getAuthorities());
-        
-        
+
         String organisation = null;
         if(authentication.getAuthorities().contains(new SimpleGrantedAuthority(AppConstants.ROLE_NAME_ADMIN))) {
             organisation = organisationParam;
@@ -102,12 +97,7 @@ public class ApiKeyController {
         objectContext.commitChanges();
 
         try {
-            SimpleMailMessage message = new SimpleMailMessage(); 
-            message.setFrom(mailUsername);
-            message.setTo(coreOrganisation.getEmail()); 
-            message.setSubject("datahub: new api key"); 
-            message.setText(apiKey);
-            emailSender.send(message);            
+            emailService.send(coreOrganisation.getEmail(), "datahub: new api key", apiKey);
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
@@ -151,5 +141,4 @@ public class ApiKeyController {
                 .internalServerError()
                 .body("Please contact service provider.");
     }
-
 }

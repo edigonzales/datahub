@@ -68,7 +68,10 @@ SELECT
     d.jobid,
     j.createdat AS createdat, 
     j.updatedat AS updatedat,
-    j.state AS status, 
+    CASE 
+        WHEN state = 'SUCCEEDED' THEN 'SUCCEEDED'
+        ELSE state
+    END as status, 
     queue_position.queueposition AS queueposition,
     op.aname AS operat,
     th.aname AS theme,

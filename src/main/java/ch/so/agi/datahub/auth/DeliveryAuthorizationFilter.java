@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -47,9 +48,7 @@ public class DeliveryAuthorizationFilter extends OncePerRequestFilter {
     
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
-        logger.debug("********* DO DELIVER AUTHORIZATION HERE...");
-        
+            throws ServletException, IOException {        
         HttpServletRequest servletRequest = (HttpServletRequest) request;
         String themeName = servletRequest.getParameter("theme");
         String operatName = servletRequest.getParameter("operat");
@@ -64,17 +63,21 @@ public class DeliveryAuthorizationFilter extends OncePerRequestFilter {
             responseStream.flush();
             return;
         }
-
-        // TODO: AGI (Admin) darf alles.
-        // Eventuell org filter mit LIKE ersetzen. Nicht ganz feine Art. Aber könnte funktionieren.
         
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String orgName = authentication.getName();
+
+        String orgName = null;
+        if(authentication.getAuthorities().contains(new SimpleGrantedAuthority(AppConstants.ROLE_NAME_ADMIN))) {
+            orgName = "%";
+        } else {
+            orgName = authentication.getName();
+        }
                  
         String stmt = """
 SELECT 
     th.t_id AS theme_tid,
     th.aname AS theme_name, 
+    org.email,
     th.config,
     th.metaconfig,
     op.t_id AS operat_tid,
@@ -86,7 +89,7 @@ FROM
     LEFT JOIN %s.core_theme AS th 
     ON th.t_id = op.theme_r 
 WHERE 
-    org.aname = '$organisation_name'
+    org.aname LIKE '$organisation_name'
     AND 
     op.aname = '$operat_name'
     AND 

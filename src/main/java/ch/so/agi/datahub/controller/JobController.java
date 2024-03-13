@@ -15,7 +15,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
 
 import ch.so.agi.datahub.model.JobResponse;
 import ch.so.agi.datahub.service.JobResponseService;
@@ -46,20 +45,8 @@ public class JobController {
     @GetMapping(path = "/web/jobs")
     public String getJobsWeb(Authentication authentication, Model model) {
         List<JobResponse> jobResponseList = jobResponseService.getJobsByOrg(authentication);
-        
-//        if (jobResponseList.size() == 0) {
-//            return new ResponseEntity<List<JobResponse>>(null, null, HttpStatus.NO_CONTENT);
-//        }
-        
         model.addAttribute("jobResponseList", jobResponseList);
-        
-        model.addAttribute("message", "Hello World!");
         return "jobs";
-
-        
-//        HttpHeaders responseHeaders = new HttpHeaders();
-//        responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-//        return new ResponseEntity<List<JobResponse>>(jobResponseList, responseHeaders, HttpStatus.OK);
     }
     
     
@@ -101,10 +88,6 @@ public class JobController {
     public ResponseEntity<?> getJobWebById(Authentication authentication,
             @PathVariable("jobId") String jobId) throws IOException {
         JobResponse jobResponse = jobResponseService.getJobResponseById(jobId, authentication);
-
-        if (jobResponse == null) {
-            return new ResponseEntity<JobResponse>(null, null, HttpStatus.NO_CONTENT);
-        }
         
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setContentType(MediaType.APPLICATION_JSON);

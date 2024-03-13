@@ -40,24 +40,24 @@ public class DeliveryService {
     private FilesStorageService filesStorageService;
     
     private ObjectContext objectContext;
+    
+    private EmailService emailService;
 
-    public DeliveryService(FilesStorageService filesStorageService, ObjectContext objectContext) {
+    public DeliveryService(FilesStorageService filesStorageService, ObjectContext objectContext, EmailService emailService) {
         this.filesStorageService = filesStorageService;
         this.objectContext = objectContext;
+        this.emailService = emailService;
     }
 
     @Job(name = "Delivery", retries=0)
-    public synchronized void deliver(JobContext jobContext, String theme, String fileName, String config, String metaConfig) throws IOException {
-        logger.info("********* DELIVERING SERVICE HERE...");
-        logger.info(jobContext.getJobId().toString());
-                
+    public synchronized void deliver(JobContext jobContext, String email, String theme, String fileName, String config, String metaConfig) throws IOException {                
         String jobId = jobContext.getJobId().toString();
         
-        try {
-            Thread.sleep(120000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Thread.sleep(120000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
         // Validate file.
         Resource resource = filesStorageService.load(fileName, jobId, folderPrefix, workDirectory);        
@@ -90,13 +90,7 @@ public class DeliveryService {
         boolean delivered;
         // TODO: nicht sicher, ob man das so will. Resp. für den Datenlieferanten ist nach Validierung fertig.
         // D.h. er kann nichts dafür, wenn es beim Kopieren einen Fehler gibt.
-        
-        //TODO: S3, damit später einfach gelöscht werden kann beim Import durch GRETL.
-        // use qualifier for storageServices.
-        // Siehe Spring Cloud für s3 upload, falls es was bringt.
-        // Andi fragen, ob GRETL-Jenkins auf ein gemeinsames Volume zugreifen kann?
-        
-        
+         
         try {
             filesStorageService.save(new FileInputStream(transferFile), transferFile.getName(), theme, null, targetDirectory);            
             filesStorageService.save(new FileInputStream(new File(logFileName)), transferFile.getName()+".log", theme, null, targetDirectory);            
@@ -108,6 +102,14 @@ public class DeliveryService {
         // Update tables in database.
         updateDelivery(jobId, valid, delivered, logFile);   
         logger.info("<{}> File delivered", jobId);
+        
+        // Send email to delivery organisation
+        try {
+            emailService.send(email, "datahub; " + jobId, "Validation: " + valid + "\n" + "Delivery: " + delivered);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("<{}> Error while sending email: {}", jobId, e.getMessage());
+        }
     }
     
     private void updateDelivery(String jobId, boolean valid, boolean delivered, File logFile) {

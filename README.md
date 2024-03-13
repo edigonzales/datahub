@@ -20,6 +20,13 @@ curl -i -X POST --header "X-API-KEY:c0bb04eb-789b-4063-95ad-bd86a06c6aff" -F 'or
 curl -i -X POST --header "X-API-KEY:c0bb04eb-789b-4063-95ad-bd86a06c6aff" -F 'organisation=Märki AG' http://localhost:8080/api/v1/keys
 ```
 
+Admin darf beliebige Operate schicken:
+
+```
+curl -i -X POST --header "X-API-KEY:c0bb04eb-789b-4063-95ad-bd86a06c6aff" -F 'file=@Grenchen_LKMap_wasser.xtf' -F 'theme=LKMAP_2015' -F 'operat=2546_was' http://localhost:8080/api/v1/deliveries
+```
+
+
 Märki AG:
 ```
 curl -i -X GET --header "X-API-KEY:ca20e14c-faa7-4920-b0a5-c5a44476d80c" http://localhost:8080/protected/hello
@@ -36,6 +43,9 @@ curl -i -X POST --header "X-API-KEY:ca20e14c-faa7-4920-b0a5-c5a44476d80c" -F 'fi
 
 
 
+
+
+
 SWG:
 ```
 curl -i -X GET --header "X-API-KEY:ab539116-210a-4ebf-ab9f-ee8786957fb6" http://localhost:8080/protected/hello
@@ -45,6 +55,9 @@ curl -i -X GET --header "X-API-KEY:ab539116-210a-4ebf-ab9f-ee8786957fb6" http://
 curl -i -X POST --header "X-API-KEY:ab539116-210a-4ebf-ab9f-ee8786957fb6" -F 'file=@Grenchen_LKMap_wasser.xtf' -F 'theme=LKMAP_2015' -F 'operat=2546_was' http://localhost:8080/api/v1/deliveries
 ```
 
+```
+curl -i -X POST --header "X-API-KEY:ab539116-210a-4ebf-ab9f-ee8786957fb6" -F 'file=@Grenchen_LKMap_wasser_error.xtf' -F 'theme=LKMAP_2015' -F 'operat=2546_was' http://localhost:8080/api/v1/deliveries
+```
 
 W+H AG:
 ```

@@ -21,19 +21,6 @@
     th {
         background-color: #f2f2f2;
     }
-
-    .row-enqueued {
-        background-color: #949393;
-    }
-    .row-processing {
-        background-color: #3a70b0;
-    }
-    .row-succeeded {
-        background-color: #8cc04f;
-    }
-    .row-failed {
-        background-color: #d54c53;
-    }
     
     a:link {
         color: rgb(21, 101, 192);
@@ -162,8 +149,8 @@
         td:nth-of-type(6):before { content: "Validierung"; }
         td:nth-of-type(7):before { content: "Logdatei"; }
         td:nth-of-type(8):before { content: "Lieferdatum"; }
-        td:nth-of-type(9):before { content: "Updatedatum"; }
-        td:nth-of-type(10):before { content: "Job-ID"; }
+        /*td:nth-of-type(9):before { content: "Updatedatum"; }*/
+        td:nth-of-type(9):before { content: "Job-ID"; }
     }
 </style>
 </head>
@@ -183,7 +170,7 @@
                 <th>Validierung</th>
                 <th>Logdatei</th>
                 <th>Lieferdatum</th>
-                <th>Updatedatum</th>
+                <!--<th>Updatedatum</th>-->
                 <th>Job-ID</th>
             </tr>
         </thead>
@@ -194,11 +181,11 @@
                 <td th:text="${jobResponse.theme}" />
                 <td th:text="${jobResponse.operat}" />
                 <td>
-                    <div th:if="${jobResponse.queuePosition != null}">
+                    <span th:if="${jobResponse.queuePosition != null}">
                         <div class="circle">
                             <span class="circle_content" th:text="${jobResponse.queuePosition}"/>
                         </div>   
-                    </div>
+                    </span>
                     &nbsp;
                 </td>
                 <th:block th:switch="${jobResponse.status}">
@@ -209,7 +196,7 @@
                         <div class="badge-processing">PROCESSING</div>
                     </td>
                     <td th:case="'SUCCEEDED'">
-                        <div class="badge-succeeded">DELIVERED</div>
+                        <div class="badge-succeeded">SUCCEEDED</div>
                     </td>
                     <td th:case="'FAILED'">
                         <div class="badge-failed">FAILED</div>
@@ -236,7 +223,7 @@
                     &nbsp;
                 </td>
                 <td th:text="${#temporals.format(jobResponse.createdAt, 'yyyy-MM-dd HH:mm:ss')}" />
-                <td th:text="${#temporals.format(jobResponse.updatedAt, 'yyyy-MM-dd HH:mm:ss')}" />
+                <!--<td th:text="${#temporals.format(jobResponse.updatedAt, 'yyyy-MM-dd HH:mm:ss')}" />-->
                 <td>
                     <a th:href="@{/web/jobs} + '/' + ${jobResponse.jobId}" target="_blank">
                         <span th:text="${jobResponse.jobId}" />
