@@ -10,25 +10,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 @Configuration
-//@EnableMethodSecurity
 public class WebSecurityConfig {
 
     @Value("${app.apiKeyHeaderName}")
@@ -54,19 +45,7 @@ public class WebSecurityConfig {
         registrationBean.addUrlPatterns("/api/v1/deliveries/*");
         return registrationBean;
     }
-    
-    // Braucht es m.E. nicht: Werden alle Jobs angefordert, werden nach der Authentifizierung nur
-    // die Jobs der anfordernden Organisation angezeigt. Wird ein einzelner Job requestet, reicht
-    // momentan die Authentifizerung, da man die Job-ID (UUID) kennen muss.
-//    @Bean
-//    FilterRegistrationBean<JobAuthorizationFilter> jobAuthFilter(JobAuthorizationFilter authorizationFilter) {
-//        FilterRegistrationBean<JobAuthorizationFilter> registrationBean = new FilterRegistrationBean<>();
-//        registrationBean.setFilter(authorizationFilter);
-//        registrationBean.addUrlPatterns("/api/v1/jobs/*");
-//        return registrationBean;
-//    }
-
-        
+            
     @Autowired
     private ApiKeyHeaderAuthenticationService apiKeyHeaderAuthService;
 
@@ -98,7 +77,7 @@ public class WebSecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new ApiKeyHeaderAuthenticationFilter(authenticationManager(), apiKeyHeaderName), LogoutFilter.class)
-                // FIXME Während refactoring ausschalten. 
+                // TODO Machen wir noch was in diese Richtung? 
 //                .exceptionHandling(exceptionHandling ->
 //                    exceptionHandling.authenticationEntryPoint(authEntryPoint)
 //                )
@@ -121,9 +100,8 @@ public class WebSecurityConfig {
             .authenticationProvider(formAuthenticationProvider)
             .formLogin(form -> form
                     .loginPage("/web/login")
-                    // .usernameParameter("phone-number").passwordParameter("password")
                     .loginProcessingUrl("/web/login")
-                    .defaultSuccessUrl("/web/welcome")
+                    .defaultSuccessUrl("/web/jobs")
                     .permitAll()
             )
             .logout(logout -> logout
@@ -132,5 +110,4 @@ public class WebSecurityConfig {
                 );
         return http.build();
     }
- 
 }
