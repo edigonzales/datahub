@@ -170,7 +170,7 @@ a.black-link:visited {
                 <th>Thema</th>
                 <th>Operat</th>
                 <th>Position</th>
-                <th>Jobstatus</th>
+                <th>Lieferung</th>
                 <th>Validierung</th>
                 <th>Logdatei</th>
                 <th>Lieferdatum</th>
@@ -200,10 +200,10 @@ a.black-link:visited {
                 </th:block>
                 <th:block th:switch="${jobResponse.validationStatus}">
                     <td th:case="'SUCCEEDED'">
-                        <div class="badge-succeeded">SUCCEEDED</div>
+                        <div class="badge-succeeded">DONE</div>
                     </td>
                     <td th:case="'FAILED'">
-                        <div class="badge-failed">FAILED</div>
+                        <div class="badge-failed">ERROR</div>
                     </td>
                 </th:block>
                 <td><a class="black-link" th:href="${jobResponse.logFileLocation}" target="_blank">

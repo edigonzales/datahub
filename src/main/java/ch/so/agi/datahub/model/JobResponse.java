@@ -10,7 +10,7 @@ public record JobResponse(
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         String status,
-        Integer queuePosition,
+        Long queuePosition,
         String operat,
         String theme, 
         String organisation,
