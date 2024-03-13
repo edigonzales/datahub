@@ -119,7 +119,7 @@ ORDER BY
                 .param("organisation", organisation)
                 .select(objectContext);
 
-        logger.debug("DataRow: {}", results);
+        logger.trace("DataRow: {}", results);
                 
         List<JobResponse> jobResponseList = results.stream().map(dr -> {
             JobResponse jobResponse = new JobResponse(
