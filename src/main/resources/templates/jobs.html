@@ -222,8 +222,8 @@
                     </a>
                     &nbsp;
                 </td>
-                <td th:text="${#temporals.format(jobResponse.createdAt, 'yyyy-MM-dd HH:mm:ss')}" />
-                <!--<td th:text="${#temporals.format(jobResponse.updatedAt, 'yyyy-MM-dd HH:mm:ss')}" />-->
+                <!--<td th:text="${jobResponse.createdAt}" >dsf</td>-->
+                <td th:text="${#temporals.format(jobResponse.updatedAt, 'yyyy-MM-dd HH:mm:ss')}" />
                 <td>
                     <a th:href="@{/web/jobs} + '/' + ${jobResponse.jobId}" target="_blank">
                         <span th:text="${jobResponse.jobId}" />

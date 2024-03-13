@@ -1,8 +1,10 @@
 package ch.so.agi.datahub.service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -38,7 +40,7 @@ public class JobResponseService {
     private StorageProvider storageProvider;
 
     private ObjectContext objectContext;
-
+    
     public JobResponseService (StorageProvider storageProvider, ObjectContext objectContext) {
         this.storageProvider = storageProvider;
         this.objectContext = objectContext;
@@ -66,8 +68,8 @@ WITH queue_position AS
 )
 SELECT 
     d.jobid,
-    j.createdat AS createdat, 
-    j.updatedat AS updatedat,
+    (j.createdat AT TIME ZONE 'UTC') AT TIME ZONE 'Europe/Zurich' AS createdat,
+    (j.updatedat AT TIME ZONE 'UTC') AT TIME ZONE 'Europe/Zurich' AS updatedat,
     CASE 
         WHEN state = 'SUCCEEDED' THEN 'SUCCEEDED'
         ELSE state
@@ -125,6 +127,7 @@ ORDER BY
             JobResponse jobResponse = new JobResponse(
                     (String)dr.get("jobid"),
                     dr.get("createdat")!=null?((Date)dr.get("createdat")).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime():null,
+                    //null,
                     dr.get("updatedat")!=null?((Date)dr.get("updatedat")).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime():null,
                     (String)dr.get("status"),
                     (Long)dr.get("queueposition"),
@@ -150,6 +153,12 @@ ORDER BY
         } else {
             organisation = authentication.getName();
         }
+        
+        // Ich verstehe nicht ganz, wie Jobrunr das Datum handelt.
+        // Es ist um eine Stunde falsch, aber in der DB hat es keine
+        // Timezone. Via jobrunr-API bekomme ich das richtige DateTime.
+        // Ob meine Lösung nun stimmt, wird sich zeigen. Timezone 
+        // könnte man noch parametrisieren.
 
         String stmt = """
 WITH queue_position AS 
@@ -165,8 +174,8 @@ WITH queue_position AS
 )
 SELECT 
     d.jobid,
-    j.createdat AS createdat, 
-    j.updatedat AS updatedat,
+    (j.createdat AT TIME ZONE 'UTC') AT TIME ZONE 'Europe/Zurich' AS createdat,
+    (j.updatedat AT TIME ZONE 'UTC') AT TIME ZONE 'Europe/Zurich' AS updatedat,
     j.state AS status, 
     queue_position.queueposition AS queueposition,
     op.aname AS operat,
@@ -216,7 +225,7 @@ AND
                 .param("theme_table", dbSchema+".core_theme")
                 .param("organisation", organisation)
                 .selectOne(objectContext);
-        
+               
         if (result == null) {
             return null;
         }

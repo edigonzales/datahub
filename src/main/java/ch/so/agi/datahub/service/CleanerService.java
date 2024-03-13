@@ -38,11 +38,9 @@ public class CleanerService {
     }
 
     @Async("asyncTaskExecutor")
-    @Scheduled(cron="0 */5 * * * *")
+    @Scheduled(cron="0 */30 * * * *")
     //@Scheduled(fixedRate = 1 * 30 * 1000) /* Runs every 30 seconds */
     public void cleanUp() {    
-        System.out.println(new Date().getSeconds());
-        
         long deleteFileAge = 60*60*24;
         log.info("Deleting files from previous delivery runs older than {} [s]...", deleteFileAge);
 

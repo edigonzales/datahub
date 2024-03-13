@@ -1,6 +1,7 @@
 package ch.so.agi.datahub.model;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
