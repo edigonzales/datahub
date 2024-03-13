@@ -64,7 +64,7 @@ public class JobController {
     
     
     @GetMapping(path = "/api/v1/jobs/{jobId}")
-    public ResponseEntity<?> getJobById(Authentication authentication, 
+    public ResponseEntity<?> getJobApiById(Authentication authentication, 
             Model model,
             @RequestHeader(value = "Accept") String acceptHeader,
             @PathVariable("jobId") String jobId) throws IOException {
@@ -95,5 +95,19 @@ public class JobController {
             responseHeaders.setContentType(MediaType.APPLICATION_JSON);
             return new ResponseEntity<JobResponse>(jobResponse, responseHeaders, HttpStatus.OK);
         }        
+    }
+    
+    @GetMapping(path = "/web/jobs/{jobId}")
+    public ResponseEntity<?> getJobWebById(Authentication authentication,
+            @PathVariable("jobId") String jobId) throws IOException {
+        JobResponse jobResponse = jobResponseService.getJobResponseById(jobId, authentication);
+
+        if (jobResponse == null) {
+            return new ResponseEntity<JobResponse>(null, null, HttpStatus.NO_CONTENT);
+        }
+        
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity<JobResponse>(jobResponse, responseHeaders, HttpStatus.OK);
     }
 }

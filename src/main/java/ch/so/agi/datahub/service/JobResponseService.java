@@ -65,6 +65,7 @@ WITH queue_position AS
         j.state = 'ENQUEUED'
 )
 SELECT 
+    d.jobid,
     j.createdat AS createdat, 
     j.updatedat AS updatedat,
     j.state AS status, 
@@ -73,10 +74,14 @@ SELECT
     th.aname AS theme,
     org.aname AS organisation,
     CASE 
-        WHEN isvalid IS TRUE THEN 'SUCCEEDED' 
-        ELSE 'FAILED'
+        WHEN isvalid IS TRUE THEN 'DONE' 
+        WHEN isvalid IS FALSE THEN 'ERROR'
+        ELSE NULL::TEXT
     END AS validationstatus,
-    '$log_file_location' || d.jobid AS logfilelocation,
+    CASE
+        WHEN isvalid IS NOT NULL THEN '$log_file_location' || d.jobid
+        ELSE NULL::TEXT
+    END AS logfilelocation,
     'xtflogfilelocation'::TEXT AS xtflogfilelocation,
     'csvlogfilelocation'::TEXT AS csvlogfilelocation
 FROM 
@@ -115,6 +120,7 @@ ORDER BY
                 
         List<JobResponse> jobResponseList = results.stream().map(dr -> {
             JobResponse jobResponse = new JobResponse(
+                    (String)dr.get("jobid"),
                     dr.get("createdat")!=null?((Date)dr.get("createdat")).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime():null,
                     dr.get("updatedat")!=null?((Date)dr.get("updatedat")).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime():null,
                     (String)dr.get("status"),
@@ -155,18 +161,23 @@ WITH queue_position AS
         j.state = 'ENQUEUED'
 )
 SELECT 
+    d.jobid,
     j.createdat AS createdat, 
-    j.updatedat::TEXT AS updatedat,
+    j.updatedat AS updatedat,
     j.state AS status, 
     queue_position.queueposition AS queueposition,
     op.aname AS operat,
     th.aname AS theme,
     org.aname AS organisation,
     CASE 
-        WHEN isvalid IS TRUE THEN 'SUCCEEDED' 
-        ELSE 'FAILED'
+        WHEN isvalid IS TRUE THEN 'DONE' 
+        WHEN isvalid IS FALSE THEN 'ERROR'
+        ELSE NULL::TEXT
     END AS validationstatus,
-    '$log_file_location' || d.jobid AS logfilelocation,
+    CASE
+        WHEN isvalid IS NOT NULL THEN '$log_file_location' || d.jobid
+        ELSE NULL::TEXT
+    END AS logfilelocation,
     'xtflogfilelocation'::TEXT AS xtflogfilelocation,
     'csvlogfilelocation'::TEXT AS csvlogfilelocation
 FROM 
@@ -208,6 +219,7 @@ AND
         }
         
         JobResponse jobResponse = new JobResponse(
+                (String)result.get("jobid"),
                 result.get("createdat")!=null?((Date)result.get("createdat")).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime():null,
                 result.get("updatedat")!=null?((Date)result.get("updatedat")).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime():null,
                 (String)result.get("status"),

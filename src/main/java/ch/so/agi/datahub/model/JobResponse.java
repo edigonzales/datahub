@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record JobResponse(
+        String jobId,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         String status,

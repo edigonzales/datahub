@@ -52,6 +52,12 @@ public class DeliveryService {
         logger.info(jobContext.getJobId().toString());
                 
         String jobId = jobContext.getJobId().toString();
+        
+        try {
+            Thread.sleep(120000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         // Validate file.
         Resource resource = filesStorageService.load(fileName, jobId, folderPrefix, workDirectory);        
