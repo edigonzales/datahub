@@ -9,21 +9,21 @@ curl -i -X GET --header "X-API-KEY:c0bb04eb-789b-4063-95ad-bd86a06c6aff" http://
 
 Admin:
 ```
-curl -i -X POST --header "X-API-KEY:c0bb04eb-789b-4063-95ad-bd86a06c6aff" -F 'organisation=W+H AG' http://localhost:8080/api/v1/keys
+curl -i -X POST --header "X-API-KEY:c0bb04eb-789b-4063-95ad-bd86a06c6aff" -F 'organisation=W+H AG' http://localhost:8080/api/keys
 ```
 
 ```
-curl -i -X POST --header "X-API-KEY:c0bb04eb-789b-4063-95ad-bd86a06c6aff" -F 'organisation=SWG' http://localhost:8080/api/v1/keys
+curl -i -X POST --header "X-API-KEY:c0bb04eb-789b-4063-95ad-bd86a06c6aff" -F 'organisation=SWG' http://localhost:8080/api/keys
 ```
 
 ```
-curl -i -X POST --header "X-API-KEY:c0bb04eb-789b-4063-95ad-bd86a06c6aff" -F 'organisation=Märki AG' http://localhost:8080/api/v1/keys
+curl -i -X POST --header "X-API-KEY:c0bb04eb-789b-4063-95ad-bd86a06c6aff" -F 'organisation=Märki AG' http://localhost:8080/api/keys
 ```
 
 Admin darf beliebige Operate schicken:
 
 ```
-curl -i -X POST --header "X-API-KEY:c0bb04eb-789b-4063-95ad-bd86a06c6aff" -F 'file=@Grenchen_LKMap_wasser.xtf' -F 'theme=LKMAP_2015' -F 'operat=2546_was' http://localhost:8080/api/v1/deliveries
+curl -i -X POST --header "X-API-KEY:c0bb04eb-789b-4063-95ad-bd86a06c6aff" -F 'file=@Grenchen_LKMap_wasser.xtf' -F 'theme=LKMAP_2015' -F 'operat=2546_was' http://localhost:8080/api/deliveries
 ```
 
 
@@ -33,11 +33,11 @@ curl -i -X GET --header "X-API-KEY:ca20e14c-faa7-4920-b0a5-c5a44476d80c" http://
 ```
 
 ```
-curl -i -X POST --header "X-API-KEY:ca20e14c-faa7-4920-b0a5-c5a44476d80c" -F 'file=@2471.xtf' -F 'theme=IPW_2020' -F 'operat=2471' http://localhost:8080/api/v1/deliveries
+curl -i -X POST --header "X-API-KEY:ca20e14c-faa7-4920-b0a5-c5a44476d80c" -F 'file=@2471.xtf' -F 'theme=IPW_2020' -F 'operat=2471' http://localhost:8080/api/deliveries
 ```
 
 ```
-curl -i -X POST --header "X-API-KEY:ca20e14c-faa7-4920-b0a5-c5a44476d80c" -F 'file=@2622_gep.xtf' -F 'theme=IPW_2020' -F 'operat=2622' http://localhost:8080/api/v1/deliveries
+curl -i -X POST --header "X-API-KEY:ca20e14c-faa7-4920-b0a5-c5a44476d80c" -F 'file=@2622_gep.xtf' -F 'theme=IPW_2020' -F 'operat=2622' http://localhost:8080/api/deliveries
 ```
 
 
@@ -52,11 +52,11 @@ curl -i -X GET --header "X-API-KEY:ab539116-210a-4ebf-ab9f-ee8786957fb6" http://
 ```
 
 ```
-curl -i -X POST --header "X-API-KEY:ab539116-210a-4ebf-ab9f-ee8786957fb6" -F 'file=@Grenchen_LKMap_wasser.xtf' -F 'theme=LKMAP_2015' -F 'operat=2546_was' http://localhost:8080/api/v1/deliveries
+curl -i -X POST --header "X-API-KEY:ab539116-210a-4ebf-ab9f-ee8786957fb6" -F 'file=@Grenchen_LKMap_wasser.xtf' -F 'theme=LKMAP_2015' -F 'operat=2546_was' http://localhost:8080/api/deliveries
 ```
 
 ```
-curl -i -X POST --header "X-API-KEY:ab539116-210a-4ebf-ab9f-ee8786957fb6" -F 'file=@Grenchen_LKMap_wasser_error.xtf' -F 'theme=LKMAP_2015' -F 'operat=2546_was' http://localhost:8080/api/v1/deliveries
+curl -i -X POST --header "X-API-KEY:ab539116-210a-4ebf-ab9f-ee8786957fb6" -F 'file=@Grenchen_LKMap_wasser_error.xtf' -F 'theme=LKMAP_2015' -F 'operat=2546_was' http://localhost:8080/api/deliveries
 ```
 
 W+H AG:
@@ -64,56 +64,56 @@ W+H AG:
 curl -i -X GET --header "X-API-KEY:fda5f71f-8875-4d4a-af0c-87d9ba2832b6" http://localhost:8080/protected/hello
 ```
 ```
-curl -i -X POST --header "X-API-KEY:fda5f71f-8875-4d4a-af0c-87d9ba2832b6" http://localhost:8080/api/v1/keys
+curl -i -X POST --header "X-API-KEY:fda5f71f-8875-4d4a-af0c-87d9ba2832b6" http://localhost:8080/api/keys
 ```
 
 ```
-curl -i -X DELETE --header "X-API-KEY:fda5f71f-8875-4d4a-af0c-87d9ba2832b6" http://localhost:8080/api/v1/keys/e2b76dce-5160-429b-96ec-0c64ed7c5027
+curl -i -X DELETE --header "X-API-KEY:fda5f71f-8875-4d4a-af0c-87d9ba2832b6" http://localhost:8080/api/keys/e2b76dce-5160-429b-96ec-0c64ed7c5027
 ```
 ```
-curl -i -X POST --header "X-API-KEY:fda5f71f-8875-4d4a-af0c-87d9ba2832b6" -F 'file=@Aeschi_LKMap_Wasser.xtf' -F 'theme=LKMAP_2015' -F 'operat=2511_was' http://localhost:8080/api/v1/deliveries
-```
-
-```
-curl -i -X GET --header "X-API-KEY:fda5f71f-8875-4d4a-af0c-87d9ba2832b6" http://localhost:8080/api/v1/jobs/010a0db3-821a-41a2-8059-83d9aaa2258b
+curl -i -X POST --header "X-API-KEY:fda5f71f-8875-4d4a-af0c-87d9ba2832b6" -F 'file=@Aeschi_LKMap_Wasser.xtf' -F 'theme=LKMAP_2015' -F 'operat=2511_was' http://localhost:8080/api/deliveries
 ```
 
 ```
-curl -i -X GET --header "X-API-KEY:fda5f71f-8875-4d4a-af0c-87d9ba2832b6" http://localhost:8080/api/v1/logs/010a0db3-821a-41a2-8059-83d9aaa2258b
+curl -i -X GET --header "X-API-KEY:fda5f71f-8875-4d4a-af0c-87d9ba2832b6" http://localhost:8080/api/jobs/010a0db3-821a-41a2-8059-83d9aaa2258b
 ```
 
-
 ```
-curl -i -X GET --header 'Accept: application/json' --header "X-API-KEY:f3f65344-c909-4615-a2ea-7a05f7e27fbf" http://localhost:8080/api/v1/jobs/0ecc0cd7-204e-4380-961b-a4b198f13675
-```
-```
-curl -i -X GET --header 'Accept: text/html' --header "X-API-KEY:f3f65344-c909-4615-a2ea-7a05f7e27fbf" http://localhost:8080/api/v1/jobs/0ecc0cd7-204e-4380-961b-a4b198f13675
-```
-
-
-
-```
-curl -i -X POST -F 'file=@2549.ch.so.arp.nutzungsplanung.kommunal.xtf' -F 'theme=NPLNF' -F 'operat=2549' -u 'bob:uncle' http://localhost:8080/api/v1/deliveries
+curl -i -X GET --header "X-API-KEY:fda5f71f-8875-4d4a-af0c-87d9ba2832b6" http://localhost:8080/api/logs/010a0db3-821a-41a2-8059-83d9aaa2258b
 ```
 
 
 ```
-curl -i -X POST -F 'file=@2471_gep.xtf' -F 'theme=IPW_2020' -F 'operat=2471' -u 'lisa:aunt' http://localhost:8080/api/v1/deliveries
-```
-
-```
-curl -i -X POST -F 'file=@Aeschi_LKMap_Wasser.xtf' -F 'theme=LKMAP_2015' -F 'operat=2511_was' -u 'hans:cousin' http://localhost:8080/api/v1/deliveries
+curl -i -X GET --header 'Accept: application/json' --header "X-API-KEY:f3f65344-c909-4615-a2ea-7a05f7e27fbf" http://localhost:8080/api/jobs/0ecc0cd7-204e-4380-961b-a4b198f13675
 ```
 ```
-curl -i -X GET -H 'Accept: text/html' -u 'hans:cousin' http://localhost:8080/api/v1/jobs/8bd96c37-65f6-45cb-a284-2cc714bc07c8
-```
-```
-curl -i -X GET -H 'Accept: application/json' -u 'hans:cousin' http://localhost:8080/api/v1/jobs/8bd96c37-65f6-45cb-a284-2cc714bc07c8
+curl -i -X GET --header 'Accept: text/html' --header "X-API-KEY:f3f65344-c909-4615-a2ea-7a05f7e27fbf" http://localhost:8080/api/jobs/0ecc0cd7-204e-4380-961b-a4b198f13675
 ```
 
 
+
 ```
-curl -i -X GET -u 'hans:cousin' http://localhost:8080/api/v1/jobs/8bd96c37-65f6-45cb-a284-2cc714bc07c8
+curl -i -X POST -F 'file=@2549.ch.so.arp.nutzungsplanung.kommunal.xtf' -F 'theme=NPLNF' -F 'operat=2549' -u 'bob:uncle' http://localhost:8080/api/deliveries
+```
+
+
+```
+curl -i -X POST -F 'file=@2471_gep.xtf' -F 'theme=IPW_2020' -F 'operat=2471' -u 'lisa:aunt' http://localhost:8080/api/deliveries
+```
+
+```
+curl -i -X POST -F 'file=@Aeschi_LKMap_Wasser.xtf' -F 'theme=LKMAP_2015' -F 'operat=2511_was' -u 'hans:cousin' http://localhost:8080/api/deliveries
+```
+```
+curl -i -X GET -H 'Accept: text/html' -u 'hans:cousin' http://localhost:8080/api/jobs/8bd96c37-65f6-45cb-a284-2cc714bc07c8
+```
+```
+curl -i -X GET -H 'Accept: application/json' -u 'hans:cousin' http://localhost:8080/api/jobs/8bd96c37-65f6-45cb-a284-2cc714bc07c8
+```
+
+
+```
+curl -i -X GET -u 'hans:cousin' http://localhost:8080/api/jobs/8bd96c37-65f6-45cb-a284-2cc714bc07c8
 ```
 
 ```

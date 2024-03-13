@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import ch.so.agi.datahub.model.JobResponse;
 import ch.so.agi.datahub.service.JobResponseService;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
 public class JobController {
@@ -29,7 +30,7 @@ public class JobController {
         this.jobResponseService = jobResponseService;
     }
     
-    @GetMapping(path = "/api/v1/jobs")
+    @GetMapping(path = "/api/jobs")
     public ResponseEntity<?> getJobsApi(Authentication authentication) {
         List<JobResponse> jobResponseList = jobResponseService.getJobsByOrg(authentication);
         
@@ -43,45 +44,30 @@ public class JobController {
     }
         
     @GetMapping(path = "/web/jobs")
-    public String getJobsWeb(Authentication authentication, Model model) {
+    public String getJobsWeb(Authentication authentication, Model model, HttpServletResponse response) {
         List<JobResponse> jobResponseList = jobResponseService.getJobsByOrg(authentication);
         model.addAttribute("jobResponseList", jobResponseList);
+        
+        response.setHeader("Refresh", "15");
+        
         return "jobs";
     }
     
     
-    @GetMapping(path = "/api/v1/jobs/{jobId}")
+    @GetMapping(path = "/api/jobs/{jobId}")
     public ResponseEntity<?> getJobApiById(Authentication authentication, 
             Model model,
-            @RequestHeader(value = "Accept") String acceptHeader,
+            /*@RequestHeader(value = "Accept") String acceptHeader,*/
             @PathVariable("jobId") String jobId) throws IOException {
-        
         JobResponse jobResponse = jobResponseService.getJobResponseById(jobId, authentication);
-//        logger.info(jobResponse.toString());
-        
-//        model.addAttribute("message", "Hello World!");
-//        return "foo";
-
-        if (acceptHeader != null && acceptHeader.contains(MediaType.TEXT_HTML_VALUE)) {
-            // HTML response
-//            ModelAndView modelAndView = new ModelAndView("templateName");
-//            modelAndView.addObject("key", "value");
-//            return modelAndView;
-            HttpHeaders responseHeaders = new HttpHeaders();
-            responseHeaders.setContentType(MediaType.TEXT_HTML);
-            return new ResponseEntity<String>("Ich bin HTML", responseHeaders, HttpStatus.OK);
-        } else {
-            // JSON response
-//            return new ModelAndView().addObject("key", "value");
             
-            if (jobResponse == null) {
-                return new ResponseEntity<JobResponse>(null, null, HttpStatus.NO_CONTENT);
-            }
+        if (jobResponse == null) {
+            return new ResponseEntity<JobResponse>(null, null, HttpStatus.NO_CONTENT);
+        }
             
-            HttpHeaders responseHeaders = new HttpHeaders();
-            responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-            return new ResponseEntity<JobResponse>(jobResponse, responseHeaders, HttpStatus.OK);
-        }        
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity<JobResponse>(jobResponse, responseHeaders, HttpStatus.OK);
     }
     
     @GetMapping(path = "/web/jobs/{jobId}")

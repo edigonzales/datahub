@@ -40,9 +40,9 @@ public class WebSecurityConfig {
     FilterRegistrationBean<DeliveryAuthorizationFilter> deliveryAuthFilter(DeliveryAuthorizationFilter authorizationFilter) {
         FilterRegistrationBean<DeliveryAuthorizationFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(authorizationFilter);
-        //registrationBean.addUrlPatterns("/api/v1/deliveries/**", "/und_noch_andere/*");
+        //registrationBean.addUrlPatterns("/api/deliveries/**", "/und_noch_andere/*");
         //registrationBean.addUrlPatterns("*");
-        registrationBean.addUrlPatterns("/api/v1/deliveries/*");
+        registrationBean.addUrlPatterns("/api/deliveries/*");
         return registrationBean;
     }
             
@@ -65,7 +65,7 @@ public class WebSecurityConfig {
                 .sessionManagement(sess -> 
                     sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .securityMatcher("/api/v1/keys/**", "/api/v1/deliveries/**", "/api/v1/jobs/**", "/protected/**")
+                .securityMatcher("/api/keys/**", "/api/deliveries/**", "/api/jobs/**", "/protected/**")
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> registry
                         // permitAll() isn't the same as no security and skip all filters

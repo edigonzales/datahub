@@ -44,7 +44,7 @@ public class ApiKeyHeaderAuthenticationFilter extends OncePerRequestFilter {
    
             String requestURI = request.getRequestURI();
             if (requestURI.contains("api") && (requestURI.contains("jobs") || requestURI.contains("log"))) {
-                String redirectURI = requestURI.replace("api/v1/", "web/");                
+                String redirectURI = requestURI.replace("api/", "web/");                
                 response.reset();
                 response.resetBuffer();
                 response.sendRedirect (redirectURI);

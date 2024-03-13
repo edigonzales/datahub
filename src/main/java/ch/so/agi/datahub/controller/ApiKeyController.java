@@ -46,7 +46,7 @@ public class ApiKeyController {
         this.emailService = emailService;
     }
     
-    @PostMapping(path = "/api/v1/keys")
+    @PostMapping(path = "/api/keys")
     public ResponseEntity<?> createApiKey(Authentication authentication, @RequestPart(name = "organisation", required = false) String organisationParam) {
         // Organisation eruieren, für die der neue API-Key erzeugt werden soll.
         // Falls es ein Admin-Key (resp. Org) ist, muss die Organisation als Parameter geliefert 
@@ -105,7 +105,7 @@ public class ApiKeyController {
                 .ok(new GenericResponse(null, "Sent email with new key.", Instant.now()));
     }
     
-    @DeleteMapping(path = "/api/v1/keys/{apiKey}") 
+    @DeleteMapping(path = "/api/keys/{apiKey}") 
     public ResponseEntity<?> deleteApiKey(Authentication authentication, @PathVariable(name = "apiKey") String apiKeyParam) {        
         List<CoreApikey> apiKeys = ObjectSelect.query(CoreApikey.class)
                 .where(CoreApikey.REVOKEDAT.isNull())

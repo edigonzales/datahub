@@ -109,7 +109,7 @@ ORDER BY
 
         List<DataRow> results = SQLSelect
                 .dataRowQuery(stmt)
-                .param("log_file_location", getHost() + "/api/v1/logs/")
+                .param("log_file_location", getHost() + "/api/logs/")
                 .param("jobrunr_jobs_table", jobrunrDbSchema+".jobrunr_jobs")
                 .param("delivery_table", dbSchema+".deliveries_delivery")
                 .param("apikey_table", dbSchema+".core_apikey")
@@ -207,7 +207,7 @@ AND
         DataRow result = SQLSelect
                 .dataRowQuery(stmt)
                 .param("job_id", jobId)
-                .param("log_file_location", getHost() + "/api/v1/logs/" + jobId)
+                .param("log_file_location", getHost() + "/api/logs/" + jobId)
                 .param("jobrunr_jobs_table", jobrunrDbSchema+".jobrunr_jobs")
                 .param("delivery_table", dbSchema+".deliveries_delivery")
                 .param("apikey_table", dbSchema+".core_apikey")

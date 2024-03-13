@@ -34,7 +34,7 @@ public class LogController {
         this.filesStorageService = filesStorageService;
     }
     
-    @GetMapping(path = "/api/v1/logs/{jobId}")
+    @GetMapping(path = "/api/logs/{jobId}")
     public ResponseEntity<?> getLogById(@PathVariable("jobId") String jobId) throws IOException {        
         return getLog(jobId);
     }

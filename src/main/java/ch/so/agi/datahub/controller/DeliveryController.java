@@ -76,7 +76,7 @@ public class DeliveryController {
     }
 
     //@Transactional(rollbackFor={InvalidDataAccessResourceUsageException.class})
-    @PostMapping(value="/api/v1/deliveries", consumes = {"multipart/form-data"})
+    @PostMapping(value="/api/deliveries", consumes = {"multipart/form-data"})
     public ResponseEntity<?> uploadFile(Authentication authentication, 
             @RequestPart(name = "theme", required = true) String theme,
             @RequestPart(name = "operat", required = true) String operat,
@@ -149,7 +149,7 @@ public class DeliveryController {
 
         return ResponseEntity
                 .accepted()
-                .header("Operation-Location", getHost()+"/api/v1/jobs/"+jobId)
+                .header("Operation-Location", getHost()+"/api/jobs/"+jobId)
                 .body(null);
     }
     
