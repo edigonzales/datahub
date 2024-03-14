@@ -2,6 +2,12 @@
 
 ## Testrequests
 
+
+```
+curl -i --header "X-API-KEY:asdfasdf" --header "x-forwarded-host:example.com" http://localhost:8080/ping
+```
+
+
 ```
 curl -i -X GET --header "X-API-KEY:c0bb04eb-789b-4063-95ad-bd86a06c6aff" http://localhost:8080/protected/hello
 ```
