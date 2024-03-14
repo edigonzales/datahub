@@ -1,6 +1,5 @@
 package ch.so.agi.datahub;
 
-import java.io.File;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -19,13 +18,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import ch.so.agi.datahub.cayenne.CoreApikey;
 import ch.so.agi.datahub.cayenne.CoreOrganisation;
-import ch.so.agi.datahub.cayenne.DeliveriesAsset;
 import jakarta.annotation.PreDestroy;
 
 @Configuration
@@ -70,7 +72,7 @@ public class DatahubApplication {
     public void shutdownCayenne() {
         cayenneRuntime.shutdown();
     }
-        
+
     @Bean
     CommandLineRunner init() {
         return args -> {

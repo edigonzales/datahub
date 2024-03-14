@@ -38,6 +38,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+    //implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     
     implementation 'org.jobrunr:jobrunr-spring-boot-3-starter:6.3.4'
     

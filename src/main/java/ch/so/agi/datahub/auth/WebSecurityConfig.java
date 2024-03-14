@@ -19,6 +19,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @Configuration
 public class WebSecurityConfig {
 
@@ -34,6 +36,9 @@ public class WebSecurityConfig {
     
     @Autowired
     PasswordEncoder encoder;
+    
+    @Autowired
+    ObjectMapper mapper;
   
     // Bean-Methode darf nicht den gleichen Namen wie die Klasse haben.
     @Bean
@@ -45,7 +50,19 @@ public class WebSecurityConfig {
         registrationBean.addUrlPatterns("/api/deliveries/*");
         return registrationBean;
     }
-            
+    
+    @Bean
+    FilterRegistrationBean<RevokeApiKeyFilter> revokeKeyFilter() {
+        System.out.println("*****"+apiKeyHeaderName);
+        RevokeApiKeyFilter revokeApiKeyFilter = new RevokeApiKeyFilter(mapper, apiKeyHeaderName);
+        FilterRegistrationBean<RevokeApiKeyFilter> registrationBean = new FilterRegistrationBean<>();
+        registrationBean.setFilter(revokeApiKeyFilter);
+        registrationBean.addUrlPatterns("*");
+        registrationBean.setOrder(1);
+        return registrationBean;
+    }
+    
+                
     @Autowired
     private ApiKeyHeaderAuthenticationService apiKeyHeaderAuthService;
 
