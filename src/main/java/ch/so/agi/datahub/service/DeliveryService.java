@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import ch.ehi.basics.settings.Settings;
 import ch.so.agi.datahub.cayenne.DeliveriesAsset;
@@ -42,7 +43,7 @@ public class DeliveryService {
     private ObjectContext objectContext;
     
     private EmailService emailService;
-
+    
     public DeliveryService(FilesStorageService filesStorageService, ObjectContext objectContext, EmailService emailService) {
         this.filesStorageService = filesStorageService;
         this.objectContext = objectContext;
@@ -50,7 +51,7 @@ public class DeliveryService {
     }
 
     @Job(name = "Delivery", retries=0)
-    public synchronized void deliver(JobContext jobContext, String email, String theme, String fileName, String config, String metaConfig) throws IOException {                
+    public synchronized void deliver(JobContext jobContext, String email, String theme, String fileName, String config, String metaConfig, String host) throws IOException {                
         String jobId = jobContext.getJobId().toString();
         
 //        try {
@@ -104,8 +105,11 @@ public class DeliveryService {
         logger.info("<{}> File delivered", jobId);
         
         // Send email to delivery organisation
+        // HTML content: https://stackoverflow.com/questions/5289849/how-do-i-send-html-email-in-spring-mvc
+        String linkLogFile = "<a href='"+host+"/api/logs"+jobId+"'>"+jobId+"</a>";
         try {
-            emailService.send(email, "datahub; " + jobId, "Validation: " + valid + "\n" + "Delivery: " + delivered);
+            emailService.send(email, "datahub; " + jobId, "Validation: " + valid + "\n" + "Delivery: " + delivered + "\n" 
+                    + "Logdatei: " + host + "/api/logs/" + jobId + "\n" + "Jobs: " + host + "/web/jobs");
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("<{}> Error while sending email: {}", jobId, e.getMessage());

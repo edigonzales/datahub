@@ -138,10 +138,11 @@ public class DeliveryController {
         String validatorConfig = operatDeliveryInfo.get("config")!=null?(String)operatDeliveryInfo.get("config"):""; 
         String validatorMetaConfig = operatDeliveryInfo.get("metaconfig")!=null?(String)operatDeliveryInfo.get("metaconfig"):"";
         
-        String email = (String)operatDeliveryInfo.get("email");
+        String email = (String)operatDeliveryInfo.get("email");        
+        String host = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString().toString();
                         
         jobScheduler.enqueue(jobIdUuid, () -> deliveryService.deliver(JobContext.Null, email, theme, sanitizedFileName,
-                validatorConfig, validatorMetaConfig));
+                validatorConfig, validatorMetaConfig, host));
         logger.info("<{}> Job is being queued for validation.", jobId);
        
         // DB-Nachführung committen.
