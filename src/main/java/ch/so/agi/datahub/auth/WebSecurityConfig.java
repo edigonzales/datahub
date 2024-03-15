@@ -21,6 +21,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ch.so.agi.datahub.service.EmailService;
+
 @Configuration
 public class WebSecurityConfig {
 
@@ -39,6 +41,9 @@ public class WebSecurityConfig {
     
     @Autowired
     ObjectMapper mapper;
+    
+    @Autowired
+    EmailService emailService;
   
     // Bean-Methode darf nicht den gleichen Namen wie die Klasse haben.
     @Bean
@@ -53,13 +58,17 @@ public class WebSecurityConfig {
     
     @Bean
     FilterRegistrationBean<RevokeApiKeyFilter> revokeKeyFilter() {
-        System.out.println("*****"+apiKeyHeaderName);
-        RevokeApiKeyFilter revokeApiKeyFilter = new RevokeApiKeyFilter(mapper, apiKeyHeaderName);
         FilterRegistrationBean<RevokeApiKeyFilter> registrationBean = new FilterRegistrationBean<>();
-        registrationBean.setFilter(revokeApiKeyFilter);
+        registrationBean.setFilter(getRevokeApiKeyFilter());
         registrationBean.addUrlPatterns("*");
         registrationBean.setOrder(1);
         return registrationBean;
+    }
+
+    @Bean
+    RevokeApiKeyFilter getRevokeApiKeyFilter() {
+        RevokeApiKeyFilter revokeApiKeyFilter = new RevokeApiKeyFilter(apiKeyHeaderName, objectContext, encoder, emailService, mapper);
+        return revokeApiKeyFilter;
     }
     
                 
