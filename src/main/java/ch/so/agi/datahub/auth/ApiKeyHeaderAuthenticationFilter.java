@@ -39,32 +39,19 @@ public class ApiKeyHeaderAuthenticationFilter extends OncePerRequestFilter {
         
         String apiKey = request.getHeader(headerName);
         if(apiKey == null) {
-            logger.warn("Did not find api key header in request.");
+            logger.warn("Did not find api key header in request");
             //filterChain.doFilter(request, response);
-   
-            // Damit Benutzer, die auf einen Link in der Konsole klicken, direkt im schönen GUI landen.
-            // Den API-Key schickt man in diesem Fall nicht mit (weil Klick in die Konsole).
-            // Benutzer ist also nicht authentifiziert. Bewusster Entscheid, dass Jobs und Logs keine
-            // Authentifizierung und Autorisierung benötigen. 
-            String requestURI = request.getRequestURI();
-            if (requestURI.contains("api") && (requestURI.contains("jobs"))) {
-//                String redirectURI = requestURI.replace("api/", "web/");                
-//                response.reset();
-//                response.resetBuffer();
-//                response.sendRedirect (redirectURI);
-//                return; 
-            } else {               
-                // Falls filterChain.doFilter() nicht gesetzt wird,
-                // wird bereits hier abgebrochen. Es kann somit keine
-                // zweite Authentifizierungsmethode verwendet werden.
-                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//                ServletOutputStream responseStream = response.getOutputStream();
-//                ObjectMapper mapper =  new ObjectMapper();
-//                mapper.writeValue(responseStream, new GenericResponse(this.getClass().getCanonicalName(), "Did not find api key header in request.", Instant.now()));
-//                responseStream.flush();
-                return;                
-            }
+            
+            // Falls filterChain.doFilter() nicht gesetzt wird,
+            // wird bereits hier abgebrochen. Es kann so keine
+            // zweite Authentifizierungsmethode verwendet werden.
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//            ServletOutputStream responseStream = response.getOutputStream();
+//            ObjectMapper mapper =  new ObjectMapper();
+//            mapper.writeValue(responseStream, new GenericResponse(this.getClass().getCanonicalName(), "Did not find api key header in request.", Instant.now()));
+//            responseStream.flush();
+            return;
         }
         
         try {
