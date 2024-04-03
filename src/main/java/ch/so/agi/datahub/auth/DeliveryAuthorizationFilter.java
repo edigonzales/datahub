@@ -34,7 +34,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class DeliveryAuthorizationFilter extends OncePerRequestFilter {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Value("${app.dbSchema}")
+    @Value("${app.dbSchemaConfig}")
     private String dbSchema;
         
     private ObjectContext objectContext;
@@ -54,7 +54,7 @@ public class DeliveryAuthorizationFilter extends OncePerRequestFilter {
         String operatName = servletRequest.getParameter("operat");
         
         if (themeName == null || operatName == null) {
-            logger.error("theme or operate parameter is missing");
+            logger.error("theme or operat parameter is missing");
             
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -73,20 +73,22 @@ public class DeliveryAuthorizationFilter extends OncePerRequestFilter {
             orgName = authentication.getName();
         }
                  
+        
         String stmt = """
 SELECT 
     th.t_id AS theme_tid,
-    th.aname AS theme_name, 
+    th.aname AS theme_name,
+    org.aname AS org_name, 
     org.email,
     th.config,
     th.metaconfig,
     op.t_id AS operat_tid,
     op.aname AS operat_name
 FROM 
-    %s.core_organisation AS org 
-    LEFT JOIN %s.core_operat AS op 
+    $core_organisation_table AS org 
+    LEFT JOIN $core_operat_table AS op 
     ON org.t_id = op.organisation_r 
-    LEFT JOIN %s.core_theme AS th 
+    LEFT JOIN $core_theme_table AS th 
     ON th.t_id = op.theme_r 
 WHERE 
     org.aname LIKE '$organisation_name'
@@ -94,16 +96,19 @@ WHERE
     op.aname = '$operat_name'
     AND 
     th.aname = '$theme_name'
-                """.formatted(dbSchema, dbSchema, dbSchema, dbSchema);
+                """;
         
         DataRow result = SQLSelect
                 .dataRowQuery(stmt)
+                .param("core_organisation_table", dbSchema + ".core_organisation")
+                .param("core_operat_table", dbSchema + ".core_operat")
+                .param("core_theme_table", dbSchema + ".core_theme")
                 .param("organisation_name", orgName)
                 .param("operat_name", operatName)
                 .param("theme_name", themeName)
                 .selectOne(objectContext);
 
-        logger.debug("DataRow: {}", result);
+        logger.trace("DataRow: {}", result);
         
         if (result == null) {
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);

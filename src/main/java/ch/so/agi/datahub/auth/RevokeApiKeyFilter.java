@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.ObjectSelect;
@@ -45,12 +46,16 @@ public class RevokeApiKeyFilter extends OncePerRequestFilter {
     
     final String headerName;
     
-    public RevokeApiKeyFilter(final String headerName, ObjectContext objectContext, PasswordEncoder encoder, EmailService emailService, ObjectMapper mapper) {
+    ResourceBundle resourceBundle;
+    
+    public RevokeApiKeyFilter(final String headerName, ObjectContext objectContext, PasswordEncoder encoder,
+            EmailService emailService, ObjectMapper mapper, ResourceBundle resourceBundle) {
         this.headerName = headerName;
         this.objectContext = objectContext;
         this.encoder = encoder;
         this.emailService = emailService;
         this.mapper = mapper;
+        this.resourceBundle = resourceBundle;
     }
     
     @Override
@@ -80,7 +85,7 @@ public class RevokeApiKeyFilter extends OncePerRequestFilter {
                     objectContext.commitChanges();                    
                     try {
                         CoreOrganisation coreOrganisation = myApiKey.getCoreOrganisation();
-                        emailService.send(coreOrganisation.getEmail(), "datahub: api key revoked", "api key revoked");
+                        emailService.send(coreOrganisation.getEmail(), resourceBundle.getString("revokeApiKeyEmailSubject"), resourceBundle.getString("revokeApiKeyEmailBody"));
                     } catch (Exception e) {
                         e.printStackTrace();
                         logger.error(e.getMessage());                        

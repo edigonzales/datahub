@@ -21,5 +21,4 @@ public class ApiKeyHeaderAuthenticationProvider implements AuthenticationProvide
     public boolean supports(Class<?> authentication) {
         return authentication.equals(ApiKeyHeaderAuthenticationToken.class);
     }
-
 }

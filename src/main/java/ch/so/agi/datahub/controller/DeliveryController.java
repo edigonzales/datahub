@@ -39,8 +39,6 @@ import ch.so.agi.datahub.AppConstants;
 import ch.so.agi.datahub.auth.ApiKeyHeaderAuthenticationToken;
 import ch.so.agi.datahub.cayenne.CoreApikey;
 import ch.so.agi.datahub.cayenne.CoreOperat;
-import ch.so.agi.datahub.cayenne.CoreUser;
-import ch.so.agi.datahub.cayenne.DeliveriesAsset;
 import ch.so.agi.datahub.cayenne.DeliveriesDelivery;
 import ch.so.agi.datahub.service.DeliveryService;
 import ch.so.agi.datahub.service.FilesStorageService;
@@ -92,46 +90,20 @@ public class DeliveryController {
 
         // Normalize file name
         String originalFileName = file.getOriginalFilename();
-        String sanitizedFileName = (String)operatDeliveryInfo.get("operat_name") + ".xtf";
+        String sanitizedFileName = operat + ".xtf";
 
         // Daten speichern
         filesStorageService.save(file.getInputStream(), sanitizedFileName, jobId, folderPrefix, workDirectory);
-        
-        // TODO 
-        // DB-Zeugs mit Repository Pattern?
-        // Committen muss dann vor Queuen kommen. 
-        // Falls aber das Queuen failed, müsste man die DB manuell nachführen.
-        
+                
         // Die Delivery-Tabellen nachführen.
-        long operatTid = (Long)operatDeliveryInfo.get("operat_tid");
-        
-        CoreOperat coreOperat = SelectById.query(CoreOperat.class, operatTid).selectOne(objectContext);
-        
-        DeliveriesAsset deliveriesAsset = objectContext.newObject(DeliveriesAsset.class);
-        deliveriesAsset.setAtype("PrimaryData");
-        deliveriesAsset.setOriginalfilename(originalFileName);
-        deliveriesAsset.setSanitizedfilename(sanitizedFileName);
-
+        String orgName = (String)operatDeliveryInfo.get("org_name");
+                
         DeliveriesDelivery deliveriesDelivery = objectContext.newObject(DeliveriesDelivery.class);
         deliveriesDelivery.setJobid(jobId);
         deliveriesDelivery.setDeliverydate(LocalDateTime.now());
-        deliveriesDelivery.setCoreOperat(coreOperat);
-        
-        // Wird bereits im ApiKeyHeaderAuthenticationService ermittelt. 
-        // Synergien?
-        List<CoreApikey> apiKeys = ObjectSelect.query(CoreApikey.class)
-                .where(CoreApikey.REVOKEDAT.isNull())
-                .and(CoreApikey.DATEOFEXPIRY.gt(LocalDateTime.now()).orExp(CoreApikey.DATEOFEXPIRY.isNull()))
-                .select(objectContext);
-        CoreApikey myApiKey = null;
-        for (CoreApikey apiKey : apiKeys) {
-            if (encoder.matches(((ApiKeyHeaderAuthenticationToken) authentication).getApiKey(), apiKey.getApikey())) {
-                myApiKey = apiKey;
-                break;
-            }
-        }
-        deliveriesDelivery.setCoreApikey(myApiKey);
-        deliveriesDelivery.addToDeliveriesAssets(deliveriesAsset);
+        deliveriesDelivery.setOrganisation(orgName);
+        deliveriesDelivery.setTheme(theme);
+        deliveriesDelivery.setOperat(operat);
 
         // Validierungsjob in Jobrunr queuen.
         // Jobrunr kann nicht mit null Strings umgehen.
@@ -141,7 +113,7 @@ public class DeliveryController {
         String email = (String)operatDeliveryInfo.get("email");        
         String host = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString().toString();
                         
-        jobScheduler.enqueue(jobIdUuid, () -> deliveryService.deliver(JobContext.Null, email, theme, sanitizedFileName,
+        jobScheduler.enqueue(jobIdUuid, () -> deliveryService.deliver(JobContext.Null, email, theme, operat, sanitizedFileName,
                 validatorConfig, validatorMetaConfig, host));
         logger.info("<{}> Job is being queued for validation.", jobId);
        
@@ -156,6 +128,7 @@ public class DeliveryController {
     
     @ExceptionHandler({Exception.class, RuntimeException.class})
     public ResponseEntity<?> error(Exception e) {
+        e.printStackTrace();
         logger.error("<{}>", e.getMessage());
         return ResponseEntity
                 .internalServerError()

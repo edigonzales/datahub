@@ -30,31 +30,125 @@ import ch.so.agi.datahub.model.JobResponse;
 public class JobResponseService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Value("${app.dbSchema}")
-    private String dbSchema;
+    @Value("${app.dbSchemaConfig}")
+    private String dbSchemaConfig;
+    
+    @Value("${app.dbSchemaLog}")
+    private String dbSchemaLog;
     
     // Jobrunr verlangt in den application.properties den Punkt für Schema-Support.
     @Value("#{'${org.jobrunr.database.tablePrefix}'.substring(0,'${org.jobrunr.database.tablePrefix}'.length-2)}")
-    private String jobrunrDbSchema;
-
-    private StorageProvider storageProvider;
+    private String dbSchemaJobrunr;
 
     private ObjectContext objectContext;
     
-    public JobResponseService (StorageProvider storageProvider, ObjectContext objectContext) {
-        this.storageProvider = storageProvider;
+    public JobResponseService (ObjectContext objectContext) {
         this.objectContext = objectContext;
     }
     
-    public List<JobResponse> getJobsByOrg(Authentication authentication) {
-        String organisation = null;
-        if(authentication.getAuthorities().contains(new SimpleGrantedAuthority(AppConstants.ROLE_NAME_ADMIN))) {
-            organisation = "%";
-        } else {
-            organisation = authentication.getName();
+    public List<JobResponse> getJobsResponse() {
+//        String organisation = null;
+//        if(authentication.getAuthorities().contains(new SimpleGrantedAuthority(AppConstants.ROLE_NAME_ADMIN))) {
+//            organisation = "%";
+//        } else {
+//            organisation = authentication.getName();
+//        }
+        
+        String stmt = baseStmt + "ORDER BY j.createdat DESC";
+
+        List<DataRow> results = SQLSelect
+                .dataRowQuery(stmt)
+                .param("log_file_location", getHost() + "/api/logs/")
+                .param("jobrunr_jobs_table", dbSchemaJobrunr+".jobrunr_jobs")
+                .param("delivery_table", dbSchemaLog+".deliveries_delivery")
+                .param("apikey_table", dbSchemaConfig+".core_apikey")
+                .param("organisation_table", dbSchemaConfig+".core_organisation")
+                .param("operat_table", dbSchemaConfig+".core_operat")
+                .param("theme_table", dbSchemaConfig+".core_theme")
+                .param("organisation", "%")
+                .select(objectContext);
+
+        logger.trace("DataRow: {}", results);
+                
+        List<JobResponse> jobResponseList = results.stream().map(dr -> {
+            JobResponse jobResponse = new JobResponse(
+                    (String)dr.get("jobid"),
+                    dr.get("createdat")!=null?((Date)dr.get("createdat")).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime():null,
+                    dr.get("updatedat")!=null?((Date)dr.get("updatedat")).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime():null,
+                    (String)dr.get("status"),
+                    (Long)dr.get("queueposition"),
+                    (String)dr.get("operat"),
+                    (String)dr.get("theme"),
+                    (String)dr.get("organisation"),
+                    (String)dr.get("message"),
+                    (String)dr.get("validationstatus"), 
+                    (String)dr.get("logfilelocation"), 
+                    null, 
+                    null 
+                    );
+            return jobResponse;
+        }).collect(Collectors.toList());
+        
+        return jobResponseList;
+    }
+
+    public JobResponse getJobResponseById(String jobId) {            
+//        String organisation = null;
+//        if(authentication.getAuthorities().contains(new SimpleGrantedAuthority(AppConstants.ROLE_NAME_ADMIN))) {
+//            organisation = "%";
+//        } else {
+//            organisation = authentication.getName();
+//        }
+        
+        // Ich verstehe nicht ganz, wie Jobrunr das Datum handelt.
+        // Es ist um eine Stunde falsch, aber in der DB hat es keine
+        // Timezone. Via jobrunr-API bekomme ich das richtige DateTime.
+        // Ob meine Lösung nun stimmt, wird sich zeigen. Timezone 
+        // könnte man noch parametrisieren.
+
+        String stmt = baseStmt + "AND j.id = '$job_id'";
+
+        DataRow result = SQLSelect
+                .dataRowQuery(stmt)
+                .param("job_id", jobId)
+                .param("log_file_location", getHost() + "/api/logs/" + jobId)
+                .param("jobrunr_jobs_table", dbSchemaJobrunr+".jobrunr_jobs")
+                .param("delivery_table", dbSchemaLog+".deliveries_delivery")
+                .param("apikey_table", dbSchemaConfig+".core_apikey")
+                .param("organisation_table", dbSchemaConfig+".core_organisation")
+                .param("operat_table", dbSchemaConfig+".core_operat")
+                .param("theme_table", dbSchemaConfig+".core_theme")
+                .param("organisation", "%")
+                .selectOne(objectContext);
+               
+        if (result == null) {
+            return null;
         }
         
-        String stmt = """
+        JobResponse jobResponse = new JobResponse(
+                (String)result.get("jobid"),
+                result.get("createdat")!=null?((Date)result.get("createdat")).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime():null,
+                result.get("updatedat")!=null?((Date)result.get("updatedat")).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime():null,
+                (String)result.get("status"),
+                (Long)result.get("queueposition"),
+                (String)result.get("operat"),
+                (String)result.get("theme"),
+                (String)result.get("organisation"),
+                (String)result.get("message"),
+                (String)result.get("validationstatus"), 
+                (String)result.get("logfilelocation"), 
+                null, //(String)result.get("xtflogfilelocation"), 
+                null //(String)result.get("csvlogfilelocation")
+                );
+        
+        return jobResponse;
+    }
+    
+    private String getHost() {
+        return ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+    }
+    
+    private String baseStmt = """
 WITH queue_position AS 
 (
     SELECT 
@@ -62,7 +156,7 @@ WITH queue_position AS
         createdat,
         ROW_NUMBER() OVER (ORDER BY createdat) AS queueposition
     FROM 
-        agi_datahub_jobrunr_v1.jobrunr_jobs AS j
+        $jobrunr_jobs_table AS j
     WHERE 
         j.state = 'ENQUEUED'
 )
@@ -93,163 +187,15 @@ FROM
     $jobrunr_jobs_table AS j
     LEFT JOIN $delivery_table AS d 
     ON j.id = d.jobid 
-    LEFT JOIN $apikey_table AS k 
-    ON d.apikey_r = k.t_id     
     LEFT JOIN $organisation_table AS org 
-    ON k.organisation_r = org.t_id 
+    ON org.aname = d.organisation 
     LEFT JOIN $operat_table AS op
-    ON d.operat_r = op.t_id
+    ON d.operat = op.aname
     LEFT JOIN $theme_table AS th 
     ON op.theme_r = th.t_id    
     LEFT JOIN queue_position 
     ON queue_position.id = j.id
 WHERE 
     org.aname LIKE '$organisation'
-ORDER BY
-    j.createdat DESC
-                """;
-
-        List<DataRow> results = SQLSelect
-                .dataRowQuery(stmt)
-                .param("log_file_location", getHost() + "/api/logs/")
-                .param("jobrunr_jobs_table", jobrunrDbSchema+".jobrunr_jobs")
-                .param("delivery_table", dbSchema+".deliveries_delivery")
-                .param("apikey_table", dbSchema+".core_apikey")
-                .param("organisation_table", dbSchema+".core_organisation")
-                .param("operat_table", dbSchema+".core_operat")
-                .param("theme_table", dbSchema+".core_theme")
-                .param("organisation", organisation)
-                .select(objectContext);
-
-        logger.trace("DataRow: {}", results);
-                
-        List<JobResponse> jobResponseList = results.stream().map(dr -> {
-            JobResponse jobResponse = new JobResponse(
-                    (String)dr.get("jobid"),
-                    dr.get("createdat")!=null?((Date)dr.get("createdat")).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime():null,
-                    //null,
-                    dr.get("updatedat")!=null?((Date)dr.get("updatedat")).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime():null,
-                    (String)dr.get("status"),
-                    (Long)dr.get("queueposition"),
-                    (String)dr.get("operat"),
-                    (String)dr.get("theme"),
-                    (String)dr.get("organisation"),
-                    (String)dr.get("message"),
-                    (String)dr.get("validationstatus"), 
-                    (String)dr.get("logfilelocation"), 
-                    null, 
-                    null 
-                    );
-            return jobResponse;
-        }).collect(Collectors.toList());
-        
-        return jobResponseList;
-    }
-
-    public JobResponse getJobResponseById(String jobId, Authentication authentication) {            
-        String organisation = null;
-        if(authentication.getAuthorities().contains(new SimpleGrantedAuthority(AppConstants.ROLE_NAME_ADMIN))) {
-            organisation = "%";
-        } else {
-            organisation = authentication.getName();
-        }
-        
-        // Ich verstehe nicht ganz, wie Jobrunr das Datum handelt.
-        // Es ist um eine Stunde falsch, aber in der DB hat es keine
-        // Timezone. Via jobrunr-API bekomme ich das richtige DateTime.
-        // Ob meine Lösung nun stimmt, wird sich zeigen. Timezone 
-        // könnte man noch parametrisieren.
-
-        String stmt = """
-WITH queue_position AS 
-(
-    SELECT 
-        j.id, 
-        createdat,
-        ROW_NUMBER() OVER (ORDER BY createdat) AS queueposition
-    FROM 
-        agi_datahub_jobrunr_v1.jobrunr_jobs AS j
-    WHERE 
-        j.state = 'ENQUEUED'
-)
-SELECT 
-    d.jobid,
-    (j.createdat AT TIME ZONE 'UTC') AT TIME ZONE 'Europe/Zurich' AS createdat,
-    (j.updatedat AT TIME ZONE 'UTC') AT TIME ZONE 'Europe/Zurich' AS updatedat,
-    j.state AS status, 
-    queue_position.queueposition AS queueposition,
-    op.aname AS operat,
-    th.aname AS theme,
-    org.aname AS organisation,
-    CASE 
-        WHEN isvalid IS TRUE THEN 'DONE' 
-        WHEN isvalid IS FALSE THEN 'ERROR'
-        ELSE NULL::TEXT
-    END AS validationstatus,
-    CASE
-        WHEN isvalid IS NOT NULL THEN '$log_file_location' || d.jobid
-        ELSE NULL::TEXT
-    END AS logfilelocation,
-    'xtflogfilelocation'::TEXT AS xtflogfilelocation,
-    'csvlogfilelocation'::TEXT AS csvlogfilelocation
-FROM 
-    $jobrunr_jobs_table AS j
-    LEFT JOIN $delivery_table AS d 
-    ON j.id = d.jobid 
-    LEFT JOIN $apikey_table AS k 
-    ON d.apikey_r = k.t_id     
-    LEFT JOIN $organisation_table AS org 
-    ON k.organisation_r = org.t_id 
-    LEFT JOIN $operat_table AS op
-    ON d.operat_r = op.t_id
-    LEFT JOIN $theme_table AS th 
-    ON op.theme_r = th.t_id    
-    LEFT JOIN queue_position 
-    ON queue_position.id = j.id
-    
-WHERE 
-    org.aname LIKE '$organisation'
-AND 
-    j.id = '$job_id'
-                """;
-        
-        DataRow result = SQLSelect
-                .dataRowQuery(stmt)
-                .param("job_id", jobId)
-                .param("log_file_location", getHost() + "/api/logs/" + jobId)
-                .param("jobrunr_jobs_table", jobrunrDbSchema+".jobrunr_jobs")
-                .param("delivery_table", dbSchema+".deliveries_delivery")
-                .param("apikey_table", dbSchema+".core_apikey")
-                .param("organisation_table", dbSchema+".core_organisation")
-                .param("operat_table", dbSchema+".core_operat")
-                .param("theme_table", dbSchema+".core_theme")
-                .param("organisation", organisation)
-                .selectOne(objectContext);
-               
-        if (result == null) {
-            return null;
-        }
-        
-        JobResponse jobResponse = new JobResponse(
-                (String)result.get("jobid"),
-                result.get("createdat")!=null?((Date)result.get("createdat")).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime():null,
-                result.get("updatedat")!=null?((Date)result.get("updatedat")).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime():null,
-                (String)result.get("status"),
-                (Long)result.get("queueposition"),
-                (String)result.get("operat"),
-                (String)result.get("theme"),
-                (String)result.get("organisation"),
-                (String)result.get("message"),
-                (String)result.get("validationstatus"), 
-                (String)result.get("logfilelocation"), 
-                null, //(String)result.get("xtflogfilelocation"), 
-                null //(String)result.get("csvlogfilelocation")
-                );
-        
-        return jobResponse;
-    }
-    
-    private String getHost() {
-        return ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-    }
+            """;
 }

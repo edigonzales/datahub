@@ -1,5 +1,7 @@
 package ch.so.agi.datahub.auth;
 
+import java.util.ResourceBundle;
+
 import org.apache.cayenne.ObjectContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -44,6 +46,9 @@ public class WebSecurityConfig {
     
     @Autowired
     EmailService emailService;
+    
+    @Autowired
+    ResourceBundle resourceBundle;
   
     // Bean-Methode darf nicht den gleichen Namen wie die Klasse haben.
     @Bean
@@ -67,7 +72,7 @@ public class WebSecurityConfig {
 
     @Bean
     RevokeApiKeyFilter getRevokeApiKeyFilter() {
-        RevokeApiKeyFilter revokeApiKeyFilter = new RevokeApiKeyFilter(apiKeyHeaderName, objectContext, encoder, emailService, mapper);
+        RevokeApiKeyFilter revokeApiKeyFilter = new RevokeApiKeyFilter(apiKeyHeaderName, objectContext, encoder, emailService, mapper, resourceBundle);
         return revokeApiKeyFilter;
     }
     
@@ -78,12 +83,11 @@ public class WebSecurityConfig {
     @Bean
     AuthenticationManager authenticationManager() {
         ApiKeyHeaderAuthenticationProvider apiKeyHeaderAuthenticationProvider = new ApiKeyHeaderAuthenticationProvider(apiKeyHeaderAuthService);
-        //TenantAuthenticationProvider tenantAuthenticationProvider = new TenantAuthenticationProvider(tenantAuthService);
-        return new ProviderManager(apiKeyHeaderAuthenticationProvider /*, tenantAuthenticationProvider*/);
+        return new ProviderManager(apiKeyHeaderAuthenticationProvider);
     }
 
     @Bean
-    @Order(1)
+    @Order(2)
     SecurityFilterChain apiKeySecurityFilterChain(HttpSecurity http) throws Exception {                
         return http
                 .cors(AbstractHttpConfigurer::disable)
@@ -91,7 +95,8 @@ public class WebSecurityConfig {
                 .sessionManagement(sess -> 
                     sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .securityMatcher("/api/keys/**", "/api/deliveries/**", "/api/jobs/**", "/protected/**")
+                // /api/jobs: Bewusster Entscheid, dass dieser Bereich unauthentifiziert sein soll.
+                .securityMatcher("/api/keys/**", "/api/deliveries/**", "/protected/**")
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> registry
                         // permitAll() isn't the same as no security and skip all filters
@@ -103,37 +108,11 @@ public class WebSecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new ApiKeyHeaderAuthenticationFilter(authenticationManager(), apiKeyHeaderName), LogoutFilter.class)
-                // TODO Machen wir noch was in diese Richtung? 
+                // TODO
 //                .exceptionHandling(exceptionHandling ->
 //                    exceptionHandling.authenticationEntryPoint(authEntryPoint)
 //                )
                 .logout(AbstractHttpConfigurer::disable)
                 .build();
-    }
-    
-    @Autowired
-    private FormAuthenticationProvider formAuthenticationProvider;
-
-    @Bean
-    @Order(2)
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(AbstractHttpConfigurer::disable)
-            .securityMatcher("/web/**")
-            .authorizeHttpRequests((authorize) ->
-                authorize.anyRequest().authenticated()
-            )
-            .authenticationProvider(formAuthenticationProvider)
-            .formLogin(form -> form
-                    .loginPage("/web/login")
-                    .loginProcessingUrl("/web/login")
-                    .defaultSuccessUrl("/web/jobs")
-                    .permitAll()
-            )
-            .logout(logout -> logout
-                    .logoutRequestMatcher(new AntPathRequestMatcher("/web/logout"))
-                    .permitAll()
-                );
-        return http.build();
-    }
+    }    
 }

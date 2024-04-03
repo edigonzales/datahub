@@ -3,6 +3,7 @@ package ch.so.agi.datahub.controller;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.UUID;
 
 import org.apache.cayenne.ObjectContext;
@@ -40,10 +41,13 @@ public class ApiKeyController {
     
     private EmailService emailService;
     
-    public ApiKeyController(ObjectContext objectContext, PasswordEncoder encoder, EmailService emailService) {
+    ResourceBundle resourceBundle;
+    
+    public ApiKeyController(ObjectContext objectContext, PasswordEncoder encoder, EmailService emailService, ResourceBundle resourceBundle) {
         this.objectContext = objectContext;
         this.encoder = encoder;
         this.emailService = emailService;
+        this.resourceBundle = resourceBundle;
     }
     
     @PostMapping(path = "/api/keys")
@@ -53,6 +57,8 @@ public class ApiKeyController {
         // werden.
         // Falls die Organisation selber einen neuen Key braucht, kennt man die zum Request-Key 
         // gehörende Organisation (aus der DB).
+        // Wenn die Admin-Org für sich selber einen neuen Key machen will, muss sie auch
+        // die Organisation mitliefern.
 
         String organisation = null;
         if(authentication.getAuthorities().contains(new SimpleGrantedAuthority(AppConstants.ROLE_NAME_ADMIN))) {
@@ -66,7 +72,6 @@ public class ApiKeyController {
             return ResponseEntity
                     .internalServerError()
                     .body(new GenericResponse(this.getClass().getCanonicalName(), "Parameter 'organisation' is required.", Instant.now()));
-                    
         }
         
         CoreOrganisation coreOrganisation = ObjectSelect.query(CoreOrganisation.class)
@@ -91,7 +96,7 @@ public class ApiKeyController {
         objectContext.commitChanges();
 
         try {
-            emailService.send(coreOrganisation.getEmail(), "datahub: new api key", apiKey);
+            emailService.send(coreOrganisation.getEmail(), resourceBundle.getString("newApiKeyEmailSubject"), apiKey);
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
@@ -102,7 +107,7 @@ public class ApiKeyController {
         }
 
         return ResponseEntity
-                .ok(new GenericResponse(null, "Sent email with new key.", Instant.now()));
+                .ok(new GenericResponse(null, "Sent email with new api key.", Instant.now()));
     }
     
     @DeleteMapping(path = "/api/keys/{apiKey}") 
@@ -112,24 +117,30 @@ public class ApiKeyController {
                 .select(objectContext);
         
         for (CoreApikey apiKey : apiKeys) {
-            if (encoder.matches(apiKeyParam, apiKey.getApikey())) {
+            // Beim Key-Löschen gibt es keinen Autorisierungsfilter. Es wird jedoch hier
+            // überprüft, ob die dem authentifziertem Key zugehörige Organisation einen
+            // fremden Key löschen will.
+            // Grund für das Nicht-Autorisieren ist die Eintretenswahrscheinlichkeit und
+            // wenn man einen fremden Key hat, kann man sich ja mit diesem authentifizieren.
+            if (encoder.matches(apiKeyParam, apiKey.getApikey()) && authentication.getName().equalsIgnoreCase(apiKey.getCoreOrganisation().getAname())) {
                 apiKey.setRevokedat(LocalDateTime.now());
                 objectContext.commitChanges();
                 
                 return ResponseEntity
-                        .ok().body(new GenericResponse(null, "Key deleted.", Instant.now()));
+                        .ok().body(new GenericResponse(null, "API key deleted.", Instant.now()));
             }
         }
 
         return ResponseEntity
                 .internalServerError()
-                .body(new GenericResponse(this.getClass().getCanonicalName(), "Key not deleted.", Instant.now()));
+                .body(new GenericResponse(this.getClass().getCanonicalName(), "API key not deleted.", Instant.now()));
     }
 
     // Notwendig, weil sonst ApiKeyHeaderAuthenticationFilter Exception greift.
     // Wegen filterChain.
     @ExceptionHandler({Exception.class, RuntimeException.class})
     public ResponseEntity<?> databaseError(Exception e) {
+        e.printStackTrace();
         logger.error("<{}>", e.getMessage());
         return ResponseEntity
                 .internalServerError()

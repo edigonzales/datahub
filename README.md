@@ -1,5 +1,12 @@
 # datahub
 
+## Issues
+
+- Revoke Key nach gewisser Zeit
+- E-Mail wenn revoked (automatisch)
+- Inhalt E-Mail?   
+- E-Mail via AIO verschicken
+
 ## Testrequests
 
 
@@ -71,6 +78,10 @@ curl -i -X GET --header "X-API-KEY:fda5f71f-8875-4d4a-af0c-87d9ba2832b6" http://
 ```
 ```
 curl -i -X POST --header "X-API-KEY:fda5f71f-8875-4d4a-af0c-87d9ba2832b6" http://localhost:8080/api/keys
+```
+
+```
+curl -i -X DELETE --header "X-API-KEY:fda5f71f-8875-4d4a-af0c-87d9ba2832b6" http://localhost:8080/api/keys/5b4fd340-adbb-441a-b9c3-e1d2f13cb1e0
 ```
 
 ```
@@ -179,6 +190,21 @@ docker-compose up
   * 
 
 - datümer bei den Keys
+
+**Config/Log-Version**
+
+```
+java -jar /Users/stefan/Downloads/ili2pg-4.9.1.jar --dbhost localhost --dbport 54321 --dbdatabase edit --dbusr postgres --dbpwd secret --defaultSrsCode 2056 --createGeomIdx  --createFk --createFkIdx --createEnumTabs --createMetaInfo --nameByTopic --strokeArcs --createUnique --createNumChecks --createTextChecks --createDateTimeChecks --createImportTabs --createUnique --dbschema agi_datahub_config_v1 --models "SO_AGI_Datahub_Config_20240403" --modeldir "https://models.geo.admin.ch;ili/" --schemaimport
+```
+
+```
+java -jar /Users/stefan/Downloads/ili2pg-4.9.1.jar --dbhost localhost --dbport 54321 --dbdatabase edit --dbusr postgres --dbpwd secret --defaultSrsCode 2056 --createGeomIdx  --createFk --createFkIdx --createEnumTabs --createMetaInfo --nameByTopic --strokeArcs --createUnique --createNumChecks --createTextChecks --createDateTimeChecks --createImportTabs --createUnique --dbschema agi_datahub_config_v1 --models "SO_AGI_Datahub_Config_20240403" --modeldir "https://models.geo.admin.ch;ili/" --import datahub_key_20240403.xtf
+```
+
+```
+java -jar /Users/stefan/Downloads/ili2pg-4.9.1.jar --dbhost localhost --dbport 54321 --dbdatabase edit --dbusr postgres --dbpwd secret --defaultSrsCode 2056 --createGeomIdx  --createFk --createFkIdx --createEnumTabs --createMetaInfo --nameByTopic --strokeArcs --createUnique --createNumChecks --createTextChecks --createDateTimeChecks --createImportTabs --createUnique --dbschema agi_datahub_log_v1 --models "SO_AGI_Datahub_Log_20240403" --modeldir "https://models.geo.admin.ch;ili/" --schemaimport
+```
+
 
 
 **API-Key-Version**

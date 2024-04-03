@@ -52,6 +52,7 @@ public class LogController {
     
     @ExceptionHandler({Exception.class, RuntimeException.class})
     public ResponseEntity<?> error(Exception e) {
+        e.printStackTrace();
         logger.error("<{}>", e.getMessage());
         return ResponseEntity
                 .internalServerError()

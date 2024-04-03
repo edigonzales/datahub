@@ -1,6 +1,10 @@
 package ch.so.agi.datahub;
 
+import java.sql.PreparedStatement;
 import java.time.LocalDateTime;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.UUID;
 
 import javax.sql.DataSource;
@@ -19,9 +23,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -36,11 +45,17 @@ import jakarta.annotation.PreDestroy;
 public class DatahubApplication {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    @Value("${app.dbSchemaConfig}")
+    private String dbSchemaConfig;
+    
     @Value("${app.adminAccountInit}")
     private boolean adminAccountInit;
 
     @Value("${app.adminAccountName}")
     private String adminAccountName;
+
+    @Value("${app.adminAccountMail}")
+    private String adminAccountMail;
 
     @Autowired 
     private DataSource dataSource;
@@ -74,13 +89,11 @@ public class DatahubApplication {
     }
 
     @Bean
-    CommandLineRunner init() {
+    CommandLineRunner init(ObjectContext objectContext) {
         return args -> {
             // Add admin account to database.
             // Show admin key once in the console.
             if (adminAccountInit) {
-                ObjectContext objectContext = objectContext();
-
                 CoreOrganisation existingOrg = ObjectSelect.query(CoreOrganisation.class)
                         .where(CoreOrganisation.ANAME.eq(adminAccountName))
                         .selectFirst(objectContext);
@@ -92,8 +105,8 @@ public class DatahubApplication {
 
                 CoreOrganisation coreOrganisation = objectContext.newObject(CoreOrganisation.class);
                 coreOrganisation.setAname(adminAccountName);
-                coreOrganisation.setArole("ADMIN");
-                coreOrganisation.setEmail("stefan.ziegler@bd.so.ch");
+                coreOrganisation.setArole(AppConstants.ROLE_NAME_ADMIN);
+                coreOrganisation.setEmail(adminAccountMail);
                 
                 String apiKey = UUID.randomUUID().toString();
                 String encodedApiKey = encoder().encode(apiKey);
@@ -115,5 +128,12 @@ public class DatahubApplication {
     @Bean
     PasswordEncoder encoder() {
         return new BCryptPasswordEncoder();
+    }
+    
+    @Bean
+    ResourceBundle resourceBundle() {
+        Locale locale = Locale.of("de", "CH");
+        ResourceBundle rsrc = ResourceBundle.getBundle("DatahubMessages", locale);
+        return rsrc;
     }
 }

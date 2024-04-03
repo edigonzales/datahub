@@ -31,8 +31,8 @@ public class JobController {
     }
     
     @GetMapping(path = "/api/jobs")
-    public ResponseEntity<?> getJobsApi(Authentication authentication) {
-        List<JobResponse> jobResponseList = jobResponseService.getJobsByOrg(authentication);
+    public ResponseEntity<?> getJobsApi() {
+        List<JobResponse> jobResponseList = jobResponseService.getJobsResponse();
         
         if (jobResponseList.size() == 0) {
             return new ResponseEntity<List<JobResponse>>(null, null, HttpStatus.NO_CONTENT);
@@ -44,8 +44,8 @@ public class JobController {
     }
         
     @GetMapping(path = "/web/jobs")
-    public String getJobsWeb(Authentication authentication, Model model, HttpServletResponse response) {
-        List<JobResponse> jobResponseList = jobResponseService.getJobsByOrg(authentication);
+    public String getJobsWeb(Model model, HttpServletResponse response) {
+        List<JobResponse> jobResponseList = jobResponseService.getJobsResponse();
         model.addAttribute("jobResponseList", jobResponseList);
         
         response.setHeader("Refresh", "15");
@@ -53,13 +53,9 @@ public class JobController {
         return "jobs";
     }
     
-    
     @GetMapping(path = "/api/jobs/{jobId}")
-    public ResponseEntity<?> getJobApiById(Authentication authentication, 
-            Model model,
-            /*@RequestHeader(value = "Accept") String acceptHeader,*/
-            @PathVariable("jobId") String jobId) throws IOException {
-        JobResponse jobResponse = jobResponseService.getJobResponseById(jobId, authentication);
+    public ResponseEntity<?> getJobApiById(Model model, @PathVariable("jobId") String jobId) throws IOException {
+        JobResponse jobResponse = jobResponseService.getJobResponseById(jobId);
             
         if (jobResponse == null) {
             return new ResponseEntity<JobResponse>(null, null, HttpStatus.NO_CONTENT);
@@ -71,9 +67,8 @@ public class JobController {
     }
     
     @GetMapping(path = "/web/jobs/{jobId}")
-    public ResponseEntity<?> getJobWebById(Authentication authentication,
-            @PathVariable("jobId") String jobId) throws IOException {
-        JobResponse jobResponse = jobResponseService.getJobResponseById(jobId, authentication);
+    public ResponseEntity<?> getJobWebById(@PathVariable("jobId") String jobId) throws IOException {
+        JobResponse jobResponse = jobResponseService.getJobResponseById(jobId);
         
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setContentType(MediaType.APPLICATION_JSON);

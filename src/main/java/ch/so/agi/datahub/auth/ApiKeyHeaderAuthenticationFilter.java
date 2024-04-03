@@ -42,18 +42,20 @@ public class ApiKeyHeaderAuthenticationFilter extends OncePerRequestFilter {
             logger.warn("Did not find api key header in request.");
             //filterChain.doFilter(request, response);
    
+            // Damit Benutzer, die auf einen Link in der Konsole klicken, direkt im schönen GUI landen.
+            // Den API-Key schickt man in diesem Fall nicht mit (weil Klick in die Konsole).
+            // Benutzer ist also nicht authentifiziert. Bewusster Entscheid, dass Jobs und Logs keine
+            // Authentifizierung und Autorisierung benötigen. 
             String requestURI = request.getRequestURI();
-            if (requestURI.contains("api") && (requestURI.contains("jobs") || requestURI.contains("log"))) {
-                String redirectURI = requestURI.replace("api/", "web/");                
-                response.reset();
-                response.resetBuffer();
-                response.sendRedirect (redirectURI);
-                return; 
-            } else {
-                System.out.println(requestURI);
-                
+            if (requestURI.contains("api") && (requestURI.contains("jobs"))) {
+//                String redirectURI = requestURI.replace("api/", "web/");                
+//                response.reset();
+//                response.resetBuffer();
+//                response.sendRedirect (redirectURI);
+//                return; 
+            } else {               
                 // Falls filterChain.doFilter() nicht gesetzt wird,
-                // wird bereits hier abgebrochen. Es kann so keine
+                // wird bereits hier abgebrochen. Es kann somit keine
                 // zweite Authentifizierungsmethode verwendet werden.
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -70,7 +72,7 @@ public class ApiKeyHeaderAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             filterChain.doFilter(request, response);                
 
-            // Falls es eine zweite Security Chain gibt, die die gleiche den gleichen
+            // Falls es eine zweite Security Chain gibt, die den gleichen
             // Security Matcher hat, wird der unauthentifizerte Request in der
             // zweiten Chain auch behandelt und z.B. auf eine Login-Seite verwiesen.
             // Das wäre dann wahrscheinlich nicht gewünscht. Man müsste hier bereits
