@@ -41,7 +41,7 @@ public class CleanerService {
     @Scheduled(cron="0 */30 * * * *")
     //@Scheduled(fixedRate = 1 * 30 * 1000) /* Runs every 30 seconds */
     public void cleanUp() {    
-        long deleteFileAge = 60*60*24;
+        long deleteFileAge = 60*60*24; // = 1 Tag
         log.info("Deleting files from previous delivery runs older than {} [s]...", deleteFileAge);
 
         if (storageService instanceof LocalFilesStorageService) {
