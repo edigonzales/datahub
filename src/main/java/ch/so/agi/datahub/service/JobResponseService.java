@@ -54,7 +54,7 @@ public class JobResponseService {
 //            organisation = authentication.getName();
 //        }
         
-        String stmt = baseStmt + "ORDER BY j.createdat DESC";
+        String stmt = baseStmt + "ORDER BY j.createdat DESC LIMIT 300";
 
         List<DataRow> results = SQLSelect
                 .dataRowQuery(stmt)
