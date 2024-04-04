@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<f:view>
+    <h:head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=0" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+
+        <title>Datahub - Jobs</title>
+        <!-- <h:outputStylesheet library="webjars" name="primeflex/3.3.1/primeflex.min.css" />-->
+        <!-- <h:outputStylesheet name="css/oerebctsws.css"/>-->
+        
+
+    </h:head>
+
+
+    <h:body>
+            
+        <h:form id="form">
+
+            <div class="card">
+    
+                <p:dataTable id="jobs-table" var="job" value="#{jobView.jobs}" reflow="true">
+                    <p:column headerText="Organisation">
+                        <h:outputText value="#{job.organisation()}" />
+                    </p:column>
+                    <p:column headerText="Thema">
+                        <h:outputText value="#{job.theme()}" />
+                    </p:column>
+                    <p:column headerText="Operat">
+                        <h:outputText value="#{job.operat()}" />
+                    </p:column>
+
+            
+                </p:dataTable>
+        
+            </div>
+        </h:form>
+
+    </h:body>
+
+</f:view>      
+</html>

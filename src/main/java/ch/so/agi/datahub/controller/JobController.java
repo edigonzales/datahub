@@ -43,7 +43,7 @@ public class JobController {
         return new ResponseEntity<List<JobResponse>>(jobResponseList, responseHeaders, HttpStatus.OK);
     }
         
-    @GetMapping(path = "/web/jobs")
+    @GetMapping(path = "/web.old/jobs")
     public String getJobsWeb(Model model, HttpServletResponse response) {
         List<JobResponse> jobResponseList = jobResponseService.getJobsResponse();
         model.addAttribute("jobResponseList", jobResponseList);
@@ -52,7 +52,7 @@ public class JobController {
         
         return "jobs";
     }
-    
+
     @GetMapping(path = "/api/jobs/{jobId}")
     public ResponseEntity<?> getJobApiById(Model model, @PathVariable("jobId") String jobId) throws IOException {
         JobResponse jobResponse = jobResponseService.getJobResponseById(jobId);
@@ -66,7 +66,7 @@ public class JobController {
         return new ResponseEntity<JobResponse>(jobResponse, responseHeaders, HttpStatus.OK);
     }
     
-    @GetMapping(path = "/web/jobs/{jobId}")
+    @GetMapping(path = "/web/jobs.old/{jobId}")
     public ResponseEntity<?> getJobWebById(@PathVariable("jobId") String jobId) throws IOException {
         JobResponse jobResponse = jobResponseService.getJobResponseById(jobId);
         

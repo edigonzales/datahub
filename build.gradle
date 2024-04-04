@@ -11,7 +11,7 @@ buildscript {
 
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.2.2'
+    id 'org.springframework.boot' version '3.2.3'
     id 'io.spring.dependency-management' version '1.1.4'
 }
 
@@ -38,7 +38,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
-    //implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    
+    implementation platform('org.joinfaces:joinfaces-platform:5.2.4')
+    implementation 'org.joinfaces:faces-spring-boot-starter'
+    implementation 'org.joinfaces:primefaces-spring-boot-starter'
+    implementation 'org.webjars.npm:primeflex:3.3.1'
     
     implementation 'org.jobrunr:jobrunr-spring-boot-3-starter:6.3.4'
     
