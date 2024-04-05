@@ -1,33 +1,25 @@
 package ch.so.agi.datahub.service;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.SQLSelect;
-import org.jobrunr.jobs.Job;
-import org.jobrunr.storage.StorageProvider;
+import org.primefaces.model.FilterMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import ch.so.agi.datahub.AppConstants;
-import ch.so.agi.datahub.model.JobResponse;
-import ch.so.agi.datahub.model.JobResponse;
+import ch.so.agi.datahub.model.JobResponseBean;
 
 @Service
-public class JobResponseService {
+public class JobResponseBeanService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Value("${app.dbSchemaConfig}")
@@ -42,20 +34,51 @@ public class JobResponseService {
 
     private ObjectContext objectContext;
     
-    public JobResponseService (ObjectContext objectContext) {
+    public JobResponseBeanService (ObjectContext objectContext) {
         this.objectContext = objectContext;
     }
     
-    public int getJobResponseCount() {
-        System.out.println("service: getJobResponseCount");
+    private String getWhereClause(Map<String, FilterMeta> filterBy) {
+        String whereClause = "";
+        int i=0;
+        for (Map.Entry<String, FilterMeta> entry : filterBy.entrySet()) {
+            if (i==0) {
+                whereClause += " AND ";
+            } else {
+                whereClause += " AND ";
+            } 
+            String attrName = entry.getKey();
+//            logger.info("attrName: " + attrName);
+            if (attrName.equalsIgnoreCase("validationStatus")) {
+                attrName = "isvalid";
+            }
+                        
+            whereClause += " " + attrName + getOperatorAndFilterValue((String)entry.getValue().getFilterValue()); 
+            
+            i++;
+        }
+        return whereClause;
+    }
+    
+    private String getOperatorAndFilterValue(String rawFilterValue) {
+        return switch(rawFilterValue) {
+            case "true" -> " IS true";
+            case "false" -> " IS false";                
+            default -> " ILIKE '"+rawFilterValue+"%'";
+        };
+    }
+    
+    public int getJobResponseCount(Map<String, FilterMeta> filterBy) {
+//        System.out.println("service: getJobResponseCount");
         
-        String stmt = "SELECT CAST(count(*) AS INTEGER) AS cnt FROM " + dbSchemaLog + ".deliveries_delivery;";
+        String stmt = "SELECT CAST(count(*) AS INTEGER) AS cnt FROM " + dbSchemaLog + ".deliveries_delivery WHERE 1=1 " + getWhereClause(filterBy);
+//        logger.debug(stmt);
         
         int count = (int) SQLSelect.dataRowQuery(stmt).selectOne(objectContext).get("cnt");
         return count;
     }
     
-    public List<JobResponse> getJobResponseList() {
+    public List<JobResponseBean> getJobResponseList(Map<String, FilterMeta> filterBy) {
 //        String organisation = null;
 //        if(authentication.getAuthorities().contains(new SimpleGrantedAuthority(AppConstants.ROLE_NAME_ADMIN))) {
 //            organisation = "%";
@@ -63,11 +86,11 @@ public class JobResponseService {
 //            organisation = authentication.getName();
 //        }
         
-        System.out.println("service: getJobResponseList");
+//        System.out.println("service: getJobResponseList");
 
+        String stmt = baseStmt + getWhereClause(filterBy) + " ORDER BY j.createdat DESC LIMIT 300";        
+//        logger.debug(stmt);
         
-        String stmt = baseStmt + "ORDER BY j.createdat DESC LIMIT 300";
-
         List<DataRow> results = SQLSelect
                 .dataRowQuery(stmt)
                 .param("log_file_location", getHost() + "/api/logs/")
@@ -82,8 +105,8 @@ public class JobResponseService {
 
         logger.trace("DataRow: {}", results);
                 
-        List<JobResponse> jobResponseList = results.stream().map(dr -> {
-            JobResponse jobResponse = new JobResponse(
+        List<JobResponseBean> jobResponseList = results.stream().map(dr -> {
+            JobResponseBean jobResponse = new JobResponseBean(
                     (String)dr.get("jobid"),
                     dr.get("createdat")!=null?((Date)dr.get("createdat")).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime():null,
                     dr.get("updatedat")!=null?((Date)dr.get("updatedat")).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime():null,
@@ -104,57 +127,57 @@ public class JobResponseService {
         return jobResponseList;
     }
 
-    public JobResponse getJobResponseById(String jobId) {            
-//        String organisation = null;
-//        if(authentication.getAuthorities().contains(new SimpleGrantedAuthority(AppConstants.ROLE_NAME_ADMIN))) {
-//            organisation = "%";
-//        } else {
-//            organisation = authentication.getName();
+//    public JobResponse getJobResponseById(String jobId) {            
+////        String organisation = null;
+////        if(authentication.getAuthorities().contains(new SimpleGrantedAuthority(AppConstants.ROLE_NAME_ADMIN))) {
+////            organisation = "%";
+////        } else {
+////            organisation = authentication.getName();
+////        }
+//        
+//        // Ich verstehe nicht ganz, wie Jobrunr das Datum handelt.
+//        // Es ist um eine Stunde falsch, aber in der DB hat es keine
+//        // Timezone. Via jobrunr-API bekomme ich das richtige DateTime.
+//        // Ob meine Lösung nun stimmt, wird sich zeigen. Timezone 
+//        // könnte man noch parametrisieren.
+//
+//        String stmt = baseStmt + "AND j.id = '$job_id'";
+//
+//        DataRow result = SQLSelect
+//                .dataRowQuery(stmt)
+//                .param("job_id", jobId)
+//                .param("log_file_location", getHost() + "/api/logs/" + jobId)
+//                .param("jobrunr_jobs_table", dbSchemaJobrunr+".jobrunr_jobs")
+//                .param("delivery_table", dbSchemaLog+".deliveries_delivery")
+//                .param("apikey_table", dbSchemaConfig+".core_apikey")
+//                .param("organisation_table", dbSchemaConfig+".core_organisation")
+//                .param("operat_table", dbSchemaConfig+".core_operat")
+//                .param("theme_table", dbSchemaConfig+".core_theme")
+//                .param("organisation", "%")
+//                .selectOne(objectContext);
+//               
+//        if (result == null) {
+//            return null;
 //        }
-        
-        // Ich verstehe nicht ganz, wie Jobrunr das Datum handelt.
-        // Es ist um eine Stunde falsch, aber in der DB hat es keine
-        // Timezone. Via jobrunr-API bekomme ich das richtige DateTime.
-        // Ob meine Lösung nun stimmt, wird sich zeigen. Timezone 
-        // könnte man noch parametrisieren.
-
-        String stmt = baseStmt + "AND j.id = '$job_id'";
-
-        DataRow result = SQLSelect
-                .dataRowQuery(stmt)
-                .param("job_id", jobId)
-                .param("log_file_location", getHost() + "/api/logs/" + jobId)
-                .param("jobrunr_jobs_table", dbSchemaJobrunr+".jobrunr_jobs")
-                .param("delivery_table", dbSchemaLog+".deliveries_delivery")
-                .param("apikey_table", dbSchemaConfig+".core_apikey")
-                .param("organisation_table", dbSchemaConfig+".core_organisation")
-                .param("operat_table", dbSchemaConfig+".core_operat")
-                .param("theme_table", dbSchemaConfig+".core_theme")
-                .param("organisation", "%")
-                .selectOne(objectContext);
-               
-        if (result == null) {
-            return null;
-        }
-        
-        JobResponse jobResponse = new JobResponse(
-                (String)result.get("jobid"),
-                result.get("createdat")!=null?((Date)result.get("createdat")).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime():null,
-                result.get("updatedat")!=null?((Date)result.get("updatedat")).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime():null,
-                (String)result.get("status"),
-                (Long)result.get("queueposition"),
-                (String)result.get("operat"),
-                (String)result.get("theme"),
-                (String)result.get("organisation"),
-                (String)result.get("message"),
-                (String)result.get("validationstatus"), 
-                (String)result.get("logfilelocation"), 
-                null, //(String)result.get("xtflogfilelocation"), 
-                null //(String)result.get("csvlogfilelocation")
-                );
-        
-        return jobResponse;
-    }
+//        
+//        JobResponse jobResponse = new JobResponse(
+//                (String)result.get("jobid"),
+//                result.get("createdat")!=null?((Date)result.get("createdat")).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime():null,
+//                result.get("updatedat")!=null?((Date)result.get("updatedat")).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime():null,
+//                (String)result.get("status"),
+//                (Long)result.get("queueposition"),
+//                (String)result.get("operat"),
+//                (String)result.get("theme"),
+//                (String)result.get("organisation"),
+//                (String)result.get("message"),
+//                (String)result.get("validationstatus"), 
+//                (String)result.get("logfilelocation"), 
+//                null, //(String)result.get("xtflogfilelocation"), 
+//                null //(String)result.get("csvlogfilelocation")
+//                );
+//        
+//        return jobResponse;
+//    }
     
     private String getHost() {
         return ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
@@ -208,6 +231,6 @@ FROM
     LEFT JOIN queue_position 
     ON queue_position.id = j.id
 WHERE 
-    org.aname LIKE '$organisation'
+    org.aname IS NOT NULL
             """;
 }

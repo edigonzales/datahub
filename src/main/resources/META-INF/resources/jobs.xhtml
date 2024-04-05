@@ -7,6 +7,8 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui">
 
+<!-- Achtung: Damit hat man wirklich gar keinen State. Jeder Knopfdruck (so auch ein leerer commandButton) refreshed alles. -->
+<!-- <f:view transient="true">-->
 <f:view>
     <h:head>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -16,36 +18,60 @@
 
         <title>Datahub - Jobs</title>
         <!-- <h:outputStylesheet library="webjars" name="primeflex/3.3.1/primeflex.min.css" />-->
-        <!-- <h:outputStylesheet name="css/oerebctsws.css"/>-->
-        
-
+        <h:outputStylesheet name="css/datahub.css"/>
     </h:head>
-
-
     <h:body>
-            
-        <h:form id="form">
-
-            <div class="card">
     
-                <p:dataTable id="jobs-table" var="job" value="#{jobView.jobs}" reflow="true">
-                    <p:column headerText="Organisation">
-                        <h:outputText value="#{job.organisation()}" />
+        <h:form id="form">
+            <div class="card">
+                <p:dataTable id="jobs-table" widgetVar="jobs-table" var="job" value="#{jobView.model}" filteredValue="#{jobView.filteredItems}" reflow="true">
+		            <f:facet name="header">
+		                <p:outputPanel>
+		                     <p:commandButton  value="Clear Filters" onclick="PF('jobs-table').clearFilters()" />
+		                     &nbsp;
+                             <p:commandButton value="Refresh" process="@this" update="jobs-table"/>
+		                </p:outputPanel>
+		            </f:facet>
+                    <p:column headerText="Organisation" filterBy="#{job.organisation}">
+                        <h:outputText value="#{job.organisation}" />
                     </p:column>
-                    <p:column headerText="Thema">
-                        <h:outputText value="#{job.theme()}" />
+                    <p:column headerText="Thema" filterBy="#{job.theme}">
+                        <h:outputText value="#{job.theme}" />
                     </p:column>
-                    <p:column headerText="Operat">
-                        <h:outputText value="#{job.operat()}" />
+                    <p:column headerText="Operat" filterBy="#{job.operat}">
+                        <h:outputText value="#{job.operat}" />
                     </p:column>
+                    <p:column headerText="Position">
+                        <p:badge rendered="#{job.queuePosition gt 0}" value="#{job.queuePosition}" styleClass="mr-2" severity="warning"></p:badge>                        
+                    </p:column>
+                    <p:column headerText="Lieferung">
+                        <h:outputText styleClass="badge-job-status" value="#{job.status}" />
+                    </p:column>
+                    <p:column headerText="Validierung" filterBy="#{job.validationStatus}">
 
-            
+	                    <f:facet name="filter">
+	                        <p:selectOneMenu onchange="PF('jobs-table').filter()">
+	                            <f:selectItem itemLabel="All" itemValue="#{null}" noSelectionOption="true" />
+	                            <f:selectItem itemLabel="DONE" itemValue="true" />
+	                            <f:selectItem itemLabel="FAILED" itemValue="false" />
+	                        </p:selectOneMenu>
+	                    </f:facet>
+
+                        <h:outputText styleClass="badge-#{job.validationStatus.toLowerCase()}" value="#{job.validationStatus}" />                        
+                    </p:column>
+                    <p:column headerText="Logdatei">
+                        <h:outputLink rendered="#{job.logFileLocation ne null}" class="black-link" value="#{job.logFileLocation}" target="_blank">
+                            <i class="pi pi-file" style="font-size: 1.2em"></i>
+                        </h:outputLink>
+                    </p:column>
+                    <p:column headerText="Lieferdatum">
+				        <h:outputText value="#{job.createdAt}">
+				            <f:convertDateTime type="localDateTime" pattern="yyyy-MM-dd HH:mm:ss" />
+				        </h:outputText>
+                    </p:column>
                 </p:dataTable>
-        
             </div>
         </h:form>
-
     </h:body>
-
 </f:view>      
 </html>

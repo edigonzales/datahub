@@ -32,7 +32,7 @@ public class JobController {
     
     @GetMapping(path = "/api/jobs")
     public ResponseEntity<?> getJobsApi() {
-        List<JobResponse> jobResponseList = jobResponseService.getJobsResponse();
+        List<JobResponse> jobResponseList = jobResponseService.getJobResponseList();
         
         if (jobResponseList.size() == 0) {
             return new ResponseEntity<List<JobResponse>>(null, null, HttpStatus.NO_CONTENT);
@@ -45,7 +45,7 @@ public class JobController {
         
     @GetMapping(path = "/web.old/jobs")
     public String getJobsWeb(Model model, HttpServletResponse response) {
-        List<JobResponse> jobResponseList = jobResponseService.getJobsResponse();
+        List<JobResponse> jobResponseList = jobResponseService.getJobResponseList();
         model.addAttribute("jobResponseList", jobResponseList);
         
         response.setHeader("Refresh", "15");

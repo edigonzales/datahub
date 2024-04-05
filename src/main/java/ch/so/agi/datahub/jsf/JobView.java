@@ -2,34 +2,36 @@ package ch.so.agi.datahub.jsf;
 
 import java.util.List;
 
+import org.primefaces.model.LazyDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.so.agi.datahub.model.JobResponse;
-import ch.so.agi.datahub.service.JobResponseService;
+import ch.so.agi.datahub.model.JobResponseBean;
+import ch.so.agi.datahub.service.JobResponseBeanService;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
 
 @Named
+//@ViewScoped
 @RequestScoped
 public class JobView {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    private JobResponseService jobResponseService;
-
-    public JobView(JobResponseService jobResponseService) {
-        this.jobResponseService = jobResponseService;
+    
+    private LazyDataModel<JobResponseBean> lazyModel;
+    
+    public JobView(JobResponseBeanService jobResponseService) {
+        lazyModel = new JobLazyDataModel(jobResponseService);
     }
     
     @PostConstruct
     public void init() {
-        System.out.println("** PostConstruct **");
+        logger.debug("** PostConstruct **");
+        logger.debug(this.toString());
     }
-    
-    public List<JobResponse> getJobs() {
-        List<JobResponse> jobResponseList = jobResponseService.getJobsResponse();
-        return jobResponseList;
+        
+    public LazyDataModel<JobResponseBean> getModel() {  
+        return lazyModel;
     }
-    
 }

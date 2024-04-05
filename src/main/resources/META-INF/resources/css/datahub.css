@@ -1,0 +1,65 @@
+.black-link {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #333333; 
+    text-decoration: underline !important;
+}
+
+a.black-link:hover {
+    color: #333333;
+    text-decoration: underline !important;
+}  
+
+a.black-link:visited {
+    color: #333333; 
+    text-decoration: underline !important;
+}  
+
+.circle {
+    display: inline-table;
+    vertical-align: middle;
+    width: 24px;
+    height: 24px;
+    background-color: #FFD8B2;
+    border-radius: 50%;
+}
+
+.circle_content {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 12px;
+    font-weight: bold;
+    color: #805B36;
+}
+
+.badge-done {
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #c8e6c9;
+    color: #256029;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.badge-failed {
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #ffcdd2;
+    color: #ca4141;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.badge-job-status {
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #eaeaea;
+    color: #495057;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: bold;
+}
+

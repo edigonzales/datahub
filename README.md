@@ -2,10 +2,23 @@
 
 ## Issues
 
+GUI:
+- View für Tabelle (damit die Attribute direkt ohne Frickel-Mapping angesprochen werden können)
+- isValid kann bleiben. Aber es sollte auch z.B. isValid_txt geben. Grund siehe oben.
+- Combobox für Organisation und Lieferung
+- refactor "JobResponseBean" vs "JobResponse". Achtung API!
+
+
+Backend:
 - Revoke Key nach gewisser Zeit
 - E-Mail wenn revoked (automatisch)
 - Inhalt E-Mail?   
 - E-Mail via AIO verschicken
+
+Varia:
+- LIMIT für Query?
+- LIMIT by age?
+
 
 ## Testrequests
 

@@ -114,7 +114,7 @@ public class DeliveryService {
         // HTML content: https://stackoverflow.com/questions/5289849/how-do-i-send-html-email-in-spring-mvc
         // String linkLogFile = "<a href='"+host+"/api/logs"+jobId+"'>"+jobId+"</a>";
         String mailSubject = resourceBundle.getString("deliveryEmailSubject").formatted(valid?"SUCCESSFULL":"ERROR", theme, operat);
-        String mailBody = resourceBundle.getString("deliveryEmailBody").formatted(host + "/api/logs/" + jobId, host + "/web/jobs");
+        String mailBody = resourceBundle.getString("deliveryEmailBody").formatted(jobId, host + "/api/logs/" + jobId, host + "/web/jobs");
         try {
             emailService.send(email, mailSubject, mailBody);
         } catch (Exception e) {
