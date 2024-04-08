@@ -6,8 +6,8 @@ import org.primefaces.model.LazyDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.so.agi.datahub.model.JobResponseBean;
-import ch.so.agi.datahub.service.JobResponseBeanService;
+import ch.so.agi.datahub.model.JobResponse;
+import ch.so.agi.datahub.service.JobResponseService;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.view.ViewScoped;
@@ -19,9 +19,9 @@ import jakarta.inject.Named;
 public class JobView {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     
-    private LazyDataModel<JobResponseBean> lazyModel;
+    private LazyDataModel<JobResponse> lazyModel;
     
-    public JobView(JobResponseBeanService jobResponseService) {
+    public JobView(JobResponseService jobResponseService) {
         lazyModel = new JobLazyDataModel(jobResponseService);
     }
     
@@ -31,7 +31,7 @@ public class JobView {
         logger.debug(this.toString());
     }
         
-    public LazyDataModel<JobResponseBean> getModel() {  
+    public LazyDataModel<JobResponse> getModel() {  
         return lazyModel;
     }
 }

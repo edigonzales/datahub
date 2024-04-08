@@ -8,18 +8,18 @@ import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortMeta;
 import org.slf4j.LoggerFactory;
 
-import ch.so.agi.datahub.model.JobResponseBean;
-import ch.so.agi.datahub.service.JobResponseBeanService;
+import ch.so.agi.datahub.model.JobResponse;
+import ch.so.agi.datahub.service.JobResponseService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JobLazyDataModel extends LazyDataModel<JobResponseBean> {
+public class JobLazyDataModel extends LazyDataModel<JobResponse> {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private JobResponseBeanService jobResponseService;
+    private JobResponseService jobResponseService;
     
-    public JobLazyDataModel(JobResponseBeanService jobResponseService) {
+    public JobLazyDataModel(JobResponseService jobResponseService) {
         this.jobResponseService = jobResponseService;
     }
     
@@ -29,10 +29,10 @@ public class JobLazyDataModel extends LazyDataModel<JobResponseBean> {
     }
 
     @Override
-    public List<JobResponseBean> load(int first, int pageSize, Map<String, SortMeta> sortBy,
+    public List<JobResponse> load(int first, int pageSize, Map<String, SortMeta> sortBy,
             Map<String, FilterMeta> filterBy) {
         logger.debug("load load load filters: " + filterBy.toString());
-        List<JobResponseBean> jobResponseList = jobResponseService.getJobResponseList(filterBy);
+        List<JobResponse> jobResponseList = jobResponseService.getJobResponseList(filterBy);
         int dataSize = jobResponseList.size();
         this.setRowCount(dataSize);
         return jobResponseList;        

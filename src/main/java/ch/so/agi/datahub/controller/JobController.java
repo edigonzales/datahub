@@ -9,16 +9,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 import ch.so.agi.datahub.model.JobResponse;
 import ch.so.agi.datahub.service.JobResponseService;
-import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
 public class JobController {
@@ -43,15 +40,15 @@ public class JobController {
         return new ResponseEntity<List<JobResponse>>(jobResponseList, responseHeaders, HttpStatus.OK);
     }
         
-    @GetMapping(path = "/web.old/jobs")
-    public String getJobsWeb(Model model, HttpServletResponse response) {
-        List<JobResponse> jobResponseList = jobResponseService.getJobResponseList();
-        model.addAttribute("jobResponseList", jobResponseList);
-        
-        response.setHeader("Refresh", "15");
-        
-        return "jobs";
-    }
+//    @GetMapping(path = "/web.old/jobs")
+//    public String getJobsWeb(Model model, HttpServletResponse response) {
+//        List<JobResponse> jobResponseList = jobResponseService.getJobResponseList();
+//        model.addAttribute("jobResponseList", jobResponseList);
+//        
+//        response.setHeader("Refresh", "15");
+//        
+//        return "jobs";
+//    }
 
     @GetMapping(path = "/api/jobs/{jobId}")
     public ResponseEntity<?> getJobApiById(Model model, @PathVariable("jobId") String jobId) throws IOException {
@@ -64,14 +61,5 @@ public class JobController {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<JobResponse>(jobResponse, responseHeaders, HttpStatus.OK);
-    }
-    
-    @GetMapping(path = "/web/jobs.old/{jobId}")
-    public ResponseEntity<?> getJobWebById(@PathVariable("jobId") String jobId) throws IOException {
-        JobResponse jobResponse = jobResponseService.getJobResponseById(jobId);
-        
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity<JobResponse>(jobResponse, responseHeaders, HttpStatus.OK);
-    }
+    }    
 }

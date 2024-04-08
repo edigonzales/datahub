@@ -6,7 +6,7 @@ GUI:
 - View für Tabelle (damit die Attribute direkt ohne Frickel-Mapping angesprochen werden können)
 - isValid kann bleiben. Aber es sollte auch z.B. isValid_txt geben. Grund siehe oben.
 - Combobox für Organisation und Lieferung
-- refactor "JobResponseBean" vs "JobResponse". Achtung API!
+- ~~refactor "JobResponseBean" vs "JobResponse". Achtung API!~~
 
 
 Backend:
@@ -16,8 +16,14 @@ Backend:
 - E-Mail via AIO verschicken
 
 Varia:
+- Wie in Produktion? Insb. Schemas / Views (mit Andi anschauen)
 - LIMIT für Query?
 - LIMIT by age?
+
+
+## Doku
+
+- "reason": "JobRunr maintenance - deleting succeeded job": https://www.jobrunr.io/en/documentation/pro/custom-delete-policy/
 
 
 ## Testrequests

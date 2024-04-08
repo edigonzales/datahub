@@ -44,7 +44,19 @@
                     <p:column headerText="Position">
                         <p:badge rendered="#{job.queuePosition gt 0}" value="#{job.queuePosition}" styleClass="mr-2" severity="warning"></p:badge>                        
                     </p:column>
-                    <p:column headerText="Lieferung">
+                    <p:column headerText="Lieferung" filterBy="#{job.status}">
+
+                        <f:facet name="filter">
+                            <p:selectOneMenu onchange="PF('jobs-table').filter()">
+                                <f:selectItem itemLabel="All" itemValue="#{null}" noSelectionOption="true" />
+                                <f:selectItem itemLabel="SUCCEEDED" itemValue="SUCCEEDED" />
+                                <f:selectItem itemLabel="PROCESSING" itemValue="PROCESSING" />
+                                <f:selectItem itemLabel="ENQUEUED" itemValue="ENQUEUED" />
+                                <f:selectItem itemLabel="FAILED" itemValue="FAILED" />
+                                <f:selectItem itemLabel="DELETED" itemValue="DELETED" />
+                            </p:selectOneMenu>
+                        </f:facet>
+
                         <h:outputText styleClass="badge-job-status" value="#{job.status}" />
                     </p:column>
                     <p:column headerText="Validierung" filterBy="#{job.validationStatus}">

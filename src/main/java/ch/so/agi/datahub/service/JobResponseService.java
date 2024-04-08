@@ -1,29 +1,22 @@
 package ch.so.agi.datahub.service;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashMap;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.SQLSelect;
-import org.jobrunr.jobs.Job;
-import org.jobrunr.storage.StorageProvider;
+import org.primefaces.model.FilterMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import ch.so.agi.datahub.AppConstants;
-import ch.so.agi.datahub.model.JobResponse;
 import ch.so.agi.datahub.model.JobResponse;
 
 @Service
@@ -46,28 +39,48 @@ public class JobResponseService {
         this.objectContext = objectContext;
     }
     
-    public int getJobResponseCount() {
-        System.out.println("service: getJobResponseCount");
-        
-        String stmt = "SELECT CAST(count(*) AS INTEGER) AS cnt FROM " + dbSchemaLog + ".deliveries_delivery;";
-        
+    private String getWhereClause(Map<String, FilterMeta> filterBy) {
+        String whereClause = "";
+        int i=0;
+        for (Map.Entry<String, FilterMeta> entry : filterBy.entrySet()) {
+            if (i==0) {
+                whereClause += " AND ";
+            } else {
+                whereClause += " AND ";
+            } 
+            String attrName = entry.getKey();
+            if (attrName.equalsIgnoreCase("validationStatus")) {
+                attrName = "isvalid";
+            }
+                        
+            whereClause += " " + attrName + getOperatorAndFilterValue((String)entry.getValue().getFilterValue()); 
+            
+            i++;
+        }
+        return whereClause;
+    }
+    
+    private String getOperatorAndFilterValue(String rawFilterValue) {
+        return switch(rawFilterValue) {
+            case "true" -> " IS true";
+            case "false" -> " IS false";                
+            default -> " ILIKE '"+rawFilterValue+"%'";
+        };
+    }
+    
+    public int getJobResponseCount(Map<String, FilterMeta> filterBy) {        
+        String stmt = "SELECT CAST(count(*) AS INTEGER) AS cnt FROM " + dbSchemaLog + ".deliveries_delivery WHERE 1=1 " + getWhereClause(filterBy);
         int count = (int) SQLSelect.dataRowQuery(stmt).selectOne(objectContext).get("cnt");
         return count;
     }
     
     public List<JobResponse> getJobResponseList() {
-//        String organisation = null;
-//        if(authentication.getAuthorities().contains(new SimpleGrantedAuthority(AppConstants.ROLE_NAME_ADMIN))) {
-//            organisation = "%";
-//        } else {
-//            organisation = authentication.getName();
-//        }
+        return getJobResponseList(new HashMap<>());
+    }
+    
+    public List<JobResponse> getJobResponseList(Map<String, FilterMeta> filterBy) {
+        String stmt = baseStmt + getWhereClause(filterBy) + " ORDER BY j.createdat DESC LIMIT 300";        
         
-        System.out.println("service: getJobResponseList");
-
-        
-        String stmt = baseStmt + "ORDER BY j.createdat DESC LIMIT 300";
-
         List<DataRow> results = SQLSelect
                 .dataRowQuery(stmt)
                 .param("log_file_location", getHost() + "/api/logs/")
@@ -77,7 +90,6 @@ public class JobResponseService {
                 .param("organisation_table", dbSchemaConfig+".core_organisation")
                 .param("operat_table", dbSchemaConfig+".core_operat")
                 .param("theme_table", dbSchemaConfig+".core_theme")
-                .param("organisation", "%")
                 .select(objectContext);
 
         logger.trace("DataRow: {}", results);
@@ -94,7 +106,8 @@ public class JobResponseService {
                     (String)dr.get("organisation"),
                     (String)dr.get("message"),
                     (String)dr.get("validationstatus"), 
-                    (String)dr.get("logfilelocation"), 
+                    // TODO überprüfen
+                    dr.get("validationstatus")!=null?(getHost() + "/api/logs/" + (String)dr.get("jobid")):null, 
                     null, 
                     null 
                     );
@@ -104,21 +117,14 @@ public class JobResponseService {
         return jobResponseList;
     }
 
-    public JobResponse getJobResponseById(String jobId) {            
-//        String organisation = null;
-//        if(authentication.getAuthorities().contains(new SimpleGrantedAuthority(AppConstants.ROLE_NAME_ADMIN))) {
-//            organisation = "%";
-//        } else {
-//            organisation = authentication.getName();
-//        }
-        
+    public JobResponse getJobResponseById(String jobId) {        
         // Ich verstehe nicht ganz, wie Jobrunr das Datum handelt.
         // Es ist um eine Stunde falsch, aber in der DB hat es keine
         // Timezone. Via jobrunr-API bekomme ich das richtige DateTime.
         // Ob meine Lösung nun stimmt, wird sich zeigen. Timezone 
         // könnte man noch parametrisieren.
 
-        String stmt = baseStmt + "AND j.id = '$job_id'";
+        String stmt = baseStmt + " AND j.id = '$job_id'";
 
         DataRow result = SQLSelect
                 .dataRowQuery(stmt)
@@ -130,7 +136,6 @@ public class JobResponseService {
                 .param("organisation_table", dbSchemaConfig+".core_organisation")
                 .param("operat_table", dbSchemaConfig+".core_operat")
                 .param("theme_table", dbSchemaConfig+".core_theme")
-                .param("organisation", "%")
                 .selectOne(objectContext);
                
         if (result == null) {
@@ -147,8 +152,9 @@ public class JobResponseService {
                 (String)result.get("theme"),
                 (String)result.get("organisation"),
                 (String)result.get("message"),
-                (String)result.get("validationstatus"), 
-                (String)result.get("logfilelocation"), 
+                (String)result.get("validationstatus"),
+                // TODO überprüfen
+                result.get("validationstatus")!=null?(getHost() + "/api/logs/" + jobId):null, 
                 null, //(String)result.get("xtflogfilelocation"), 
                 null //(String)result.get("csvlogfilelocation")
                 );
@@ -208,6 +214,6 @@ FROM
     LEFT JOIN queue_position 
     ON queue_position.id = j.id
 WHERE 
-    org.aname LIKE '$organisation'
+    org.aname IS NOT NULL
             """;
 }

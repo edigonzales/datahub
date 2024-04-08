@@ -1,3 +1,15 @@
+body {
+    color: #333333 !important;
+}
+
+body .ui-datatable thead th {
+    color: #333333 !important;
+}
+
+body .ui-datatable .ui-datatable-data>tr {
+    color: #333333 !important;
+}
+
 .black-link {
     overflow: hidden;
     text-overflow: ellipsis;
