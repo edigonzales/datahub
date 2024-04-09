@@ -23,9 +23,9 @@ SELECT
     th.aname AS theme,
     org.aname AS organisation,
     CASE 
-        WHEN isvalid IS TRUE THEN 'DONE' 
-        WHEN isvalid IS FALSE THEN 'FAILED'
-        ELSE NULL::TEXT
+        WHEN isvalid IS TRUE THEN CAST('DONE' AS VARCHAR(512)) 
+        WHEN isvalid IS FALSE THEN CAST('FAILED' AS VARCHAR(512))
+        ELSE CAST(NULL AS VARCHAR(512))
     END AS validationstatus
 FROM 
     agi_datahub_jobrunr_v1.jobrunr_jobs AS j

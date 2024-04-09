@@ -14,8 +14,10 @@ Backend:
 - E-Mail wenn revoked (automatisch)
 - Inhalt E-Mail?   
 - E-Mail via AIO verschicken
+- Develop: views.sql in postscript
 
 Varia:
+- tomcat threads etc. a la öreb
 - Wie in Produktion? Insb. Schemas / Views (mit Andi anschauen)
 - ~~LIMIT für Query?~~
 - LIMIT by age?
