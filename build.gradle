@@ -99,6 +99,7 @@ cdbimport {
             schema {
                 name 'agi_datahub_log_v1'
                 includeTable 'deliveries_delivery'
+                includeTable 'v_jobresponse'
             }
     }
 }

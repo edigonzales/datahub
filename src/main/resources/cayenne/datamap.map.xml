@@ -41,6 +41,17 @@
 		<db-attribute name="t_id" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="19"/>
 		<db-attribute name="theme" type="VARCHAR" isMandatory="true" length="51220"/>
 	</db-entity>
+	<db-entity name="v_jobresponse" schema="agi_datahub_log_v1">
+		<db-attribute name="createdat" type="TIMESTAMP" length="29"/>
+		<db-attribute name="jobid" type="VARCHAR" length="36"/>
+		<db-attribute name="operat" type="VARCHAR" length="512"/>
+		<db-attribute name="organisation" type="VARCHAR" length="512"/>
+		<db-attribute name="queueposition" type="BIGINT" length="19"/>
+		<db-attribute name="status" type="VARCHAR" length="2147483647"/>
+		<db-attribute name="theme" type="VARCHAR" length="20"/>
+		<db-attribute name="updatedat" type="TIMESTAMP" length="29"/>
+		<db-attribute name="validationstatus" type="VARCHAR" length="512"/>
+	</db-entity>
 	<obj-entity name="CoreApikey" className="ch.so.agi.datahub.cayenne.CoreApikey" dbEntityName="core_apikey">
 		<obj-attribute name="apikey" type="java.lang.String" db-attribute-path="apikey"/>
 		<obj-attribute name="createdat" type="java.time.LocalDateTime" db-attribute-path="createdat"/>
@@ -69,6 +80,17 @@
 		<obj-attribute name="operat" type="java.lang.String" db-attribute-path="operat"/>
 		<obj-attribute name="organisation" type="java.lang.String" db-attribute-path="organisation"/>
 		<obj-attribute name="theme" type="java.lang.String" db-attribute-path="theme"/>
+	</obj-entity>
+	<obj-entity name="VJobresponse" className="ch.so.agi.datahub.cayenne.VJobresponse" dbEntityName="v_jobresponse">
+		<obj-attribute name="createdat" type="java.time.LocalDateTime" db-attribute-path="createdat"/>
+		<obj-attribute name="jobid" type="java.lang.String" db-attribute-path="jobid"/>
+		<obj-attribute name="operat" type="java.lang.String" db-attribute-path="operat"/>
+		<obj-attribute name="organisation" type="java.lang.String" db-attribute-path="organisation"/>
+		<obj-attribute name="queueposition" type="java.lang.Long" db-attribute-path="queueposition"/>
+		<obj-attribute name="status" type="java.lang.String" db-attribute-path="status"/>
+		<obj-attribute name="theme" type="java.lang.String" db-attribute-path="theme"/>
+		<obj-attribute name="updatedat" type="java.time.LocalDateTime" db-attribute-path="updatedat"/>
+		<obj-attribute name="validationstatus" type="java.lang.String" db-attribute-path="validationstatus"/>
 	</obj-entity>
 	<db-relationship name="coreOrganisation" source="core_apikey" target="core_organisation">
 		<db-attribute-pair source="organisation_r" target="t_id"/>

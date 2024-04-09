@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW agi_datahub_log_v1.v_deliveries_delivery AS
+CREATE OR REPLACE VIEW agi_datahub_log_v1.v_jobresponse AS
 WITH queue_position AS 
 (
     SELECT 

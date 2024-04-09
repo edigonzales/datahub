@@ -31,7 +31,6 @@ public class JobLazyDataModel extends LazyDataModel<JobResponse> {
     @Override
     public List<JobResponse> load(int first, int pageSize, Map<String, SortMeta> sortBy,
             Map<String, FilterMeta> filterBy) {
-        logger.debug("load load load filters: " + filterBy.toString());
         List<JobResponse> jobResponseList = jobResponseService.getJobResponseList(filterBy);
         int dataSize = jobResponseList.size();
         this.setRowCount(dataSize);

@@ -33,6 +33,12 @@
 		                </p:outputPanel>
 		            </f:facet>
                     <p:column headerText="Organisation" filterBy="#{job.organisation}">
+                        <f:facet name="filter">
+                            <p:selectOneMenu onchange="PF('jobs-table').filter()">
+                                <f:selectItem itemLabel="All" itemValue="#{null}" noSelectionOption="true" />
+                                <f:selectItems value="#{jobView.organisations}" />
+                            </p:selectOneMenu>
+                        </f:facet>
                         <h:outputText value="#{job.organisation}" />
                     </p:column>
                     <p:column headerText="Thema" filterBy="#{job.theme}">
@@ -49,11 +55,11 @@
                         <f:facet name="filter">
                             <p:selectOneMenu onchange="PF('jobs-table').filter()">
                                 <f:selectItem itemLabel="All" itemValue="#{null}" noSelectionOption="true" />
-                                <f:selectItem itemLabel="SUCCEEDED" itemValue="SUCCEEDED" />
-                                <f:selectItem itemLabel="PROCESSING" itemValue="PROCESSING" />
-                                <f:selectItem itemLabel="ENQUEUED" itemValue="ENQUEUED" />
-                                <f:selectItem itemLabel="FAILED" itemValue="FAILED" />
-                                <f:selectItem itemLabel="DELETED" itemValue="DELETED" />
+                                <f:selectItem itemLabel="Succeeded" itemValue="SUCCEEDED" />
+                                <f:selectItem itemLabel="Processing" itemValue="PROCESSING" />
+                                <f:selectItem itemLabel="Enqueued" itemValue="ENQUEUED" />
+                                <f:selectItem itemLabel="Failed" itemValue="FAILED" />
+                                <f:selectItem itemLabel="Deleted" itemValue="DELETED" />
                             </p:selectOneMenu>
                         </f:facet>
 
