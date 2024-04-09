@@ -40,7 +40,7 @@ public class JobResponseService {
         ObjectSelect<DataRow> query = ObjectSelect.dataRowQuery(VJobresponse.class);
         
         for (Map.Entry<String, FilterMeta> entry : filterBy.entrySet()) {
-            query.where(entry.getKey().toLowerCase() + " = $"+entry.getKey().toLowerCase(), entry.getValue().getFilterValue());
+            query.where(entry.getKey().toLowerCase() + " like $"+entry.getKey().toLowerCase(), entry.getValue().getFilterValue());
         }
         
         return (int) query.selectCount(objectContext);
@@ -54,7 +54,8 @@ public class JobResponseService {
         ObjectSelect<DataRow> query = ObjectSelect.dataRowQuery(VJobresponse.class);
         
         for (Map.Entry<String, FilterMeta> entry : filterBy.entrySet()) {
-            query.where(entry.getKey().toLowerCase() + " = $"+entry.getKey().toLowerCase(), entry.getValue().getFilterValue());
+            // Achtung: Es wird immer eine like-Query gemacht. Dies funktioniert nicht mit boolean.
+            query.where(entry.getKey().toLowerCase() + " like $"+entry.getKey().toLowerCase(), entry.getValue().getFilterValue()+"%");
         }
         query.orderBy(VJobresponse.CREATEDAT.getName(), SortOrder.DESCENDING).limit(responseListLimit);
 
