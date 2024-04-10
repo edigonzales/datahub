@@ -1,6 +1,6 @@
 # datahub
 
-Datendrehscheibe: Anlieferung von INTERLIS-Transferdateien.
+Datendrehscheibe - Anlieferung von INTERLIS-Transferdateien.
 
 ## Beschreibung
 
@@ -8,13 +8,14 @@ Datahub ist eine Datendrehscheine und dient der Anlieferung von INTERLIS-Transfe
 
 Die Anlieferung erfolgt über ein REST-API, die Authentifizierung über einen API-Key. Den Status einer Lieferung kann entweder über das REST-API oder eine Webseite erfolgen. Beide Varianten benötigen keine Authentifizierung resp. Autorisierung. Ebenfalls wird eine E-Mail mit dem Prüfresultat verschickt.
 
-API-Keys können durch die Benutzer selber erstellt und widerrufen werden. Die Keys sind nicht personalisiert, sondern an eine Organisation gebunden. Es gibt eine Admin-Organisation, die für jede andere Organisation Keys erstellen kann und auch jedes Operat anliefern darf. Die Administration der Autorisierung kann mit einem Datenbank-Client gemacht werden. Das Autorisierungsmodell ist mit INTERLIS modelliert. Es gibt zusätzlich ein INTERLIS-Modell, welches die einzelnen Lieferungen loggt. 
+API-Keys können durch die Benutzer selber erstellt und widerrufen werden. Die Keys sind nicht personalisiert, sondern an eine Organisation gebunden. Es gibt eine Admin-Organisation, die für jede andere Organisation Keys erstellen kann und auch jedes Operat anliefern darf. Die Administration der Autorisierung muss mit einem Datenbank-Client gemacht werden und kann nicht mit der Anwendung gemacht werden. Das Autorisierungsmodell ist mit INTERLIS modelliert. Es gibt zusätzlich ein INTERLIS-Modell, welches die einzelnen Lieferungen loggt. 
 
 Die Daten werden nach erfolgreicher Prüfung an einen definierten Ort im Filesystem kopiert. Die Verzeichnisse müssen vorhanden sein.
 
 ## Anleitungen
 
-Siehe [docs/user-manual-de.md](Benutzerhandbuch).
+- [Benutzerhandbuch](docs/user-manual-de.md).
+- [Betriebshandbuch](docs/admin-manual-de.md)
 
 ## Komponenten
 
@@ -35,7 +36,7 @@ Backend:
 - Develop: views.sql in postscript
 
 Varia:
-- tomcat threads etc. a la öreb
+- ~~tomcat threads etc. a la öreb~~
 - Wie in Produktion? Insb. Schemas / Views (mit Andi anschauen)
 - ~~LIMIT für Query?~~
 - LIMIT by age?
