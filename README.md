@@ -21,6 +21,11 @@ Die Daten werden nach erfolgreicher Prüfung an einen definierten Ort im Filesys
 
 ## Issues
 
+Tests (auskommentiert in GH Action):
+- Umgang mit E-Mail?
+- Umgang mit DB? -> Testcontainer. Wie einrichten?
+
+
 GUI:
 - ~~View für Tabelle (damit die Attribute direkt ohne Frickel-Mapping angesprochen werden können)~~
 - ~~isValid kann bleiben. Aber es sollte auch z.B. isValid_txt geben. Grund siehe oben.~~
@@ -45,6 +50,8 @@ Varia:
 ## Doku
 
 - "reason": "JobRunr maintenance - deleting succeeded job": https://www.jobrunr.io/en/documentation/pro/custom-delete-policy/
+
+- cayenne-klassen herstellen.
 
 
 ## Testrequests

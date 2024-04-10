@@ -11,17 +11,26 @@ buildscript {
 
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.2.3'
+    id 'org.springframework.boot' version '3.2.4'
     id 'io.spring.dependency-management' version '1.1.4'
 }
 
 apply plugin: 'org.apache.cayenne'
+apply from: "$rootDir/gradle/versioning.gradle"
 
 group = 'ch.so.agi.datahub'
-version = '0.0.1-SNAPSHOT'
 
 java {
     sourceCompatibility = '21'
+    targetCompatibility = '21'
+}
+
+compileJava {
+    options.compilerArgs.addAll(['--release', '21'])
+}
+
+bootJar {
+   archiveFileName = archiveBaseName.get() + "-" + version + "-exec.jar"
 }
 
 repositories {
